@@ -40,7 +40,7 @@ WMPF上运行的微信小程序，与手机客户端的微信小程序能力一�
 
 想要顺利的运行小程序，需要两个apk
 
-* **WMPF Service apk**：由微信定期打包发布，作为Runtime的宿主环境
+* **WMPF Service apk**：由微信定期打包发布，作为小程序框架的宿主环境
 * **WMPF Client apk**：作为Service的调用方，需要你参考示例DEMO及文档进行定制
 
 
