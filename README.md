@@ -38,7 +38,7 @@ WMPF是微信小程序硬件框架(WeChat Mini-Program Framework)的简称，该
 
 WMPF上运行的微信小程序，与手机客户端的微信小程序能力一致。通过WMPF，开发者可以将微信平台能力赋能到硬件设备上
 
-WMPF由两部分组成
+想要顺利的运行小程序，需要两个apk
 
 * **WMPF Service apk**：由微信定期打包发布，作为Runtime的宿主环境
 * **WMPF Client apk**：作为Service的调用方，需要你参考示例DEMO及文档进行定制
