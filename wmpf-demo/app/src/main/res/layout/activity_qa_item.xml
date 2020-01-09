@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:minHeight="60dp"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:background="#FFFFFF">
+
+    <TextView
+        android:id="@+id/number"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        tools:text="0"/>
+
+    <LinearLayout
+        android:id="@+id/phone_number_manager_dialog_ll"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/question"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_marginEnd="15dp"
+            tools:text="question"/>
+
+        <TextView
+            android:id="@+id/answer"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:layout_width="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginEnd="15dp"
+            android:text="answer"/>
+
+    </LinearLayout>
+
+</LinearLayout>
