@@ -1,0 +1,68 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.tencent.wmpf.demo"
+        minSdkVersion 21
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // TODO: Change this to your appId applied from open.weixin.qq.com
+        // WARNING: WXA Apps run on each host AppId could be limited.
+        buildConfigField 'String', 'HOST_APPID', "\"wx94ef6bb77b573d05\""
+        // TODO: Temp workaround. You should keep the APP_SECRET out from your apk.
+        buildConfigField 'String', 'HOST_APPSECRET', "\"b2fcefb0c24eaa9a243528b0d91ee039\""
+    }
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile rootProject.file('debug.keystore')
+            storePassword 'android'
+        }
+        release {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile rootProject.file('debug.keystore')
+            storePassword 'android'
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    api 'org.parceler:parceler-api:1.1.9'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.41"
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
+
+    // TODO
+//    api("com.tencent.wmpf:wmpf-cli:0.1.5.2-SNAPSHOT") {changing = true}
+//    api("com.tencent.wmpf:wmpf-cli-addon:0.1.5.2-SNAPSHOT") {changing = true}
+
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+
+    api('com.github.bumptech.glide:glide:4.5.0') {
+        exclude group: 'com.android.support', module: 'support-media-compat'
+        exclude group: 'com.android.support', module: 'animated-vector-drawable'
+        exclude group: 'com.android.support', module: 'support-fragment'
+    }
+    api 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    api 'io.reactivex.rxjava2:rxjava:2.1.16'
+    api 'com.squareup.okhttp3:okhttp:3.10.0'
+
+    api 'cn.yipianfengye.android:zxing-library:2.2'
+}

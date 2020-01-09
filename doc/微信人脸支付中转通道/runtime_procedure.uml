@@ -1,0 +1,15 @@
+@startuml
+
+小程序 -> 小程序: wmpf.wxPayFace.getRawData 获取rawdata
+小程序 -> 商户server: 带上rawdata通知server
+商户server -> 微信支付后台API: get_wxpayface_authinfo(rawdata)
+微信支付后台 -> 商户server: 返回authinfo
+商户server -> 小程序: 返回authinfo
+
+小程序 -> 小程序: wmpf.wxPayFace.getFaceCode 获取face_code
+小程序 -> 商户server: 带上face_code通知server发起支付订单
+商户server -> 微信支付后台API: 发起订单支付facepay(face_code, orderinfo)
+微信支付后台API -> 商户server: 返回支付结果
+商户server -> 小程序: 返回支付结果
+
+@enduml

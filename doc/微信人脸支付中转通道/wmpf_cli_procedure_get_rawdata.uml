@@ -1,0 +1,8 @@
+@startuml
+
+wmpf -> cli: insert(content://com.tencent.wmpf.cli.provider/wxfacepay/rawdata)
+cli -> cli: 完成获取rawdata的流程
+cli -> wmpf: notifyChange(content://com.tencent.wmpf.cli.provider/wxfacepay)
+wmpf -> cli: query(content://com.tencent.wmpf.cli.provider/wxfacepay/callback)
+
+@enduml

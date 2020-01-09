@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Disable the given check in this project -->
+    <issue id="Deprecated" severity="warning">
+        <ignore regexp="singleLine" />
+    </issue>
+
+    <issue id="HardcodedText" severity="ignore" />
+    <issue id="TextFields" severity="ignore" />
+    <issue id="AllowBackup" severity="ignore" />
+    <issue id="GradleDynamicVersion" severity="ignore" />
+    <issue id="Autofill" severity="ignore" />
+
+</lint>
