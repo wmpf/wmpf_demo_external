@@ -5,7 +5,7 @@
 </p>
 
 <h1 align="center">
-  <a href="https://developers.weixin.qq.com/doc/oplatform/Miniprogram_Frame/">
+  <a href="https://github.com/wmpf/wmpf_demo_external/">
    WMPF Client Demo
   </a>
 </h1>
@@ -60,7 +60,7 @@ WMPF由两部分组成
 
 ## 💻 WMPF使用场景
 
-WMPF小程序框架，可以应用在各行各业的安卓系统平板电脑、大屏设备等硬件，提供低成本屏幕互动解决方案，可接入设备包括但不限于
+WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬件，提供低成本屏幕互动解决方案，可接入设备包括但不限于
 
 * 智慧零售：收银机 / 排号机 / 商场导航屏 / 自动贩卖机 / 点餐平板 / 互动广告屏幕等
 * 家用及娱乐设备：智能冰箱 / 儿童平板 / 跑步机 / 电视机 / KTV点唱机等
