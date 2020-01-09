@@ -86,7 +86,9 @@ WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬�
 
 ## 🙋 帮助
 
-* 阅读[小程序开放框架接入文档](https://developers.weixin.qq.com/doc/oplatform/Miniprogram_Frame/)和[Q&A](https://github.com/wmpf/wmpf_demo_external/wiki/Q&A)
+* 阅读[微信小程序硬件框架接入文档](https://developers.weixin.qq.com/doc/oplatform/Miniprogram_Frame/)和[Q&A](https://github.com/wmpf/wmpf_demo_external/wiki/Q&A)
+
+* 阅读项目[Wiki](https://github.com/wmpf/wmpf_demo_external/wiki)
 
 * 在[issues](https://github.com/wmpf/wmpf_demo_external/issues)中提出任何疑问与建议
 
