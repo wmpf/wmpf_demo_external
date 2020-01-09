@@ -40,8 +40,8 @@ WMPF上运行的微信小程序，与手机客户端的微信小程序能力一�
 
 WMPF由两部分组成
 
-* **WMPF Server apk**：由微信定期打包发布，作为Runtime的宿主环境
-* **WMPF Client apk**：作为Server的调用方，需要你参考示例DEMO及文档进行定制
+* **WMPF Service apk**：由微信定期打包发布，作为Runtime的宿主环境
+* **WMPF Client apk**：作为Service的调用方，需要你参考示例DEMO及文档进行定制
 
 
 <p align="center" >
@@ -49,7 +49,7 @@ WMPF由两部分组成
 </p>
 
 
-本项目提供了WMPF Server的apk下载，WMPF Client示例DEMO以及说明文档
+本项目提供了WMPF Service的apk下载，WMPF Client示例DEMO以及说明文档
 
 ```
 目录结构
