@@ -6,7 +6,7 @@
 
 <h1 align="center">
   <a href="https://developers.weixin.qq.com/doc/oplatform/Miniprogram_Frame/">
-   WeChat Mini-Program Framework
+   WMPF Client Demo
   </a>
 </h1>
 
