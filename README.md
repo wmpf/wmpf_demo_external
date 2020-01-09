@@ -34,7 +34,7 @@
 <img  width = "600" src="https://github.com/wmpf/wmpf_demo_external/blob/master/assets/arch.png" alt="架构图" align=center />
 </p>
 
-WMPF是微信小程序框架(WeChat Mini-Program Framework)的简称，该运行环境能让硬件在脱离微信客户端的情况下运行微信小程序，目前已支持Android，未来会支持到更多的平台
+WMPF是微信小程序硬件框架(WeChat Mini-Program Framework)的简称，该运行环境能让硬件在脱离微信客户端的情况下运行微信小程序，目前已支持Android，未来会支持到更多的平台
 
 WMPF上运行的微信小程序，与手机客户端的微信小程序能力一致。通过WMPF，开发者可以将微信平台能力赋能到硬件设备上
 
