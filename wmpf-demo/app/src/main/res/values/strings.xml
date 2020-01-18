@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">WMPF Client Demo</string>
+    <string name="device_info">获取</string>
+    <string name="wxa_app_id">wxa_app_id</string>
+    <string name="ticket">ticket</string>
 </resources>

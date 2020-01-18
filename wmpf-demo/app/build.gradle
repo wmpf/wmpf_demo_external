@@ -65,4 +65,6 @@ dependencies {
     api 'com.squareup.okhttp3:okhttp:3.10.0'
 
     api 'cn.yipianfengye.android:zxing-library:2.2'
+
+    implementation 'com.tencent:mmkv-static:1.0.24'
 }
