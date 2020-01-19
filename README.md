@@ -67,9 +67,9 @@ WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬�
 * 公共服务：医院挂号机 / 图书租赁设备 / 美术馆办卡机等
 * 办公设备：教育平板 / 会议终端 / 会议投屏等
 
-## 🚀 快速指南
+## 🚀 快速体验
 
-想要快速在设备上运行小程序，只需要以下4步
+在完成[硬件注册流程](https://developers.weixin.qq.com/doc/oplatform/Miniprogram_Frame/#%E4%BA%94%E3%80%81%E6%8E%A5%E5%85%A5%E7%94%B3%E8%AF%B7)后，想要快速在设备上运行小程序，只需要以下4步
 
 1. 在[Releases Page](https://github.com/wmpf/wmpf_demo_external/releases)下载并安装最新版本的WMPF Service apk
 2. 在Android Studio中导入运行[wmpf-client-demo](https://github.com/wmpf/wmpf_demo_external/tree/master/wmpf-demo)，并修改[Constants.kt](https://github.com/wmpf/wmpf_demo_external/blob/master/wmpf-demo/app/src/main/java/com/tencent/luggage/demo/wxapi/Constants.kt)
