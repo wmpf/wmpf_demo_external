@@ -79,7 +79,7 @@ WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬�
 4. 修改定制你的wmpf-client！
 
 <p align="center">
-<img src="https://github.com/wmpf/wmpf_demo_external/blob/master/assets/boost.png" width = "400" alt="boost" align=center />
+<img src="https://github.com/wmpf/wmpf_demo_external/blob/master/assets/boost.png" width = "800" alt="boost" align=center />
 </p>
 
 <p align="center">
