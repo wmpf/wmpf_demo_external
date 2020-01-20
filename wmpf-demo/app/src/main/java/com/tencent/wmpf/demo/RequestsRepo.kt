@@ -1,6 +1,7 @@
 package com.tencent.wmpf.demo
 
 import android.util.Log
+import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mmkv.MMKV
 import com.tencent.wmpf.cli.task.IPCInovkerTask_SetPushMsgCallback
 import com.tencent.wmpf.cli.task.IPCInvokerTask_getPushToken
@@ -68,6 +69,10 @@ object RequestsRepo {
      * never use this function for production environment
      */
     fun getTestDeviceInfo(ticket: String, wxaAppId: String, hostAppId: String, callback: (resp: String) -> Unit) {
+        if (!DeviceInfo.isExpired()) {
+            callback("already got device info")
+            return
+        }
         Thread {
             val req = Request.Builder().url("https://open.weixin.qq.com/wxaruntime" +
                     "/getdemodeviceinfo?ticket=$ticket&wxaappid=$wxaAppId&hostappid=$hostAppId").build()

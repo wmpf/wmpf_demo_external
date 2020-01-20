@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import com.tencent.luggage.demo.wxapi.Constants
+import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mmkv.MMKV
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.RequestsRepo
@@ -33,11 +33,12 @@ class GetDeviceInfoActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_get_device_info).setOnClickListener {
             kv.putString("appId", appIdEditView.text.toString())
             kv.putString("ticket", ticketEditView.text.toString())
-            RequestsRepo.getTestDeviceInfo(ticketEditView.text.toString(), appIdEditView.text.toString(), Constants.APP_ID){
+            RequestsRepo.getTestDeviceInfo(ticketEditView.text.toString(), appIdEditView.text.toString(), DeviceInfo.APP_ID){
                 respTextView.post {
                     respTextView.text = it
                 }
             }
         }
+
     }
 }

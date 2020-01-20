@@ -5,11 +5,9 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Button
-import com.tencent.luggage.demo.wxapi.Constants
-import com.tencent.luggage.demo.wxapi.Constants.APP_ID
+import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.wmpf.demo.Api
 import com.tencent.wmpf.demo.R
-import com.tencent.wmpf.demo.RequestsRepo
 import com.tencent.wmpf.demo.utils.InvokeTokenHelper
 import com.tencent.wxapi.test.OpenSdkTestUtil
 import io.reactivex.schedulers.Schedulers
@@ -21,8 +19,8 @@ class DocumentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_document)
 
         findViewById<Button>(R.id.btn_activate_device).setOnClickListener {
-            Api.activateDevice(Constants.PRODUCT_ID, Constants.KEY_VERSION,
-                    Constants.DEVICE_ID, Constants.SIGNATURE, Constants.APP_ID)
+            Api.activateDevice(DeviceInfo.PRODUCT_ID, DeviceInfo.KEY_VERSION,
+                    DeviceInfo.DEVICE_ID, DeviceInfo.SIGNATURE, DeviceInfo.APP_ID)
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.invokeToken} ")
@@ -42,10 +40,10 @@ class DocumentActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_authorize).setOnClickListener {
-            OpenSdkTestUtil.getSDKTicket(Constants.APP_ID, Constants.APP_SECRET)
+            OpenSdkTestUtil.getSDKTicket(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET)
                     .subscribeOn(Schedulers.io())
                     .flatMap {
-                        Api.authorize(Constants.APP_ID, it, "snsapi_userinfo,snsapi_runtime_apk")
+                        Api.authorize(DeviceInfo.APP_ID, it, "snsapi_userinfo,snsapi_runtime_apk")
                     }
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
@@ -55,10 +53,10 @@ class DocumentActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_authorize_no_login).setOnClickListener {
-            OpenSdkTestUtil.getSDKTicket(Constants.APP_ID, Constants.APP_SECRET)
+            OpenSdkTestUtil.getSDKTicket(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET)
                     .subscribeOn(Schedulers.io())
                     .flatMap {
-                        Api.authorizeNoLogin(Constants.APP_ID, it, "snsapi_userinfo,snsapi_runtime_apk")
+                        Api.authorizeNoLogin(DeviceInfo.APP_ID, it, "snsapi_userinfo,snsapi_runtime_apk")
                     }
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
@@ -140,12 +138,6 @@ class DocumentActivity : AppCompatActivity() {
             }, {
                 Log.e(TAG, "error: $it")
             })
-        }
-
-        findViewById<Button>(R.id.btn_get_device_info_activity).setOnClickListener {
-            Intent(this, GetDeviceInfoActivity::class.java).also { intent ->
-                startActivity(intent)
-            }
         }
     }
 
