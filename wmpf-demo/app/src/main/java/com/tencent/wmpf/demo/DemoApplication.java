@@ -3,6 +3,7 @@ package com.tencent.wmpf.demo;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
+import com.tencent.mmkv.MMKV;
 import com.tencent.wmpf.app.WMPFApplication;
 import com.tencent.wmpf.demo.utils.InvokeTokenHelper;
 
@@ -16,5 +17,14 @@ public class DemoApplication extends WMPFApplication {
         MultiDex.install(this);
 
         InvokeTokenHelper.INSTANCE.initInvokeToken(this);
+
+        String rootDir = MMKV.initialize(this);
+        System.out.println("mmkv root: " + rootDir);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        MMKV.onExit();
     }
 }

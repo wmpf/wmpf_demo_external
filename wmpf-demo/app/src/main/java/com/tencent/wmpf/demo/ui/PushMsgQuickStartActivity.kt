@@ -37,9 +37,6 @@ class PushMsgQuickStartActivity : AppCompatActivity() {
     private val emitterView: Button by lazy {
         findViewById<Button>(R.id.emitter)
     }
-
-    private val repo = RequestsRepo()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_push_msg_quick_start)
@@ -64,13 +61,13 @@ class PushMsgQuickStartActivity : AppCompatActivity() {
         }
 
         printlnToView("1. 获取access_token...")
-        repo.getAccessToken { success, ret ->
+        RequestsRepo.getAccessToken { success, ret ->
             var accessToken = ""
             if (success) {
                 accessToken = ret
                 printlnToView("result: $ret")
                 printlnToView("2. 获取push_token...")
-                repo.getPushToken(appId) { success, ret ->
+                RequestsRepo.getPushToken(appId) { success, ret ->
                     if (success) {
                         printlnToView("result: $ret")
                     } else {
@@ -80,10 +77,10 @@ class PushMsgQuickStartActivity : AppCompatActivity() {
 
                     printlnToView("使用获取push_token = $appToken, " +
                             "accessToken = $accessToken, msg = ${msgView.text}, delay = $delay 推送")
-                    repo.postMsg(ret, appToken, msgView.text.toString(), delay) { success, ret ->
+                    RequestsRepo.postMsg(ret, appToken, msgView.text.toString(), delay) { success, ret ->
                         printlnToView("3. 推送请求: isSuccess = $success, ret = $ret")
                         printlnToView("4. 等待推送消息返回...")
-                        repo.setMsgCallback(this@PushMsgQuickStartActivity)
+                        RequestsRepo.setMsgCallback(this@PushMsgQuickStartActivity)
                     }
                 }
             } else {

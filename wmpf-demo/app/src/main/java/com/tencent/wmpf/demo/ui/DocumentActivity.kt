@@ -6,8 +6,10 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Button
 import com.tencent.luggage.demo.wxapi.Constants
+import com.tencent.luggage.demo.wxapi.Constants.APP_ID
 import com.tencent.wmpf.demo.Api
 import com.tencent.wmpf.demo.R
+import com.tencent.wmpf.demo.RequestsRepo
 import com.tencent.wmpf.demo.utils.InvokeTokenHelper
 import com.tencent.wxapi.test.OpenSdkTestUtil
 import io.reactivex.schedulers.Schedulers
@@ -140,6 +142,11 @@ class DocumentActivity : AppCompatActivity() {
             })
         }
 
+        findViewById<Button>(R.id.btn_get_device_info_activity).setOnClickListener {
+            Intent(this, GetDeviceInfoActivity::class.java).also { intent ->
+                startActivity(intent)
+            }
+        }
     }
 
     companion object {
