@@ -9,7 +9,6 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         // TODO: Change this to your appId applied from open.weixin.qq.com
         // WARNING: WXA Apps run on each host AppId could be limited.
