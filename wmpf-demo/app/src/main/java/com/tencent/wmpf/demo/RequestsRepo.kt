@@ -2,7 +2,11 @@ package com.tencent.wmpf.demo
 
 import android.util.Log
 import com.tencent.luggage.demo.wxapi.DeviceInfo
-import com.tencent.mmkv.MMKV
+import com.tencent.luggage.demo.wxapi.DeviceInfo.KEY_EXPIRED_TIME_MS
+import com.tencent.luggage.demo.wxapi.DeviceInfo.KEY_TEST_DEVICE_ID
+import com.tencent.luggage.demo.wxapi.DeviceInfo.KEY_TEST_KEY_VERSION
+import com.tencent.luggage.demo.wxapi.DeviceInfo.KEY_TEST_PRODUCT_ID
+import com.tencent.luggage.demo.wxapi.DeviceInfo.KEY_TEST_SIGNATURE
 import com.tencent.wmpf.cli.task.IPCInovkerTask_SetPushMsgCallback
 import com.tencent.wmpf.cli.task.IPCInvokerTask_getPushToken
 import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
@@ -52,15 +56,6 @@ object RequestsRepo {
         }.start()
     }
 
-    const val KEY_TEST_PRODUCT_ID = "product_id"
-
-    const val KEY_TEST_DEVICE_ID = "device_id"
-
-    const val KEY_TEST_SIGNATURE = "signature"
-
-    const val KEY_TEST_KEY_VERSION = "key_version"
-
-    const val KEY_EXPIRED_TIME_MS = "expiredTimeMs"
 
     /**
      * @param ticket  get from wecooper
@@ -69,10 +64,6 @@ object RequestsRepo {
      * never use this function for production environment
      */
     fun getTestDeviceInfo(ticket: String, wxaAppId: String, hostAppId: String, callback: (resp: String) -> Unit) {
-        if (!DeviceInfo.isExpired()) {
-            callback("already got device info")
-            return
-        }
         Thread {
             val req = Request.Builder().url("https://open.weixin.qq.com/wxaruntime" +
                     "/getdemodeviceinfo?ticket=$ticket&wxaappid=$wxaAppId&hostappid=$hostAppId").build()
@@ -90,20 +81,19 @@ object RequestsRepo {
                     val expiredTimeMs = jsonObject.optLong(KEY_EXPIRED_TIME_MS) * 1000L + System.currentTimeMillis()
                     Log.d(TAG, "getDeviceInfo: productId = $productId, deviceId = $deviceId, signature = $signature, keyVersion = $keyVersion, appIdList = $appIdList, expiredTimeMs = $expiredTimeMs")
 
-                    val kv = MMKV.mmkvWithID(TAG, MMKV.SINGLE_PROCESS_MODE)
+                    DeviceInfo.productId = productId
+                    DeviceInfo.deviceId = deviceId
+                    DeviceInfo.signature = signature
+                    DeviceInfo.keyVersion = keyVersion
+                    DeviceInfo.expiredTimeMs = expiredTimeMs
 
-                    kv.putInt(KEY_TEST_PRODUCT_ID, productId)
-                    kv.putString(KEY_TEST_DEVICE_ID, deviceId)
-                    kv.putString(KEY_TEST_SIGNATURE, signature)
-                    kv.putInt(KEY_TEST_KEY_VERSION, keyVersion)
-                    kv.putLong(KEY_EXPIRED_TIME_MS, expiredTimeMs)
                 } else {
                     callback("error")
                     Log.w(TAG, "getDeviceInfo fail: ")
                 }
             } catch (e: Exception) {
-                callback("error: ${e.message}")
-                Log.e(TAG, "getDeviceInfo fail: ${e.message}")
+                callback("error: ${e.message.toString()}")
+                Log.e(TAG, "getDeviceInfo fail: ${e.message.toString()}")
             }
         }.start()
     }

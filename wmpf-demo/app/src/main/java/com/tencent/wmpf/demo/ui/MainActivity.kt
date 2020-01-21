@@ -49,8 +49,8 @@ class MainActivity : AppCompatActivity() {
 
         // Step 1.1
         findViewById<Button>(R.id.btn_init_wmpf_activate_device).setOnClickListener {
-            Api.activateDevice(DeviceInfo.PRODUCT_ID, DeviceInfo.KEY_VERSION,
-                    DeviceInfo.DEVICE_ID, DeviceInfo.SIGNATURE, DeviceInfo.APP_ID)
+            Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
+                    DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
                         Log.i(TAG, "success: $it")
                         InvokeTokenHelper.initInvokeToken(this, it.invokeToken)

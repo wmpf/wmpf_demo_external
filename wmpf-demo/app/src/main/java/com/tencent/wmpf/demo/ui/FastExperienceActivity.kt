@@ -44,7 +44,7 @@ class FastExperienceActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_launch_login).setOnClickListener {
-            Api.activateDevice(DeviceInfo.PRODUCT_ID, DeviceInfo.KEY_VERSION, DeviceInfo.DEVICE_ID, DeviceInfo.SIGNATURE, DeviceInfo.APP_ID)
+            Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion, DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .flatMap {
                         InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                         OpenSdkTestUtil.getSDKTicket(optAppId(), optAppSecret())
@@ -75,18 +75,23 @@ class FastExperienceActivity : AppCompatActivity() {
             RequestsRepo.getTestDeviceInfo(ticketEditView.text.toString(), appIdEditView.text.toString(), DeviceInfo.APP_ID) {
                 respTextView.post {
                     respTextView.text = it
+                    val temp = it
+                    if (temp.toLowerCase().contains("error")) {
+                        DeviceInfo.reset()
+                        return@post
+                    }
                     var consoleText = respTextView.text.toString() + "\n" + "--------激活设备中--------\n"
                     respTextView.text = consoleText
-                    Api.activateDevice(DeviceInfo.PRODUCT_ID, DeviceInfo.KEY_VERSION,
-                            DeviceInfo.DEVICE_ID, DeviceInfo.SIGNATURE, DeviceInfo.APP_ID)
+                    Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
+                            DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                             .subscribe({
                                 Log.i(TAG, "success: $it")
-                                InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                                 respTextView.post {
                                     consoleText += String.format("init finish, err %d",
                                             it?.baseResponse?.ret)
                                     respTextView.text = "$consoleText\n--------启动小程序--------\n"
-                                    launchWxa()
+                                    InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
+                                    Api.launchWxaApp(optLaunchAppId(), "").subscribe({},{})
                                 }
 
                             }, {
@@ -130,7 +135,7 @@ class FastExperienceActivity : AppCompatActivity() {
 
     @SuppressLint("CheckResult")
     private fun launchWxa() {
-        Api.activateDevice(DeviceInfo.PRODUCT_ID, DeviceInfo.KEY_VERSION, DeviceInfo.DEVICE_ID, DeviceInfo.SIGNATURE, DeviceInfo.APP_ID)
+        Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion, DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                 .flatMap {
                     InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                     Api.launchWxaApp(optLaunchAppId(), "")

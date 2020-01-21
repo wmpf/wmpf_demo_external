@@ -19,8 +19,8 @@ class DocumentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_document)
 
         findViewById<Button>(R.id.btn_activate_device).setOnClickListener {
-            Api.activateDevice(DeviceInfo.PRODUCT_ID, DeviceInfo.KEY_VERSION,
-                    DeviceInfo.DEVICE_ID, DeviceInfo.SIGNATURE, DeviceInfo.APP_ID)
+            Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
+                    DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.invokeToken} ")
