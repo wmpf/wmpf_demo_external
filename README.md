@@ -74,7 +74,7 @@ WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬�
 注册后完成后，在设备上运行小程序，只需要以下4步
 
 1. 在[Releases Page](https://github.com/wmpf/wmpf_demo_external/releases)下载并安装最新版本的WMPF Service apk
-2. 在Android Studio中导入运行[wmpf-client-demo](https://github.com/wmpf/wmpf_demo_external/tree/master/wmpf-demo)，并在demo的`首页-API文档-获取设备信息`页面填写小程序的appId和ticket，appId和ticket的获取如下如所示
+2. 在Android Studio中导入运行[wmpf-client-demo](https://github.com/wmpf/wmpf_demo_external/tree/master/wmpf-demo)，并在demo的`首页-快速体验`页面填写小程序的appId和ticket，appId和ticket的获取如下图所示
 3. 在wmpf-client-demo中输入小程序的AppID，就可以运行和体验小程序了
 4. 修改定制你的wmpf-client！
 
