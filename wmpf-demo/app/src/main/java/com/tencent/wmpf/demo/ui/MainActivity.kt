@@ -19,7 +19,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.tencent.luggage.demo.wxapi.Constants
+import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.wmpf.cli.task.*
 import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
 import com.tencent.wmpf.demo.Api
@@ -49,8 +49,8 @@ class MainActivity : AppCompatActivity() {
 
         // Step 1.1
         findViewById<Button>(R.id.btn_init_wmpf_activate_device).setOnClickListener {
-            Api.activateDevice(Constants.PRODUCT_ID, Constants.KEY_VERSION,
-                    Constants.DEVICE_ID, Constants.SIGNATURE, Constants.APP_ID)
+            Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
+                    DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
                         Log.i(TAG, "success: $it")
                         InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
@@ -66,9 +66,9 @@ class MainActivity : AppCompatActivity() {
         // Step 1.2
         findViewById<Button>(R.id.btn_init_wmpf).setOnClickListener {
             // Initialize wmpf runtime first
-            OpenSdkTestUtil.getSDKTicket(Constants.APP_ID, Constants.APP_SECRET)
+            OpenSdkTestUtil.getSDKTicket(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET)
                     .flatMap {
-                        Api.authorize(Constants.APP_ID, it, "snsapi_userinfo,snsapi_runtime_apk")
+                        Api.authorize(DeviceInfo.APP_ID, it, "snsapi_userinfo,snsapi_runtime_apk")
                     }
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                         if (response.baseResponse.ret != 0) {
                             throw Throwable("err, ret:${response.baseResponse.ret}")
                         } else {
-                            OpenSdkTestUtil.getOAuthInfo(Constants.APP_ID, Constants.APP_SECRET, response.oauthCode)
+                            OpenSdkTestUtil.getOAuthInfo(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET, response.oauthCode)
                                     .flatMap { jsonObject ->
                                         val openId = jsonObject.getString("openid")
                                         val accessToken = jsonObject.getString("access_token")
