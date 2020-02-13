@@ -21,7 +21,7 @@ object Api {
                 this.productId = productId
                 this.keyVersion = keyVerion
                 this.deviceId = deviceId
-                this.signature = signature
+                this.signature = signature.replace(Regex("[\t\r\n]"), "")
                 this.hostAppId = hostAppId
             }
 
