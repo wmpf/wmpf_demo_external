@@ -30,7 +30,7 @@ object DeviceInfo {
 
     const val KEY_EXPIRED_TIME_MS = "expiredTimeMs"
 
-    private const val isInProductionEnv = false
+    const val isInProductionEnv = false
 
     var expiredTimeMs = DEFAULT_EXPIRED_TIME_MS
         get() = kv.getLong(KEY_EXPIRED_TIME_MS, DEFAULT_EXPIRED_TIME_MS)

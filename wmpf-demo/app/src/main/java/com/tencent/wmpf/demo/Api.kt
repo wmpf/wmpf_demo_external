@@ -2,6 +2,8 @@
 
 package com.tencent.wmpf.demo
 
+import android.util.Log
+import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mm.ipcinvoker.IPCInvokeCallbackEx
 import com.tencent.wmpf.cli.task.*
 import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
@@ -13,9 +15,12 @@ import java.lang.Exception
 
 object Api {
 
+    private const val TAG = "Demo.Api"
+
     fun activateDevice(productId: Int, keyVerion: Int,
                        deviceId: String, signature: String, hostAppId: String): Single<WMPFActivateDeviceResponse> {
         return Single.create {
+            Log.i(TAG, "activateDevice: isInProductionEnv" + DeviceInfo.isInProductionEnv)
             val request = WMPFActivateDeviceRequest().apply {
                 this.baseRequest = WMPFBaseRequestHelper.checked()
                 this.productId = productId
@@ -113,7 +118,8 @@ object Api {
             request.appId = launchAppId // Binded with HOST_APPID: wx64b7714cf1f64585
             request.path = path
             request.appType = appType // 0-正式版 1-开发版 2-体验版
-
+            Log.i(TAG, "launchWxaApp: appId = " + launchAppId + ", hostAppID = " +
+                    BuildConfig.HOST_APPID + ", deviceId = " + DeviceInfo.deviceId)
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaApp, WMPFLaunchWxaAppRequest,
                     WMPFLaunchWxaAppResponse>(
                     request,
@@ -132,6 +138,9 @@ object Api {
             request.baseRequest = WMPFBaseRequestHelper.checked()
             request.baseRequest.clientApplicationId = ""
             request.rawData = rawData // rawData from qrcode
+
+            Log.i(TAG, "launchWxaApp: " + "hostAppID = " +
+                    BuildConfig.HOST_APPID + ", deviceId = " + DeviceInfo.deviceId)
 
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaAppByQrCode,
                     WMPFLaunchWxaAppByQRCodeRequest, WMPFLaunchWxaAppByQRCodeResponse>(
