@@ -76,7 +76,7 @@ WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬�
 1. 在[Releases Page](https://github.com/wmpf/wmpf_demo_external/releases)下载并安装最新版本的WMPF Service apk
 2. 在Android Studio中导入运行[wmpf-client-demo](https://github.com/wmpf/wmpf_demo_external/tree/master/wmpf-demo)，并在demo的`首页-快速体验`页面填写小程序的appId和ticket，appId和ticket的获取如下图所示
 3. 在wmpf-client-demo中输入小程序的AppID，就可以运行和体验小程序了
-4. [注册激活硬件](https://github.com/wmpf/wmpf_demo_external/wiki/%E7%A1%AC%E4%BB%B6%E6%B3%A8%E5%86%8C%E6%AD%A5%E9%AA%A4)，将获取到的信息填入[DeviceInfo.kt](https://github.com/wmpf/wmpf_demo_external/blob/master/wmpf-demo/app/src/main/java/com/tencent/luggage/demo/wxapi/DeviceInfo.kt)，然后修改定制你的wmpf-client！
+4. [注册激活硬件](https://github.com/wmpf/wmpf_demo_external/wiki/%E7%A1%AC%E4%BB%B6%E6%B3%A8%E5%86%8C%E6%AD%A5%E9%AA%A4)，将获取到的信息填入[DeviceInfo.kt](https://github.com/wmpf/wmpf_demo_external/blob/master/wmpf-demo/app/src/main/java/com/tencent/luggage/demo/wxapi/DeviceInfo.kt)及[build.gradle](https://github.com/wmpf/wmpf_demo_external/blob/master/wmpf-demo/app/build.gradle)，设置`isInProductionEnv = true`，然后修改定制你的wmpf-client！
 
 <p align="center">
 <img src="https://github.com/wmpf/wmpf_demo_external/blob/master/assets/boost.png" width = "800" alt="boost" align=center />
