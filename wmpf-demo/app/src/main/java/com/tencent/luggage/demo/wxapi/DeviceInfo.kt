@@ -30,6 +30,10 @@ object DeviceInfo {
 
     const val KEY_EXPIRED_TIME_MS = "expiredTimeMs"
 
+    /**
+     * NOTICE HERE!!!
+     * set to ture if you want to user your own device info
+     */
     const val isInProductionEnv = false
 
     var expiredTimeMs = DEFAULT_EXPIRED_TIME_MS
