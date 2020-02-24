@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
                     DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
-                        Log.i(TAG, "success: $it")
+                        Log.i(TAG, "success: token = ${it.invokeToken}")
                         if (it.invokeToken == null) {
                             Log.e(TAG,"edit your device info on com.tencent.luggage.demo.wxapi.DeviceInfo")
                             return@subscribe
