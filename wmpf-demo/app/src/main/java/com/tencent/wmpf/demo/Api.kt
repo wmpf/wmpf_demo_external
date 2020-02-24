@@ -20,7 +20,7 @@ object Api {
     fun activateDevice(productId: Int, keyVerion: Int,
                        deviceId: String, signature: String, hostAppId: String): Single<WMPFActivateDeviceResponse> {
         return Single.create {
-            Log.i(TAG, "activateDevice: isInProductionEnv" + DeviceInfo.isInProductionEnv)
+            Log.i(TAG, "activateDevice: isInProductionEnv = " + DeviceInfo.isInProductionEnv)
             val request = WMPFActivateDeviceRequest().apply {
                 this.baseRequest = WMPFBaseRequestHelper.checked()
                 this.productId = productId
