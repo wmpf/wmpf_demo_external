@@ -23,6 +23,7 @@ import com.tencent.wmpf.demo.RequestsRepo
 import com.tencent.wmpf.demo.utils.InvokeTokenHelper
 import com.tencent.wmpf.proto.*
 import com.tencent.wxapi.test.OpenSdkTestUtil
+import java.util.*
 
 class FastExperienceActivity : AppCompatActivity() {
 
@@ -76,7 +77,7 @@ class FastExperienceActivity : AppCompatActivity() {
                 respTextView.post {
                     respTextView.text = it
                     val temp = it
-                    if (temp.toLowerCase().contains("error")) {
+                    if (temp.toLowerCase(Locale.ROOT).contains("error")) {
                         DeviceInfo.reset()
                         return@post
                     }
@@ -89,9 +90,14 @@ class FastExperienceActivity : AppCompatActivity() {
                                 respTextView.post {
                                     consoleText += String.format("init finish, err %d",
                                             it?.baseResponse?.ret)
-                                    respTextView.text = "$consoleText\n--------启动小程序--------\n"
-                                    InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
-                                    Api.launchWxaApp(optLaunchAppId(), "").subscribe({},{})
+                                    if (it.invokeToken == null) {
+                                        consoleText += "\nactivate device fail for a null token, may ticket is expired\n"
+                                        respTextView.text = consoleText
+                                    } else {
+                                        respTextView.text = "$consoleText\n--------启动小程序--------\n"
+                                        InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
+                                        Api.launchWxaApp(optLaunchAppId(), "").subscribe({}, {})
+                                    }
                                 }
 
                             }, {
