@@ -71,9 +71,11 @@ class FastExperienceActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btn_launch_wxa_app_quickly).setOnClickListener {
             respTextView.text = ""
-            kv.putString("appId", appIdEditView.text.toString())
-            kv.putString("ticket", ticketEditView.text.toString())
-            RequestsRepo.getTestDeviceInfo(ticketEditView.text.toString(), appIdEditView.text.toString(), DeviceInfo.APP_ID) {
+            val appId = appIdEditView.text.toString().trim()
+            val ticket = ticketEditView.text.toString().trim()
+            kv.putString("appId", appId)
+            kv.putString("ticket", ticket)
+            RequestsRepo.getTestDeviceInfo(appId, ticket, DeviceInfo.APP_ID) {
                 respTextView.post {
                     respTextView.text = it
                     val temp = it
