@@ -23,6 +23,7 @@ import com.tencent.wmpf.demo.RequestsRepo
 import com.tencent.wmpf.demo.utils.InvokeTokenHelper
 import com.tencent.wmpf.proto.*
 import com.tencent.wxapi.test.OpenSdkTestUtil
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 class FastExperienceActivity : AppCompatActivity() {
@@ -75,7 +76,7 @@ class FastExperienceActivity : AppCompatActivity() {
             val ticket = ticketEditView.text.toString().trim()
             kv.putString("appId", appId)
             kv.putString("ticket", ticket)
-            RequestsRepo.getTestDeviceInfo(appId, ticket, DeviceInfo.APP_ID) {
+            RequestsRepo.getTestDeviceInfo(ticket, appId, DeviceInfo.APP_ID) {
                 respTextView.post {
                     respTextView.text = it
                     val temp = it
@@ -96,17 +97,42 @@ class FastExperienceActivity : AppCompatActivity() {
                                         consoleText += "\nactivate device fail for a null token, may ticket is expired\n"
                                         respTextView.text = consoleText
                                     } else {
-                                        respTextView.text = "$consoleText\n--------启动小程序--------\n"
-                                        InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
-                                        Api.launchWxaApp(optLaunchAppId(), "").subscribe({}, {})
+                                        val invokeToken = it.invokeToken
+                                        InvokeTokenHelper.initInvokeToken(this, invokeToken)
+                                        consoleText += "\ninvoke authorizeNoLogin\n"
+                                        respTextView.text = consoleText
+                                        OpenSdkTestUtil.getSDKTicket(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET)
+                                                .subscribeOn(Schedulers.io())
+                                                .flatMap { ticket ->
+                                                    Log.i(TAG, "authorizeNoLogin: ticket = $ticket")
+                                                    Api.authorizeNoLogin(DeviceInfo.APP_ID, ticket, "snsapi_userinfo,snsapi_runtime_apk")
+                                                }
+                                                .subscribe({
+                                                    runOnUiThread {
+                                                        consoleText += "\ninvoke authorizeNoLogin result: ${it.baseResponse.ret} ${it.baseResponse.errMsg} \n"
+                                                        respTextView.text = consoleText
+                                                        respTextView.text = "$consoleText\n--------启动小程序--------\n"
+                                                    }
+
+                                                    Api.launchWxaApp(optLaunchAppId(), "").subscribe({}, {})
+                                                    Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                                                }, {
+                                                    Log.e(DocumentActivity.TAG, "error: $it")
+                                                })
                                     }
                                 }
 
                             }, {
                                 Log.e(TAG, "error: $it")
                                 respTextView.post {
-                                    consoleText += "激活设备失败, error: " + it.message
+                                    var errorMsg = it.message ?: ""
+                                    if (errorMsg.contains("bridge not found")) {
+                                        errorMsg += ", 确认WMPF框架处于运行状态"
+                                    }
+                                    consoleText += "激活设备失败, error: $errorMsg"
+
                                     respTextView.text = consoleText
+
                                 }
                             })
                 }
