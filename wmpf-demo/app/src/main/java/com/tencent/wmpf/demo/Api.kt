@@ -233,7 +233,7 @@ object Api {
             ) { response -> it.onSuccess(response) }
 
             if (!result) {
-                it.onError(Exception("invoke authorize fail"))
+                it.onError(Exception("invoke deauthorize fail"))
             }
         }
     }
@@ -247,9 +247,58 @@ object Api {
                 it.onNext(response)
             }
             if (!result) {
-                it.onError(Exception("invoke authorize fail"))
+                it.onError(Exception("invoke listeningPushMsg fail"))
             }
         }
     }
 
+    fun activeStatus(): Single<WMPFActiveStatusResponse> {
+        return Single.create {
+            val request = WMPFActiveStatusRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_ActiveStatus, WMPFActiveStatusRequest, WMPFActiveStatusResponse>(
+                    request,
+                    IPCInvokerTask_ActiveStatus::class.java,
+                    object : IPCInvokeCallbackEx<WMPFActiveStatusResponse> {
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
+                        }
+
+                        override fun onCallback(response: WMPFActiveStatusResponse) {
+                            it.onSuccess(response)
+                        }
+                    })
+
+            if (!result) {
+                it.onError(Exception("invoke activeStatus fail"))
+            }
+        }
+    }
+
+    fun authorizeStatus(): Single<WMPFAuthorizeStatusResponse> {
+        return Single.create {
+            val request = WMPFAuthorizeStatusRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_AuthorizeStatus, WMPFAuthorizeStatusRequest, WMPFAuthorizeStatusResponse>(
+                    request,
+                    IPCInvokerTask_AuthorizeStatus::class.java,
+                    object : IPCInvokeCallbackEx<WMPFAuthorizeStatusResponse> {
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
+                        }
+
+                        override fun onCallback(response: WMPFAuthorizeStatusResponse) {
+                            it.onSuccess(response)
+                        }
+                    })
+
+            if (!result) {
+                it.onError(Exception("invoke activeStatus fail"))
+            }
+        }
+    }
 }

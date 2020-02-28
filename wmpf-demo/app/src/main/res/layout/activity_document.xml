@@ -22,6 +22,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
+            android:id="@+id/btn_active_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="激活状态获取"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_activate_device" />
+
+        <Button
             android:id="@+id/btn_preload_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -31,7 +43,7 @@
             android:text="预载小程序环境"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_activate_device" />
+            app:layout_constraintTop_toBottomOf="@id/btn_active_status" />
 
         <Button
             android:id="@+id/btn_authorize"
@@ -46,6 +58,18 @@
             app:layout_constraintTop_toBottomOf="@id/btn_preload_time" />
 
         <Button
+            android:id="@+id/btn_authorize_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="授权状态获取"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_authorize" />
+
+        <Button
             android:id="@+id/btn_authorize_no_login"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -55,7 +79,7 @@
             android:text="运行过程中授权登录"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_authorize" />
+            app:layout_constraintTop_toBottomOf="@id/btn_authorize_status" />
 
         <Button
             android:id="@+id/btn_launch_wxa_app"
