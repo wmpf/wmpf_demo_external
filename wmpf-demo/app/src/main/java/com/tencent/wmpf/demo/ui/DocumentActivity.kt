@@ -139,6 +139,26 @@ class DocumentActivity : AppCompatActivity() {
                 Log.e(TAG, "error: $it")
             })
         }
+
+        findViewById<Button>(R.id.btn_authorize_status).setOnClickListener {
+            Api.authorizeStatus()
+                    .subscribe({
+                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        Log.i(TAG, "success: ${it.isAuthorize} ${it.openId} ")
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
+        }
+
+        findViewById<Button>(R.id.btn_active_status).setOnClickListener {
+            Api.activeStatus()
+                    .subscribe({
+                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        Log.i(TAG, "success: ${it.isActive} ")
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
+        }
     }
 
     companion object {
