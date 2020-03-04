@@ -118,6 +118,7 @@ object Api {
             request.appId = launchAppId // Binded with HOST_APPID: wx64b7714cf1f64585
             request.path = path
             request.appType = appType // 0-正式版 1-开发版 2-体验版
+            request.mayRunInLandscapeCompatMode = false //true则允许在横屏的情况下运行小程序(暂时满屏，后期会兼容到留白模式), false会尝试转到竖屏打开小程序
             Log.i(TAG, "launchWxaApp: appId = " + launchAppId + ", hostAppID = " +
                     BuildConfig.HOST_APPID + ", deviceId = " + DeviceInfo.deviceId)
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaApp, WMPFLaunchWxaAppRequest,
