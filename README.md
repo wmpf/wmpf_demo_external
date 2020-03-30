@@ -74,7 +74,7 @@ WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬�
 注册后完成后，在设备上运行小程序，只需要以下4步
 
 1. 在[Releases Page](https://github.com/wmpf/wmpf_demo_external/releases)下载并安装最新版本的WMPF Service apk
-2. 在Android Studio中导入运行[wmpf-client-demo](https://github.com/wmpf/wmpf_demo_external/tree/master/wmpf-demo)，并在demo的`首页-快速体验`页面填写小程序的appId和ticket，appId和ticket的获取如下图所示。**注意：快速体验实际上是临时生成了设备信息，用于激活，这组信息权限较低且会失效，因此不应该用于开发环境，更不能用户生产环境**
+2. 在Android Studio中导入运行[wmpf-client-demo](https://github.com/wmpf/wmpf_demo_external/tree/master/wmpf-demo)，并在demo的`首页-快速体验`页面填写小程序的appId和ticket，appId和ticket的获取如下图所示。**注意：快速体验实际上是临时生成了设备信息，用于激活，这组信息权限较低且会失效，因此不应该用于开发环境，更不能用于生产环境。步骤4中有介绍如何注册激活硬件**
 3. 在wmpf-client-demo中输入小程序的AppID，就可以运行和体验小程序了
 4. [注册激活硬件](https://github.com/wmpf/wmpf_demo_external/wiki/%E7%A1%AC%E4%BB%B6%E6%B3%A8%E5%86%8C%E6%AD%A5%E9%AA%A4)，将获取到的信息填入[DeviceInfo.kt](https://github.com/wmpf/wmpf_demo_external/blob/master/wmpf-demo/app/src/main/java/com/tencent/luggage/demo/wxapi/DeviceInfo.kt)及[build.gradle](https://github.com/wmpf/wmpf_demo_external/blob/master/wmpf-demo/app/build.gradle)，设置`isInProductionEnv = true`，然后修改定制你的wmpf-client！
 
