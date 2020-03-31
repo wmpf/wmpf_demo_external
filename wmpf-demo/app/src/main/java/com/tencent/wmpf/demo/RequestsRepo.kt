@@ -96,7 +96,7 @@ object RequestsRepo {
         }.start()
     }
 
-    fun getPushToken(appId: String, callback: (Boolean, String, Int) -> Unit) {
+    fun getPushToken(appId: String, callback: (Boolean, String, Int,String) -> Unit) {
         val request = WMPFPushTokenRequest()
         request.baseRequest = WMPFBaseRequestHelper.checked()
         request.appId = appId
@@ -105,10 +105,15 @@ object RequestsRepo {
                 WMPFPushTokenRequest,
                 WMPFPushTokenResponse
                 >(request, IPCInvokerTask_getPushToken::class.java) { response ->
-            callback(true, response.pushToken, response.expireTimestamp)
+            if (response.baseResponse.ret == 0) {
+                callback(true, response.pushToken, response.expireTimestamp,response.baseResponse.errMsg)
+            } else {
+                callback(false, response.pushToken, response.expireTimestamp,response.baseResponse.errMsg)
+            }
+
         }
         if (!result) {
-            callback(false, "invoke getPushToken fail", -1)
+            callback(false, "", -1,"fail")
         }
     }
 

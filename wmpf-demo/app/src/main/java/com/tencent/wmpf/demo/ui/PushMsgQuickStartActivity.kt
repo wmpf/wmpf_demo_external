@@ -79,11 +79,12 @@ class PushMsgQuickStartActivity : AppCompatActivity() {
                 this.accessToken = accessToken
                 printlnToView("result: $ret")
                 printlnToView("2. 获取push_token...")
-                RequestsRepo.getPushToken(appId) { success, ret, expireTime ->
+                RequestsRepo.getPushToken(appId) { success, ret, expireTime, errMsg ->
                     if (success) {
                         printlnToView("result: token = [$ret], expireTime = [$expireTime]")
                     } else {
-                        printlnToView("result: $ret")
+                        printlnToView("result: $errMsg")
+                        return@getPushToken
                     }
                     val pushToken = ret
                     this.pushToken = pushToken

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.wmpf.demo.Api
 import com.tencent.wmpf.demo.R
@@ -150,12 +151,18 @@ class DocumentActivity : AppCompatActivity() {
                     })
         }
 
-        findViewById<Button>(R.id.btn_active_status).setOnClickListener {
+        findViewById<Button>(R.id.btn_active_status).setOnClickListener {view->
             Api.activeStatus()
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "isActive = ${it.isActive}", Toast.LENGTH_SHORT).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.isActive} ")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
