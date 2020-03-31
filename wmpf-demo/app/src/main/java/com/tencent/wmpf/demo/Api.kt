@@ -109,7 +109,7 @@ object Api {
         }
     }
 
-    fun launchWxaApp(launchAppId: String, path: String, appType: Int = 0): Single<WMPFLaunchWxaAppResponse> {
+    fun launchWxaApp(launchAppId: String, path: String, appType: Int = 0, landsapeMode: Int = 0): Single<WMPFLaunchWxaAppResponse> {
         return Single.create {
             val request = WMPFLaunchWxaAppRequest()
             request.baseRequest = WMPFBaseRequestHelper.checked()
@@ -118,7 +118,10 @@ object Api {
             request.appId = launchAppId // Binded with HOST_APPID: wx64b7714cf1f64585
             request.path = path
             request.appType = appType // 0-正式版 1-开发版 2-体验版
-            request.mayRunInLandscapeCompatMode = false //true则允许在横屏的情况下运行小程序(暂时满屏，后期会兼容到留白模式), false会尝试转到竖屏打开小程序
+            // mayRunInLandscapeCompatMode Deprecated
+//            request.mayRunInLandscapeCompatMode = true
+            request.forceRequestFullscreen = false
+            request.landscapeMode = landsapeMode // 0:和微信行为保持一致;1:允许横屏铺满显示，忽略小程序的pageOrientation配置;2:强制横屏并居中以16:9显示，忽略pageOrientation配置
             Log.i(TAG, "launchWxaApp: appId = " + launchAppId + ", hostAppID = " +
                     BuildConfig.HOST_APPID + ", deviceId = " + DeviceInfo.deviceId)
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaApp, WMPFLaunchWxaAppRequest,
