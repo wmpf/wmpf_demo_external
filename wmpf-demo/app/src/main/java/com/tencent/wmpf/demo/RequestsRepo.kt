@@ -16,9 +16,7 @@ import com.tencent.wmpf.proto.WMPFPushMsgRequest
 import com.tencent.wmpf.proto.WMPFPushMsgResponse
 import com.tencent.wmpf.proto.WMPFPushTokenRequest
 import com.tencent.wmpf.proto.WMPFPushTokenResponse
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
 import java.nio.charset.Charset
@@ -98,7 +96,7 @@ object RequestsRepo {
         }.start()
     }
 
-    fun getPushToken(appId: String, callback: (Boolean, String) -> Unit) {
+    fun getPushToken(appId: String, callback: (Boolean, String, Int) -> Unit) {
         val request = WMPFPushTokenRequest()
         request.baseRequest = WMPFBaseRequestHelper.checked()
         request.appId = appId
@@ -107,26 +105,33 @@ object RequestsRepo {
                 WMPFPushTokenRequest,
                 WMPFPushTokenResponse
                 >(request, IPCInvokerTask_getPushToken::class.java) { response ->
-            callback(true, response.pushToken)
+            callback(true, response.pushToken, response.expireTimestamp)
         }
         if (!result) {
-            callback(false, "invoke getPushToken fail")
+            callback(false, "invoke getPushToken fail", -1)
         }
     }
 
     fun postMsg(accessToken: String, token: String, msg: String, delay: Int, callback: (Boolean, String) -> Unit) {
         Thread {
-            val params = FormBody.Builder()
-            params.add("msg", msg)
-            params.add("push_token", token)
-            val req = Request.Builder()
+            Log.i(TAG, "postMsg: push [${msg}]")
+            val mediaType = MediaType.parse("text/plain")
+            val body = RequestBody.create(mediaType, "{\n   \"push_token\":\"$token\",\n   \"msg\":\"$msg\"\n}")
+            val request = Request.Builder()
                     .url("https://api.weixin.qq.com/wxa/business/runtime/appmsg/push?access_token=$accessToken")
-                    .post(params.build())
+                    .post(body)
+                    .addHeader("Content-Type", "text/plain")
+                    .addHeader("Accept", "*/*")
+                    .addHeader("Cache-Control", "no-cache")
+                    .addHeader("Host", "api.weixin.qq.com")
+                    .addHeader("Accept-Encoding", "gzip, deflate")
+                    .addHeader("Connection", "keep-alive")
+                    .addHeader("cache-control", "no-cache")
                     .build()
             try {
-                val response = client.newCall(req).execute()
-                callback(response.isSuccessful, response.body().toString())
-            } catch (e: IOException) {
+                val response = client.newCall(request).execute()
+                callback(response.isSuccessful, response.toString())
+            } catch (e: Exception) {
 
             }
         }.start()
