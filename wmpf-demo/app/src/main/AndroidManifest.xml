@@ -40,6 +40,10 @@
         <activity android:name=".ui.QAActivity" /> <!-- 扫码打开小程序 -->
         <activity android:name="com.tencent.wmpf.cli.task.LaunchWxaAppByScanInvoker" />
         <activity android:name=".ui.GetDeviceInfoActivity" />
+        <provider
+            android:authorities="com.tencent.wmpf.cli.provider"
+            android:name=".contentprovider.InvokeChannelContentProvider"
+            android:exported="true"/>
     </application>
 
 </manifest>
