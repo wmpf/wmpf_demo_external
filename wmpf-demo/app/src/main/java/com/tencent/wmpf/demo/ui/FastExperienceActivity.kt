@@ -147,10 +147,10 @@ class FastExperienceActivity : AppCompatActivity() {
             /**
             启动开发版小程序必须先登录
             0   // 正式版
-            1   // 测试版
+            1   // 开发版
             2   // 体验
              **/
-            Api.launchWxaApp(optLaunchAppId(), "", 2)
+            Api.launchWxaApp(optLaunchAppId(), "", 1)
                     .subscribe({
                         Log.e(TAG, "success: $it")
                     }, {
@@ -184,7 +184,7 @@ class FastExperienceActivity : AppCompatActivity() {
     /**
     启动开发版小程序必须先登录
     0   // 正式版
-    1   // 测试版
+    1   // 开发版
     2   // 体验
      **/
     @SuppressLint("CheckResult")

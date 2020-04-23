@@ -37,17 +37,28 @@ class PushMsgQuickStartActivity : AppCompatActivity() {
     private val emitterView: Button by lazy {
         findViewById<Button>(R.id.emitter)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_push_msg_quick_start)
         emitterView.setOnClickListener {
             try {
-                start()
+                if (pushToken.isNotBlank() && accessToken.isNotBlank()) {
+                    RequestsRepo.postMsg(accessToken, pushToken, msgView.text.toString(), 0) { success, ret ->
+                        printlnToView("3. 推送请求: isSuccess = $success, ret = $ret")
+                        printlnToView("4. 等待推送消息返回...")
+                    }
+                } else {
+                    start()
+                }
             } catch (e: Exception) {
                 Log.d(TAG, "onCreate: ")
             }
         }
     }
+
+    private var pushToken = ""
+    private var accessToken = ""
 
     private fun start() {
         val appId = appIdView.text.toString()
@@ -59,25 +70,28 @@ class PushMsgQuickStartActivity : AppCompatActivity() {
             toast("appId can not be blank")
             return
         }
-
+        printlnToView("**Test Only: 该示例没有维护状态, 不应该多次获取token**")
         printlnToView("1. 获取access_token...")
         RequestsRepo.getAccessToken { success, ret ->
             var accessToken = ""
             if (success) {
                 accessToken = ret
+                this.accessToken = accessToken
                 printlnToView("result: $ret")
                 printlnToView("2. 获取push_token...")
-                RequestsRepo.getPushToken(appId) { success, ret ->
+                RequestsRepo.getPushToken(appId) { success, ret, expireTime, errMsg ->
                     if (success) {
-                        printlnToView("result: $ret")
+                        printlnToView("result: token = [$ret], expireTime = [$expireTime]")
                     } else {
-                        printlnToView("result: $ret")
+                        printlnToView("result: $errMsg")
+                        return@getPushToken
                     }
-                    val appToken = ret
+                    val pushToken = ret
+                    this.pushToken = pushToken
 
-                    printlnToView("使用获取push_token = $appToken, " +
+                    printlnToView("使用获取push_token = $pushToken, " +
                             "accessToken = $accessToken, msg = ${msgView.text}, delay = $delay 推送")
-                    RequestsRepo.postMsg(ret, appToken, msgView.text.toString(), delay) { success, ret ->
+                    RequestsRepo.postMsg(accessToken, pushToken, msgView.text.toString(), delay) { success, ret ->
                         printlnToView("3. 推送请求: isSuccess = $success, ret = $ret")
                         printlnToView("4. 等待推送消息返回...")
                         RequestsRepo.setMsgCallback(this@PushMsgQuickStartActivity)

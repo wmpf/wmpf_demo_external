@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -50,11 +51,11 @@ class MainActivity : AppCompatActivity() {
         // Step 1.1
         findViewById<Button>(R.id.btn_init_wmpf_activate_device).setOnClickListener {
             Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
-                    DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
+                            DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
                         Log.i(TAG, "success: token = ${it.invokeToken}")
                         if (it.invokeToken == null) {
-                            Log.e(TAG,"edit your device info on com.tencent.luggage.demo.wxapi.DeviceInfo")
+                            Log.e(TAG, "edit your device info on com.tencent.luggage.demo.wxapi.DeviceInfo")
                             return@subscribe
                         }
                         InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
@@ -119,13 +120,32 @@ class MainActivity : AppCompatActivity() {
 
         // Step 2.1
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
-            // Start wxa app
-            Api.launchWxaApp("wxe5f52902cf4de896", "")
-                    .subscribe({
-                        Log.i(TAG, "success: $it")
-                    }, {
-                        Log.e(TAG, "error: $it")
-                    })
+            AlertDialog.Builder(this).setNegativeButton("normal") { _, _ ->
+
+                // Start wxa app
+                Api.launchWxaApp("wxe5f52902cf4de896", "", landsapeMode = 0)
+                        .subscribe({
+                            Log.i(TAG, "success: $it")
+                        }, {
+                            Log.e(TAG, "error: $it")
+                        })
+            }.setNeutralButton("landscape compat") { _, _ ->
+                // Start wxa app
+                Api.launchWxaApp("wxe5f52902cf4de896", "", landsapeMode = 2)
+                        .subscribe({
+                            Log.i(TAG, "success: $it")
+                        }, {
+                            Log.e(TAG, "error: $it")
+                        })
+            }.setPositiveButton("landscape") { _, _ ->
+                // Start wxa app
+                Api.launchWxaApp("wxe5f52902cf4de896", "", landsapeMode = 1)
+                        .subscribe({
+                            Log.i(TAG, "success: $it")
+                        }, {
+                            Log.e(TAG, "error: $it")
+                        })
+            }.show()
         }
 
         // Step 2.2
@@ -173,8 +193,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        Log.i(TAG, "menuItem id" +  item?.itemId)
-        return when(item?.itemId) {
+        Log.i(TAG, "menuItem id" + item?.itemId)
+        return when (item?.itemId) {
             0 -> {
                 Api.manageBackgroundMusic(true)
                         .subscribe({
@@ -257,7 +277,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission", "HardwareIds")
-    fun getIMEI():String {
+    fun getIMEI(): String {
         val telephonyMgr = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
         return telephonyMgr.deviceId ?: "error"
     }
