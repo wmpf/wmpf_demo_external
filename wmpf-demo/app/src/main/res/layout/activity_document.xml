@@ -22,6 +22,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
+            android:id="@+id/btn_activate_device_by_iot"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="激活设备(IOT)"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_activate_device" />
+
+        <Button
             android:id="@+id/btn_active_status"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -31,7 +43,7 @@
             android:text="激活状态获取"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_activate_device" />
+            app:layout_constraintTop_toBottomOf="@id/btn_activate_device_by_iot" />
 
         <Button
             android:id="@+id/btn_preload_time"
@@ -58,6 +70,30 @@
             app:layout_constraintTop_toBottomOf="@id/btn_preload_time" />
 
         <Button
+            android:id="@+id/btn_authorize_init_auth_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="注入人脸登录信息"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_authorize" />
+
+        <Button
+            android:id="@+id/btn_authorize_face"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="人脸登录"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_authorize_init_auth_info" />
+
+        <Button
             android:id="@+id/btn_authorize_status"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -67,7 +103,7 @@
             android:text="授权状态获取"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_authorize" />
+            app:layout_constraintTop_toBottomOf="@id/btn_authorize_face" />
 
         <Button
             android:id="@+id/btn_authorize_no_login"

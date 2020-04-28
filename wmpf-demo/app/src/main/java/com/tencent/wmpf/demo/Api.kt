@@ -9,6 +9,7 @@ import com.tencent.wmpf.cli.task.*
 import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
 import com.tencent.wmpf.cli.task.pb.WMPFIPCInvoker
 import com.tencent.wmpf.proto.*
+import com.tencent.wmpf.utils.WMPFHelper
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.lang.Exception
@@ -48,6 +49,35 @@ object Api {
             }
         }
     }
+
+    fun activateDeviceByIoT(hostAppId: String): Single<WMPFActivateDeviceByIoTResponse> {
+        return Single.create {
+            Log.i(TAG, "activateDeviceByIoT: isInProductionEnv = " + DeviceInfo.isInProductionEnv)
+            val request = WMPFActivateDeviceByIoTRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+                this.hostAppId = hostAppId
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_ActivateDeviceByIoT,
+                    WMPFActivateDeviceByIoTRequest, WMPFActivateDeviceByIoTResponse>(
+                    request,
+                    IPCInvokerTask_ActivateDeviceByIoT::class.java,
+                    object : IPCInvokeCallbackEx<WMPFActivateDeviceByIoTResponse> {
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
+                        }
+
+                        override fun onCallback(response: WMPFActivateDeviceByIoTResponse) {
+                            it.onSuccess(response)
+                        }
+                    })
+
+            if (!result) {
+                it.onError(Exception("invoke activateDevice fail"))
+            }
+        }
+    }
+
 
     fun preloadRuntime(): Single<WMPFPreloadRuntimeResponse> {
         return Single.create {
@@ -101,6 +131,43 @@ object Api {
                     WMPFAuthorizeNoLoginRequest, WMPFAuthorizeNoLoginResponse>(
                     request,
                     IPCInvokerTask_AuthorizeNoLogin::class.java
+            ) { response -> it.onSuccess(response) }
+
+            if (!result) {
+                it.onError(Exception("invoke authorize fail"))
+            }
+        }
+    }
+
+    fun initWxPayInfoAuthInfo(authInfoMap: Map<String, Object>): Single<WMPFInitWxFacePayInfoResponse> {
+        return Single.create {
+
+            val request = WMPFInitWxFacePayInfoRequest()
+            request.baseRequest = WMPFBaseRequestHelper.checked()
+            request.authInfo = WMPFHelper.map2Json(authInfoMap)
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_InitWxFacePayInfo,
+                    WMPFInitWxFacePayInfoRequest, WMPFInitWxFacePayInfoResponse>(
+                    request,
+                    IPCInvokerTask_InitWxFacePayInfo::class.java
+            ) { response -> it.onSuccess(response) }
+
+            if (!result) {
+                it.onError(Exception("invoke authorize fail"))
+            }
+        }
+    }
+
+    fun authorizeFaceLogin(): Single<WMPFAuthorizeByWxFacePayResponse> {
+        return Single.create {
+
+            val request = WMPFAuthorizeByWxFacePayRequest()
+            request.baseRequest = WMPFBaseRequestHelper.checked()
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_AuthorizeByWxFacePay,
+                    WMPFAuthorizeByWxFacePayRequest, WMPFAuthorizeByWxFacePayResponse>(
+                    request,
+                    IPCInvokerTask_AuthorizeByWxFacePay::class.java
             ) { response -> it.onSuccess(response) }
 
             if (!result) {

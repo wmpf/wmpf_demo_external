@@ -24,6 +24,19 @@ class DocumentActivity : AppCompatActivity() {
                     DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        if (it.invokeToken != null && it.invokeToken.isNotEmpty()) {
+                            Log.i(TAG, "success: ${it.invokeToken} ")
+                            InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
+                        }
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
+        }
+
+        findViewById<Button>(R.id.btn_activate_device_by_iot).setOnClickListener {
+            Api.activateDeviceByIoT(DeviceInfo.APP_ID)
+                    .subscribe({
+                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.invokeToken} ")
                         InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                     }, {
@@ -48,6 +61,24 @@ class DocumentActivity : AppCompatActivity() {
                     }
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
+        }
+
+        findViewById<Button>(R.id.btn_authorize_face).setOnClickListener {
+            Api.authorizeFaceLogin()
+                    .subscribe({
+                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
+        }
+
+        findViewById<Button>(R.id.btn_authorize_init_auth_info).setOnClickListener {
+            Api.initWxPayInfoAuthInfo(emptyMap())
+                    .subscribe({
+                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
