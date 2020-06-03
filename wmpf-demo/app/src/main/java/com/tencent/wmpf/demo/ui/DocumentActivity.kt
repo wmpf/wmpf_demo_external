@@ -24,6 +24,19 @@ class DocumentActivity : AppCompatActivity() {
                     DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        if (it.invokeToken != null && it.invokeToken.isNotEmpty()) {
+                            Log.i(TAG, "success: ${it.invokeToken} ")
+                            InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
+                        }
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
+        }
+
+        findViewById<Button>(R.id.btn_activate_device_by_iot).setOnClickListener {
+            Api.activateDeviceByIoT(DeviceInfo.APP_ID)
+                    .subscribe({
+                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.invokeToken} ")
                         InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                     }, {
@@ -48,6 +61,36 @@ class DocumentActivity : AppCompatActivity() {
                     }
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
+        }
+
+        findViewById<Button>(R.id.btn_authorize_face).setOnClickListener {
+            Api.authorizeFaceLogin()
+                    .subscribe({
+                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
+        }
+
+        //https://pay.weixin.qq.com/wiki/doc/wxfacepay/develop/sdk-android.html#%E4%BA%BA%E8%84%B8%E6%94%AF%E4%BB%98%E5%87%AD%E8%AF%81-getwxpayfacecode
+        findViewById<Button>(R.id.btn_authorize_init_auth_info).setOnClickListener {
+            Api.initWxPayInfoAuthInfo(mapOf(
+                    "face_authtype" to "FACEPAY" as Object,
+                    "appid" to "商户号绑定的公众号/小程序" as Object,
+                    "mch_id" to "商户号" as Object,
+                    "store_id" to "门店编号" as Object,
+                    "out_trade_no" to "商户订单号" as Object,//须与调用支付接口时字段一致，该字段在在face_code_type为"1"时可不填，为"0"时必填
+                    "total_fee" to "订单金额(数字)" as Object, // 单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
+                    "authinfo" to "调用凭证" as Object,
+                    //获取方式参见: get_wxpayface_authinfo[https://pay.weixin.qq.com/wiki/doc/wxfacepay/develop/sdk-android.html#%E8%8E%B7%E5%8F%96%E8%B0%83%E7%94%A8%E5%87%AD%E8%AF%81-get-wxpayface-authinfo]
+                    "ignore_update_pay_result" to 1 as Object //不需要商户App更新支付结果
+
+            ))
+                    .subscribe({
+                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -151,7 +194,7 @@ class DocumentActivity : AppCompatActivity() {
                     })
         }
 
-        findViewById<Button>(R.id.btn_active_status).setOnClickListener {view->
+        findViewById<Button>(R.id.btn_active_status).setOnClickListener { view ->
             Api.activeStatus()
                     .subscribe({
                         view.post {
