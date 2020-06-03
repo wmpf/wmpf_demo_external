@@ -104,6 +104,9 @@ object Api {
             request.ticket = ticket
             request.appId = appId // OpenSDK AppId for App
             request.scope = scope
+            // 需要OauthCode，将该变量置为true
+            // OauthCode需要BuildConfig.HOST_APPID有开发者资质
+            request.needOauthCode = true
 
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_Authorize,
                     WMPFAuthorizeRequest, WMPFAuthorizeResponse>(
@@ -175,6 +178,7 @@ object Api {
             }
         }
     }
+
 
     fun launchWxaApp(launchAppId: String, path: String, appType: Int = 0, landsapeMode: Int = 0): Single<WMPFLaunchWxaAppResponse> {
         return Single.create {
