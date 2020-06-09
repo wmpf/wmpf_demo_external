@@ -70,6 +70,7 @@ class DocumentActivity : AppCompatActivity() {
             Api.authorizeFaceLogin()
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        Log.i(TAG, "success: ${it.resultJson}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
