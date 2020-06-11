@@ -32,7 +32,7 @@ object RequestsRepo {
 
     fun getAccessToken(callback: (Boolean, String) -> Unit) {
         Thread {
-            val request = Request.Builder().url("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxee3e328d0211d2e8&secret=73b6e14dba526ad994e6e491c64b992f").build()
+            val request = Request.Builder().url("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${BuildConfig.HOST_APPID}&secret=${BuildConfig.HOST_APPSECRET}").build()
             try {
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
