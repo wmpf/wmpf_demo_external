@@ -1,10 +1,14 @@
-package com.tencent.wmpf.demo.ui
+package com.tencent.wmpf.demo.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import com.tencent.wmpf.demo.R
+import com.tencent.wmpf.demo.ui.DocumentActivity
+import com.tencent.wmpf.demo.ui.FastExperienceActivity
+import com.tencent.wmpf.demo.ui.MainActivity
+import com.tencent.wmpf.demo.ui.QAActivity
 
 class GuideActivity : AppCompatActivity() {
 
