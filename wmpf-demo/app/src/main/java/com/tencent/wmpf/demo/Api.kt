@@ -112,7 +112,10 @@ object Api {
                     WMPFAuthorizeRequest, WMPFAuthorizeResponse>(
                     request,
                     IPCInvokerTask_Authorize::class.java
-            ) { response -> it.onSuccess(response) }
+            ) {
+                response ->
+                Log.i(TAG, ": $response")
+                it.onSuccess(response) }
 
             if (!result) {
                 it.onError(Exception("invoke authorize fail"))
