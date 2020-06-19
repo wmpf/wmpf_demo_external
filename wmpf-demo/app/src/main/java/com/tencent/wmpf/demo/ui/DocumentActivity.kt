@@ -86,7 +86,7 @@ class DocumentActivity : AppCompatActivity() {
                     "total_fee" to "订单金额(数字)" as Object, // 单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
                     "authinfo" to "调用凭证" as Object,
                     //获取方式参见: get_wxpayface_authinfo[https://pay.weixin.qq.com/wiki/doc/wxfacepay/develop/sdk-android.html#%E8%8E%B7%E5%8F%96%E8%B0%83%E7%94%A8%E5%87%AD%E8%AF%81-get-wxpayface-authinfo]
-                    "ignore_update_pay_result" to 1 as Object //不需要商户App更新支付结果
+                    "ignore_update_pay_result" to "1" as Object //不需要商户App更新支付结果
 
             ))
                     .subscribe({
