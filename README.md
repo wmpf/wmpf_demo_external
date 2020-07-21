@@ -90,6 +90,9 @@ WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬�
 <p align="center">
 <img src="https://github.com/wmpf/wmpf_demo_external/blob/master/assets/wxa_demo.gif" width = "400" alt="gif" align=center />
 </p>
+
+* guide模式：提供API的使用示例
+* experience模式：供开发者在未注册设备的情况下进行体验与小程序的开发预览
 <p align="center">
 <img src="https://raw.githubusercontent.com/wmpf/wmpf_demo_external/master/assets/favor-example.png" width = "400" alt="png" align=center />
 </p>
