@@ -90,33 +90,17 @@ class ExperienceActivity : AppCompatActivity() {
                                     if (versionType == 0) {
                                         consoleText += "\ninvoke authorizeNoLogin\n"
                                         respTextView.text = consoleText
-                                        OpenSdkTestUtil.getSDKTicket(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET)
-                                                .subscribeOn(Schedulers.io())
-                                                .flatMap { ticket ->
-                                                    Log.i(TAG, "authorizeNoLogin: ticket = $ticket")
-                                                    Api.authorizeNoLogin(DeviceInfo.APP_ID, ticket, "snsapi_userinfo,snsapi_runtime_apk")
-                                                }
-                                                .subscribe({
-                                                    runOnUiThread {
-                                                        consoleText += "\ninvoke authorizeNoLogin result: ${it.baseResponse.ret} ${it.baseResponse.errMsg} \n"
-                                                        respTextView.text = consoleText
-                                                        respTextView.text = "$consoleText\n--------启动小程序--------\n"
-                                                    }
 
-                                                    Api.launchWxaApp(optLaunchAppId(), optPath(), landsapeMode = landscapeMode).subscribe({}, {})
-                                                    Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
-                                                }, {
-                                                    Log.e(DocumentActivity.TAG, "error: $it")
-                                                })
+                                        Api.launchWxaApp(optLaunchAppId(), optPath(), landsapeMode = landscapeMode).subscribe({
+                                            Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                                        }, {
+                                            Log.e(DocumentActivity.TAG, "error: $it")
+                                        })
+
                                     } else {
                                         consoleText += "\ninvoke authorize\n"
                                         respTextView.text = consoleText
-                                        OpenSdkTestUtil.getSDKTicket(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET)
-                                                .subscribeOn(Schedulers.io())
-                                                .flatMap { ticket ->
-                                                    Log.i(TAG, "authorizeNoLogin: ticket = $ticket")
-                                                    Api.authorize(DeviceInfo.APP_ID, ticket, "snsapi_userinfo,snsapi_runtime_apk")
-                                                }
+                                        Api.authorize()
                                                 .subscribe({
                                                     runOnUiThread {
                                                         consoleText += "\ninvoke authorize result: ${it.baseResponse.ret} ${it.baseResponse.errMsg} \n"

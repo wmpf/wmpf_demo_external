@@ -97,16 +97,14 @@ object Api {
         }
     }
 
-    fun authorize(appId: String, ticket: String, scope: String): Single<WMPFAuthorizeResponse> {
+    // wmpf v1.0.3 后不再需要传入appid, ticket, scope入参
+    fun authorize(needOauthCode: Boolean = false): Single<WMPFAuthorizeResponse> {
         return Single.create {
             val request = WMPFAuthorizeRequest()
             request.baseRequest = WMPFBaseRequestHelper.checked()
-            request.ticket = ticket
-            request.appId = appId // OpenSDK AppId for App
-            request.scope = scope
             // 需要OauthCode，将该变量置为true
             // OauthCode需要BuildConfig.HOST_APPID有开发者资质
-            request.needOauthCode = true
+            request.needOauthCode = needOauthCode
 
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_Authorize,
                     WMPFAuthorizeRequest, WMPFAuthorizeResponse>(
@@ -123,6 +121,8 @@ object Api {
         }
     }
 
+    @Deprecated("Not needed")
+    // wmpf v1.0.3 激活即可保证小程序运行中登录
     fun authorizeNoLogin(appId: String, ticket: String, scope: String): Single<WMPFAuthorizeNoLoginResponse> {
         return Single.create {
             val request = WMPFAuthorizeNoLoginRequest()
