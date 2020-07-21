@@ -54,11 +54,8 @@ class DocumentActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_authorize).setOnClickListener {
-            OpenSdkTestUtil.getSDKTicket(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET)
+            Api.authorize()
                     .subscribeOn(Schedulers.io())
-                    .flatMap {
-                        Api.authorize(DeviceInfo.APP_ID, it, "snsapi_userinfo,snsapi_runtime_apk")
-                    }
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
                     }, {
@@ -91,19 +88,6 @@ class DocumentActivity : AppCompatActivity() {
             ))
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
-                    }, {
-                        Log.e(TAG, "error: $it")
-                    })
-        }
-
-        findViewById<Button>(R.id.btn_authorize_no_login).setOnClickListener {
-            OpenSdkTestUtil.getSDKTicket(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET)
-                    .subscribeOn(Schedulers.io())
-                    .flatMap {
-                        Api.authorizeNoLogin(DeviceInfo.APP_ID, it, "snsapi_userinfo,snsapi_runtime_apk")
-                    }
-                    .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })

@@ -71,10 +71,7 @@ class MainActivity : AppCompatActivity() {
         // Step 1.2
         findViewById<Button>(R.id.btn_init_wmpf).setOnClickListener {
             // Initialize wmpf runtime first
-            OpenSdkTestUtil.getSDKTicket(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET)
-                    .flatMap {
-                        Api.authorize(DeviceInfo.APP_ID, it, "snsapi_userinfo,snsapi_runtime_apk")
-                    }
+            Api.authorize()
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
                     .flatMap { response ->
