@@ -150,7 +150,7 @@ object Api {
 
             val request = WMPFInitWxFacePayInfoRequest()
             request.baseRequest = WMPFBaseRequestHelper.checked()
-            request.authInfo = WMPFHelper.map2Json(authInfoMap)
+            request.wxFacePayInfo = WMPFHelper.map2Json(authInfoMap)
 
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_InitWxFacePayInfo,
                     WMPFInitWxFacePayInfoRequest, WMPFInitWxFacePayInfoResponse>(
