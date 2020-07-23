@@ -23,7 +23,7 @@ class DocumentActivity : AppCompatActivity() {
             Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
                     DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                         if (it.invokeToken != null && it.invokeToken.isNotEmpty()) {
                             Log.i(TAG, "success: ${it.invokeToken} ")
                             InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
@@ -36,7 +36,7 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_activate_device_by_iot).setOnClickListener {
             Api.activateDeviceByIoT(DeviceInfo.APP_ID)
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.invokeToken} ")
                         InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                     }, {
@@ -47,7 +47,7 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_preload_time).setOnClickListener {
             Api.preloadRuntime()
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -57,7 +57,7 @@ class DocumentActivity : AppCompatActivity() {
             Api.authorize()
                     .subscribeOn(Schedulers.io())
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -66,7 +66,7 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_authorize_face).setOnClickListener {
             Api.authorizeFaceLogin()
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -87,7 +87,7 @@ class DocumentActivity : AppCompatActivity() {
 
             ))
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -96,7 +96,7 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
             Api.launchWxaApp("wxe5f52902cf4de896", "")
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -105,7 +105,7 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_launch_wxa_app_by_scan).setOnClickListener {
             Api.launchWxaAppByScan("xxx")
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -114,7 +114,7 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_close_wxa_app).setOnClickListener {
             Api.closeWxaApp("wxe5f52902cf4de896")
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -123,7 +123,7 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_manage_music).setOnClickListener {
             Api.manageBackgroundMusic()
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -141,7 +141,7 @@ class DocumentActivity : AppCompatActivity() {
                          * val COMPLETE = 5
                          * val ERROR = 6
                          **/
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} state:${it.state}")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} state:${it.state}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -150,7 +150,7 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_de_authorize).setOnClickListener {
             Api.deauthorize()
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -161,7 +161,7 @@ class DocumentActivity : AppCompatActivity() {
             startActivity(intent)
 
             Api.listeningPushMsg().subscribe({
-                Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                 Log.d(TAG, "push msg body: ${it.msgBody}")
             }, {
                 Log.e(TAG, "error: $it")
@@ -171,7 +171,7 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_authorize_status).setOnClickListener {
             Api.authorizeStatus()
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.isAuthorize} ${it.openId} ")
                     }, {
                         Log.e(TAG, "error: $it")
@@ -184,7 +184,7 @@ class DocumentActivity : AppCompatActivity() {
                         view.post {
                             Toast.makeText(this, "isActive = ${it.isActive}", Toast.LENGTH_SHORT).show()
                         }
-                        Log.i(TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg} ")
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.isActive} ")
                     }, {
                         view.post {

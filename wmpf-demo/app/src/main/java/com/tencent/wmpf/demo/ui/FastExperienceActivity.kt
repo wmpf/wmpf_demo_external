@@ -52,7 +52,7 @@ class FastExperienceActivity : AppCompatActivity() {
                         Api.authorize()
                     }
                     .subscribe({
-                        Log.e(TAG, "success: ${it.baseResponse.ret}")
+                        Log.e(TAG, "success: ${it.baseResponse.errCode}")
                     }, {
                         Log.e(TAG, "error: $it")
                     })
@@ -89,7 +89,7 @@ class FastExperienceActivity : AppCompatActivity() {
                                 Log.i(TAG, "success: $it")
                                 respTextView.post {
                                     consoleText += String.format("init finish, err %d",
-                                            it?.baseResponse?.ret)
+                                            it?.baseResponse?.errCode)
                                     if (it.invokeToken == null) {
                                         consoleText += "\nactivate device fail for a null token, may ticket is expired\n"
                                         respTextView.text = consoleText
@@ -99,7 +99,7 @@ class FastExperienceActivity : AppCompatActivity() {
                                         consoleText += "\ninvoke authorizeNoLogin\n"
                                         respTextView.text = consoleText
                                         Api.launchWxaApp(optLaunchAppId(), "").subscribe({
-                                            Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                                            Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                                         }, {
                                             Log.e(DocumentActivity.TAG, "error: $it")
                                         })

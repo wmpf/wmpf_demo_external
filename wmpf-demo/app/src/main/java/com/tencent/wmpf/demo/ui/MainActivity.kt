@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                         InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                         postToMainThread(Runnable {
                             Toast.makeText(this, String.format("init finish, err %d",
-                                    it?.baseResponse?.ret), Toast.LENGTH_SHORT).show()
+                                    it?.baseResponse?.errCode), Toast.LENGTH_SHORT).show()
                         })
                     }, {
                         Log.e(TAG, "error: $it")
@@ -75,9 +75,9 @@ class MainActivity : AppCompatActivity() {
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
                     .flatMap { response ->
-                        Log.e(TAG, "init response callback %d, code=%s".format(response.baseResponse.ret, response.oauthCode))
-                        if (response.baseResponse.ret != 0) {
-                            throw Throwable("err, ret:${response.baseResponse.ret}")
+                        Log.e(TAG, "init response callback %d, code=%s".format(response.baseResponse.errCode, response.oauthCode))
+                        if (response.baseResponse.errCode != 0) {
+                            throw Throwable("err, ret:${response.baseResponse.errCode}")
                         } else {
                             OpenSdkTestUtil.getOAuthInfo(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET, response.oauthCode)
                                     .flatMap { jsonObject ->

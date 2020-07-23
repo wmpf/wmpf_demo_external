@@ -105,7 +105,7 @@ object RequestsRepo {
                 WMPFPushTokenRequest,
                 WMPFPushTokenResponse
                 >(request, IPCInvokerTask_getPushToken::class.java) { response ->
-            if (response.baseResponse.ret == 0) {
+            if (response.baseResponse.errCode == 0) {
                 callback(true, response.pushToken, response.expireTimestamp,response.baseResponse.errMsg)
             } else {
                 callback(false, response.pushToken, response.expireTimestamp,response.baseResponse.errMsg)
