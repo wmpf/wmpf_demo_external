@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import com.tencent.luggage.demo.wxapi.DeviceInfo
+import com.tencent.wmpf.cli.task.IPCInvokerTask_InitGlobalConfig
 import com.tencent.wmpf.demo.Api
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.utils.InvokeTokenHelper
@@ -19,7 +20,7 @@ class DocumentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_document)
 
-        findViewById<Button>(R.id.btn_activate_device).setOnClickListener {
+        findViewById<Button>(R.id.btn_activate_device).setOnClickListener { view ->
             Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
                     DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
@@ -29,51 +30,66 @@ class DocumentActivity : AppCompatActivity() {
                             InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                         }
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
 
-        findViewById<Button>(R.id.btn_activate_device_by_iot).setOnClickListener {
+        findViewById<Button>(R.id.btn_activate_device_by_iot).setOnClickListener { view ->
             Api.activateDeviceByIoT(DeviceInfo.APP_ID)
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.invokeToken} ")
                         InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
 
-        findViewById<Button>(R.id.btn_preload_time).setOnClickListener {
+        findViewById<Button>(R.id.btn_preload_time).setOnClickListener { view ->
             Api.preloadRuntime()
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
 
-        findViewById<Button>(R.id.btn_authorize).setOnClickListener {
+        findViewById<Button>(R.id.btn_authorize).setOnClickListener { view ->
             Api.authorize()
                     .subscribeOn(Schedulers.io())
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
 
-        findViewById<Button>(R.id.btn_authorize_face).setOnClickListener {
+        findViewById<Button>(R.id.btn_authorize_face).setOnClickListener { view ->
             Api.authorizeFaceLogin()
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
 
         //https://pay.weixin.qq.com/wiki/doc/wxfacepay/develop/sdk-android.html#%E4%BA%BA%E8%84%B8%E6%94%AF%E4%BB%98%E5%87%AD%E8%AF%81-getwxpayfacecode
-        findViewById<Button>(R.id.btn_authorize_init_auth_info).setOnClickListener {
+        findViewById<Button>(R.id.btn_authorize_init_auth_info).setOnClickListener { view ->
             Api.initWxPayInfoAuthInfo(mapOf(
                     "face_authtype" to "FACEPAY" as Object,
                     "appid" to "商户号绑定的公众号/小程序" as Object,
@@ -84,47 +100,61 @@ class DocumentActivity : AppCompatActivity() {
                     "authinfo" to "调用凭证" as Object,
                     //获取方式参见: get_wxpayface_authinfo[https://pay.weixin.qq.com/wiki/doc/wxfacepay/develop/sdk-android.html#%E8%8E%B7%E5%8F%96%E8%B0%83%E7%94%A8%E5%87%AD%E8%AF%81-get-wxpayface-authinfo]
                     "ignore_update_pay_result" to "1" as Object //不需要商户App更新支付结果
-
-            ))
+                    ))
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
 
-        findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
+        findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener { view ->
             Api.launchWxaApp("wxe5f52902cf4de896", "")
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
 
-        findViewById<Button>(R.id.btn_launch_wxa_app_by_scan).setOnClickListener {
+        findViewById<Button>(R.id.btn_launch_wxa_app_by_scan).setOnClickListener { view ->
             Api.launchWxaAppByScan("xxx")
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
 
-        findViewById<Button>(R.id.btn_close_wxa_app).setOnClickListener {
+        findViewById<Button>(R.id.btn_close_wxa_app).setOnClickListener { view ->
             Api.closeWxaApp("wxe5f52902cf4de896")
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
 
-        findViewById<Button>(R.id.btn_manage_music).setOnClickListener {
+        findViewById<Button>(R.id.btn_manage_music).setOnClickListener { view ->
             Api.manageBackgroundMusic()
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
@@ -147,16 +177,19 @@ class DocumentActivity : AppCompatActivity() {
                     })
         }
 
-        findViewById<Button>(R.id.btn_de_authorize).setOnClickListener {
+        findViewById<Button>(R.id.btn_de_authorize).setOnClickListener { view ->
             Api.deauthorize()
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
 
-        findViewById<Button>(R.id.btn_push_msg_quick_start).setOnClickListener { _ ->
+        findViewById<Button>(R.id.btn_push_msg_quick_start).setOnClickListener { view ->
             val intent = Intent(this, PushMsgQuickStartActivity::class.java)
             startActivity(intent)
 
@@ -164,16 +197,22 @@ class DocumentActivity : AppCompatActivity() {
                 Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                 Log.d(TAG, "push msg body: ${it.msgBody}")
             }, {
+                view.post {
+                    Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                }
                 Log.e(TAG, "error: $it")
             })
         }
 
-        findViewById<Button>(R.id.btn_authorize_status).setOnClickListener {
+        findViewById<Button>(R.id.btn_authorize_status).setOnClickListener {view ->
             Api.authorizeStatus()
                     .subscribe({
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.isAuthorize} ${it.openId} ")
                     }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
                         Log.e(TAG, "error: $it")
                     })
         }
@@ -193,6 +232,19 @@ class DocumentActivity : AppCompatActivity() {
                         Log.e(TAG, "error: $it")
                     })
         }
+
+        findViewById<Button>(R.id.btn_init_global_config).setOnClickListener { view ->
+            Api.initGlobalConfig(IPCInvokerTask_InitGlobalConfig.TYPE_CLOSE_OR_LOGOUT)
+                    .subscribe({
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
+                    }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                        }
+                        Log.e(TAG, "error: $it")
+                    })
+        }
+
     }
 
     companion object {

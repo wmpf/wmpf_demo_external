@@ -13,6 +13,8 @@ import com.tencent.wmpf.proto.*
 import com.tencent.wmpf.utils.WMPFHelper
 import io.reactivex.Observable
 import io.reactivex.Single
+import org.json.JSONObject
+import org.json.JSONStringer
 
 object Api {
 
@@ -468,6 +470,49 @@ object Api {
 
             if (!result) {
                 it.onError(Exception("invoke activeStatus fail"))
+            }
+        }
+    }
+
+    /**
+     * public static final int TYPE_CLOSE_OR_LOGOUT = 1; 可选择登出或切后台
+     * public static final int TYPE_LOGOUT = 2; 登出
+     * public static final int TYPE_CLOSE = 3; 切后台
+     * public static final int TYPE_BAN = 4; 当前设备暂不支持关闭小程序(点击后无反馈)
+     */
+    fun initGlobalConfig(closeButtonActionType: Int): Single<WMPFInitGlobalConfigResponse> {
+        return Single.create {
+            val globalConfigJson = JSONStringer().apply {
+                `object`()
+                key(IPCInvokerTask_InitGlobalConfig.CloseButtonActionType)
+                value(closeButtonActionType)
+                endObject()
+            }
+
+            val request = WMPFInitGlobalConfigRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+                this.globalConfigJson = globalConfigJson.toString()
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_InitGlobalConfig, WMPFInitGlobalConfigRequest, WMPFInitGlobalConfigResponse>(
+                    request,
+                    IPCInvokerTask_InitGlobalConfig::class.java,
+                    object : IPCInvokeCallbackEx<WMPFInitGlobalConfigResponse> {
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
+                        }
+
+                        override fun onCallback(response: WMPFInitGlobalConfigResponse) {
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
+                        }
+                    })
+
+            if (!result) {
+                it.onError(Exception("invoke initGlobalConfig fail"))
             }
         }
     }
