@@ -24,14 +24,16 @@ class DocumentActivity : AppCompatActivity() {
             Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
                     DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
-                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         if (it.invokeToken != null && it.invokeToken.isNotEmpty()) {
                             Log.i(TAG, "success: ${it.invokeToken} ")
                             InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                         }
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -40,12 +42,15 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_activate_device_by_iot).setOnClickListener { view ->
             Api.activateDeviceByIoT(DeviceInfo.APP_ID)
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.invokeToken} ")
                         InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -54,10 +59,13 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_preload_time).setOnClickListener { view ->
             Api.preloadRuntime()
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -67,10 +75,13 @@ class DocumentActivity : AppCompatActivity() {
             Api.authorize()
                     .subscribeOn(Schedulers.io())
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -79,10 +90,13 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_authorize_face).setOnClickListener { view ->
             Api.authorizeFaceLogin()
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -102,10 +116,13 @@ class DocumentActivity : AppCompatActivity() {
                     "ignore_update_pay_result" to "1" as Object //不需要商户App更新支付结果
                     ))
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -114,10 +131,13 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener { view ->
             Api.launchWxaApp("wxe5f52902cf4de896", "")
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -126,10 +146,13 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_launch_wxa_app_by_scan).setOnClickListener { view ->
             Api.launchWxaAppByScan("xxx")
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -138,10 +161,13 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_close_wxa_app).setOnClickListener { view ->
             Api.closeWxaApp("wxe5f52902cf4de896")
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -150,10 +176,13 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_manage_music).setOnClickListener { view ->
             Api.manageBackgroundMusic()
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -180,10 +209,13 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_de_authorize).setOnClickListener { view ->
             Api.deauthorize()
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -194,11 +226,14 @@ class DocumentActivity : AppCompatActivity() {
             startActivity(intent)
 
             Api.listeningPushMsg().subscribe({
+                view.post {
+                    Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                }
                 Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                 Log.d(TAG, "push msg body: ${it.msgBody}")
             }, {
                 view.post {
-                    Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                 }
                 Log.e(TAG, "error: $it")
             })
@@ -207,11 +242,14 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_authorize_status).setOnClickListener {view ->
             Api.authorizeStatus()
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.isAuthorize} ${it.openId} ")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -221,13 +259,13 @@ class DocumentActivity : AppCompatActivity() {
             Api.activeStatus()
                     .subscribe({
                         view.post {
-                            Toast.makeText(this, "isActive = ${it.isActive}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
                         }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.isActive} ")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
@@ -236,10 +274,13 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_init_global_config).setOnClickListener { view ->
             Api.initGlobalConfig(IPCInvokerTask_InitGlobalConfig.TYPE_CLOSE_OR_LOGOUT)
                     .subscribe({
+                        view.post {
+                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
+                        }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                     }, {
                         view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
                         }
                         Log.e(TAG, "error: $it")
                     })
