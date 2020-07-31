@@ -8,15 +8,34 @@ import com.tencent.mm.ipcinvoker.IPCInvokeCallbackEx
 import com.tencent.wmpf.cli.task.*
 import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
 import com.tencent.wmpf.cli.task.pb.WMPFIPCInvoker
+import com.tencent.wmpf.cli.task.pb.proto.WMPFResponse
 import com.tencent.wmpf.proto.*
 import com.tencent.wmpf.utils.WMPFHelper
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.lang.Exception
+import org.json.JSONObject
+import org.json.JSONStringer
 
 object Api {
 
     private const val TAG = "Demo.Api"
+
+    private fun isSuccess(response: WMPFResponse): Boolean {
+        return response != null && response.baseResponse.errCode == TaskError.ErrType_OK
+    }
+
+    private fun createTaskError(response: WMPFResponse?): TaskError {
+        if (response == null) {
+            return TaskError(TaskError.ErrType_NORMAL, -1, "response is null")
+        }
+        return TaskError(response.baseResponse.errType, response.baseResponse.errCode, response.baseResponse.errMsg)
+    }
+
+    class TaskErrorException(val taskError: TaskError): java.lang.Exception() {
+        override fun toString(): String {
+            return "TaskErrorException(taskError=$taskError)"
+        }
+    }
 
     fun activateDevice(productId: Int, keyVerion: Int,
                        deviceId: String, signature: String, hostAppId: String): Single<WMPFActivateDeviceResponse> {
@@ -40,7 +59,11 @@ object Api {
                         }
 
                         override fun onCallback(response: WMPFActivateDeviceResponse) {
-                            it.onSuccess(response)
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
                         }
                     })
 
@@ -68,12 +91,16 @@ object Api {
                         }
 
                         override fun onCallback(response: WMPFActivateDeviceByIoTResponse) {
-                            it.onSuccess(response)
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
                         }
                     })
 
             if (!result) {
-                it.onError(Exception("invoke activateDevice fail"))
+                it.onError(Exception("invoke activateDeviceByIoT fail"))
             }
         }
     }
@@ -89,7 +116,13 @@ object Api {
                     WMPFPreloadRuntimeRequest, WMPFPreloadRuntimeResponse>(
                     request,
                     IPCInvokerTask_PreloadRuntime::class.java
-            ) { response -> it.onSuccess(response) }
+            ) { response ->
+                if (isSuccess(response)) {
+                    it.onSuccess(response)
+                } else {
+                    it.onError(TaskErrorException(createTaskError(response)))
+                }
+            }
 
             if (!result) {
                 it.onError(Exception("invoke authorize fail"))
@@ -113,7 +146,12 @@ object Api {
             ) {
                 response ->
                 Log.i(TAG, ": $response")
-                it.onSuccess(response) }
+                if (isSuccess(response)) {
+                    it.onSuccess(response)
+                } else {
+                    it.onError(TaskErrorException(createTaskError(response)))
+                }
+            }
 
             if (!result) {
                 it.onError(Exception("invoke authorize fail"))
@@ -137,7 +175,13 @@ object Api {
                     WMPFAuthorizeNoLoginRequest, WMPFAuthorizeNoLoginResponse>(
                     request,
                     IPCInvokerTask_AuthorizeNoLogin::class.java
-            ) { response -> it.onSuccess(response) }
+            ) { response ->
+                if (isSuccess(response)) {
+                    it.onSuccess(response)
+                } else {
+                    it.onError(TaskErrorException(createTaskError(response)))
+                }
+            }
 
             if (!result) {
                 it.onError(Exception("invoke authorize fail"))
@@ -156,7 +200,13 @@ object Api {
                     WMPFInitWxFacePayInfoRequest, WMPFInitWxFacePayInfoResponse>(
                     request,
                     IPCInvokerTask_InitWxFacePayInfo::class.java
-            ) { response -> it.onSuccess(response) }
+            ) { response ->
+                if (isSuccess(response)) {
+                    it.onSuccess(response)
+                } else {
+                    it.onError(TaskErrorException(createTaskError(response)))
+                }
+            }
 
             if (!result) {
                 it.onError(Exception("invoke authorize fail"))
@@ -174,7 +224,13 @@ object Api {
                     WMPFAuthorizeByWxFacePayRequest, WMPFAuthorizeByWxFacePayResponse>(
                     request,
                     IPCInvokerTask_AuthorizeByWxFacePay::class.java
-            ) { response -> it.onSuccess(response) }
+            ) { response ->
+                if (isSuccess(response)) {
+                    it.onSuccess(response)
+                } else {
+                    it.onError(TaskErrorException(createTaskError(response)))
+                }
+            }
 
             if (!result) {
                 it.onError(Exception("invoke authorize fail"))
@@ -202,7 +258,13 @@ object Api {
                     WMPFLaunchWxaAppResponse>(
                     request,
                     IPCInvokerTask_LaunchWxaApp::class.java
-            ) { response -> it.onSuccess(response) }
+            ) { response ->
+                if (isSuccess(response)) {
+                    it.onSuccess(response)
+                } else {
+                    it.onError(TaskErrorException(createTaskError(response)))
+                }
+            }
 
             if (!result) {
                 it.onError(Exception("invoke launchWxaApp fail"))
@@ -224,7 +286,13 @@ object Api {
                     WMPFLaunchWxaAppByQRCodeRequest, WMPFLaunchWxaAppByQRCodeResponse>(
                         request,
                         IPCInvokerTask_LaunchWxaAppByQrCode::class.java
-                ) { response -> it.onSuccess(response) }
+            ) { response ->
+                if (isSuccess(response)) {
+                    it.onSuccess(response)
+                } else {
+                    it.onError(TaskErrorException(createTaskError(response)))
+                }
+            }
 
             if (!result) {
                 it.onError(Exception("invoke launchWxaAppByScan fail"))
@@ -243,7 +311,13 @@ object Api {
                     WMPFCloseWxaAppRequest, WMPFCloseWxaAppResponse>(
                     request,
                     IPCInvokerTask_CloseWxaApp::class.java
-            ) { response -> it.onSuccess(response) }
+            ) { response ->
+                if (isSuccess(response)) {
+                    it.onSuccess(response)
+                } else {
+                    it.onError(TaskErrorException(createTaskError(response)))
+                }
+            }
 
             if (!result) {
                 it.onError(Exception("invoke launchWxaAppByScan fail"))
@@ -261,7 +335,13 @@ object Api {
                     WMPFManageBackgroundMusicResponse>(
                     request,
                     IPCInvokerTask_ManageBackgroundMusic::class.java
-            ) { response -> it.onSuccess(response) }
+            ) { response ->
+                if (isSuccess(response)) {
+                    it.onSuccess(response)
+                } else {
+                    it.onError(TaskErrorException(createTaskError(response)))
+                }
+            }
 
             if (!result) {
                 it.onError(Exception("invoke manageBackgroundMusic fail"))
@@ -308,7 +388,13 @@ object Api {
                     WMPFDeauthorizeRequest, WMPFDeauthorizeResponse>(
                     request,
                     IPCInvokerTask_Deauthorize::class.java
-            ) { response -> it.onSuccess(response) }
+            ) { response ->
+                if (isSuccess(response)) {
+                    it.onSuccess(response)
+                } else {
+                    it.onError(TaskErrorException(createTaskError(response)))
+                }
+            }
 
             if (!result) {
                 it.onError(Exception("invoke deauthorize fail"))
@@ -345,7 +431,11 @@ object Api {
                         }
 
                         override fun onCallback(response: WMPFActiveStatusResponse) {
-                            it.onSuccess(response)
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
                         }
                     })
 
@@ -370,12 +460,58 @@ object Api {
                         }
 
                         override fun onCallback(response: WMPFAuthorizeStatusResponse) {
-                            it.onSuccess(response)
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
                         }
                     })
 
             if (!result) {
                 it.onError(Exception("invoke activeStatus fail"))
+            }
+        }
+    }
+
+    /**
+     * public static final int TYPE_CLOSE_OR_LOGOUT = 1; 可选择登出或切后台
+     * public static final int TYPE_LOGOUT = 2; 登出
+     * public static final int TYPE_CLOSE = 3; 切后台
+     */
+    fun initGlobalConfig(closeButtonActionType: Int): Single<WMPFInitGlobalConfigResponse> {
+        return Single.create {
+            val globalConfigJson = JSONStringer().apply {
+                `object`()
+                key(IPCInvokerTask_InitGlobalConfig.CloseButtonActionType)
+                value(closeButtonActionType)
+                endObject()
+            }
+
+            val request = WMPFInitGlobalConfigRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+                this.globalConfigJson = globalConfigJson.toString()
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_InitGlobalConfig, WMPFInitGlobalConfigRequest, WMPFInitGlobalConfigResponse>(
+                    request,
+                    IPCInvokerTask_InitGlobalConfig::class.java,
+                    object : IPCInvokeCallbackEx<WMPFInitGlobalConfigResponse> {
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
+                        }
+
+                        override fun onCallback(response: WMPFInitGlobalConfigResponse) {
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
+                        }
+                    })
+
+            if (!result) {
+                it.onError(Exception("invoke initGlobalConfig fail"))
             }
         }
     }
