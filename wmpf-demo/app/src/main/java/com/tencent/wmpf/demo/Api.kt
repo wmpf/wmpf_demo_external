@@ -478,7 +478,6 @@ object Api {
      * public static final int TYPE_CLOSE_OR_LOGOUT = 1; 可选择登出或切后台
      * public static final int TYPE_LOGOUT = 2; 登出
      * public static final int TYPE_CLOSE = 3; 切后台
-     * public static final int TYPE_BAN = 4; 当前设备暂不支持关闭小程序(点击后无反馈)
      */
     fun initGlobalConfig(closeButtonActionType: Int): Single<WMPFInitGlobalConfigResponse> {
         return Single.create {
