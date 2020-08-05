@@ -271,21 +271,6 @@ class DocumentActivity : AppCompatActivity() {
                     })
         }
 
-        findViewById<Button>(R.id.btn_init_global_config).setOnClickListener { view ->
-            Api.initGlobalConfig(IPCInvokerTask_InitGlobalConfig.TYPE_CLOSE_OR_LOGOUT)
-                    .subscribe({
-                        view.post {
-                            Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
-                        }
-                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
-                    }, {
-                        view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
-                        }
-                        Log.e(TAG, "error: $it")
-                    })
-        }
-
     }
 
     companion object {
