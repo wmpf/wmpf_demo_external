@@ -80,7 +80,7 @@ class ExperienceActivity : AppCompatActivity() {
                             Log.i(TAG, "success: $it")
                             respTextView.post {
                                 consoleText += String.format("init finish, err %d",
-                                        it?.baseResponse?.ret)
+                                        it?.baseResponse?.errCode)
                                 if (it.invokeToken == null) {
                                     consoleText += "\nactivate device fail for a null token, may ticket is expired\n"
                                     respTextView.text = consoleText
@@ -92,7 +92,7 @@ class ExperienceActivity : AppCompatActivity() {
                                         respTextView.text = consoleText
 
                                         Api.launchWxaApp(optLaunchAppId(), optPath(), landsapeMode = landscapeMode).subscribe({
-                                            Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                                            Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                                         }, {
                                             Log.e(DocumentActivity.TAG, "error: $it")
                                         })
@@ -103,13 +103,13 @@ class ExperienceActivity : AppCompatActivity() {
                                         Api.authorize()
                                                 .subscribe({
                                                     runOnUiThread {
-                                                        consoleText += "\ninvoke authorize result: ${it.baseResponse.ret} ${it.baseResponse.errMsg} \n"
+                                                        consoleText += "\ninvoke authorize result: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} \n"
                                                         respTextView.text = consoleText
                                                         respTextView.text = "$consoleText\n--------启动小程序--------\n"
                                                     }
 
                                                     Api.launchWxaApp(optLaunchAppId(), optPath(), appType = versionType, landsapeMode = landscapeMode).subscribe({}, {})
-                                                    Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.ret} ${it.baseResponse.errMsg}")
+                                                    Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                                                 }, {
                                                     Log.e(DocumentActivity.TAG, "error: $it")
                                                 })
