@@ -34,7 +34,7 @@ class ExperienceActivity : AppCompatActivity() {
         setContentView(R.layout.activity_experience)
         val appIdEditView = findViewById<EditText>(R.id.et_launch_app_id)
         val ticketEditView = findViewById<EditText>(R.id.et_ticket)
-        val respTextView = TextView(this)
+        val respTextView = findViewById<TextView>(R.id.resp_tv)
         val landscapeSwitch = findViewById<Switch>(R.id.switch_landscape)
         landscapeSwitch.setOnCheckedChangeListener { view, isClicked ->
             landscapeMode = if (isClicked) {
