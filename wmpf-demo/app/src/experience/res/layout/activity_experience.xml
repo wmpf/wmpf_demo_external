@@ -107,5 +107,10 @@
 成语小秀才：wx504e2b5e77713844\n
 "
             android:textIsSelectable="true" />
+
+        <TextView
+            android:id="@+id/resp_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </ScrollView>
