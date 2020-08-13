@@ -11,8 +11,6 @@ import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.RequestsRepo
 import com.tencent.wmpf.demo.ui.DocumentActivity
 import com.tencent.wmpf.demo.utils.InvokeTokenHelper
-import com.tencent.wxapi.test.OpenSdkTestUtil
-import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 /**
