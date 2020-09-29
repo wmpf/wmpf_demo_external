@@ -245,7 +245,7 @@ object Api {
             request.baseRequest = WMPFBaseRequestHelper.checked()
             // Launch target(wxa appId)
             // WARNING: hostAppIds and wxaAppIds are binded sets.
-            request.appId = launchAppId // Binded with HOST_APPID: wx64b7714cf1f64585
+            request.appId = launchAppId // 填入小程序AppId, 且需要与hostAppId有绑定关系
             request.path = path
             request.appType = appType // 0-正式版 1-开发版 2-体验版
             // mayRunInLandscapeCompatMode Deprecated
