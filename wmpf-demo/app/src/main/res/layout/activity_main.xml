@@ -55,15 +55,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_init_wmpf"/>
 
-    <TextView
-        android:id="@+id/launch_slogan"
+
+    <Button
+        android:id="@+id/btn_warm_launch"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="启动小程序流程: 2.1 正常启动 2.2 启动指定页面 2.3 扫码启动"
-        android:textColor="#FFF"
+        android:text="预热启动小程序"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_wmpf_runtime_preload" />
@@ -79,7 +79,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/launch_slogan" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_warm_launch" />
 
     <Button
         android:id="@+id/btn_launch_wxa_app_by_target_path"

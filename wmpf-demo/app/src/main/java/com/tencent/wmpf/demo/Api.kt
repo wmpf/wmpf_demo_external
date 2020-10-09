@@ -546,4 +546,45 @@ object Api {
             }
         }
     }
+
+    // 预热启动小程序，加快小程序启动
+    fun warmLaunch(appId: String): Single<WMPFLaunchWxaAppResponse> {
+        return Single.create {
+            val request = WMPFLaunchWxaAppRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+                this.isForPreWarmLaunch = true
+                this.appId = appId
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaApp, WMPFLaunchWxaAppRequest, WMPFLaunchWxaAppResponse>(
+                    request,
+                    IPCInvokerTask_LaunchWxaApp::class.java,
+                    object : IPCInvokeCallbackEx<WMPFLaunchWxaAppResponse> {
+                        override fun onCallback(response: WMPFLaunchWxaAppResponse) {
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
+                        }
+
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
+                        }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
+
+                    }
+            )
+            if (!result) {
+                it.onError(Exception("invoke initGlobalConfig fail"))
+            }
+        }
+    }
 }
