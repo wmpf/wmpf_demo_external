@@ -66,6 +66,14 @@ object Api {
                                 it.onError(TaskErrorException(createTaskError(response)))
                             }
                         }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
                     })
 
             if (!result) {
@@ -96,6 +104,14 @@ object Api {
                                 it.onSuccess(response)
                             } else {
                                 it.onError(TaskErrorException(createTaskError(response)))
+                            }
+                        }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
                             }
                         }
                     })
@@ -439,6 +455,14 @@ object Api {
                                 it.onError(TaskErrorException(createTaskError(response)))
                             }
                         }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
                     })
 
             if (!result) {
@@ -466,6 +490,14 @@ object Api {
                                 it.onSuccess(response)
                             } else {
                                 it.onError(TaskErrorException(createTaskError(response)))
+                            }
+                        }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
                             }
                         }
                     })
