@@ -507,4 +507,43 @@ object Api {
             }
         }
     }
+
+    fun initGlobalConfig(config: String): Single<WMPFInitGlobalConfigResponse> {
+        return Single.create {
+            val request = WMPFInitGlobalConfigRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+                this.globalConfigJson = config
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_InitGlobalConfig,WMPFInitGlobalConfigRequest,WMPFInitGlobalConfigResponse>(
+                    request,
+                    IPCInvokerTask_InitGlobalConfig::class.java,
+                    object :IPCInvokeCallbackEx<WMPFInitGlobalConfigResponse>{
+                        override fun onCallback(response: WMPFInitGlobalConfigResponse) {
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
+                        }
+
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
+                        }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
+
+                    }
+            )
+            if (!result) {
+                it.onError(Exception("invoke initGlobalConfig fail"))
+            }
+        }
+    }
 }

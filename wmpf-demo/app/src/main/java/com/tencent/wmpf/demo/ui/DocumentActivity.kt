@@ -11,8 +11,8 @@ import com.tencent.wmpf.cli.task.IPCInvokerTask_InitGlobalConfig
 import com.tencent.wmpf.demo.Api
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.utils.InvokeTokenHelper
-import com.tencent.wxapi.test.OpenSdkTestUtil
 import io.reactivex.schedulers.Schedulers
+import org.json.JSONObject
 
 class DocumentActivity : AppCompatActivity() {
 
@@ -269,6 +269,24 @@ class DocumentActivity : AppCompatActivity() {
                         }
                         Log.e(TAG, "error: $it")
                     })
+        }
+
+        // 调整小程序显示大小，zoom可以设置为任意值，这里给出一组建议值
+        val zoomArr = arrayOf(0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)
+        var zoomIndex = 0
+        findViewById<Button>(R.id.btn_ui_zoom).setOnClickListener { view ->
+            val jsonConfig = JSONObject()
+            jsonConfig.put(IPCInvokerTask_InitGlobalConfig.UI_ZOOM, zoomArr[zoomIndex % zoomArr.size])
+            Api.initGlobalConfig(jsonConfig.toString()).subscribe({
+                view.post {
+                    Toast.makeText(this, "success: zoom set to ${zoomArr[zoomIndex]}, 下次启动小程序生效", Toast.LENGTH_SHORT).show()
+                    zoomIndex++
+                }
+            }, {
+                view.post {
+                    Toast.makeText(this, "error: $it", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
 
     }
