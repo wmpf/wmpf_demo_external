@@ -292,7 +292,7 @@ class DocumentActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val TAG = "DocumentActivity"
+        private const val TAG = "DocumentActivity"
     }
 
 }

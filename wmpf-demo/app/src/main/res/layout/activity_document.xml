@@ -200,6 +200,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_push_msg_quick_start" />
-
     </android.support.constraint.ConstraintLayout>
 </ScrollView>
