@@ -99,9 +99,9 @@ class FastExperienceActivity : AppCompatActivity() {
                                         consoleText += "\ninvoke authorizeNoLogin\n"
                                         respTextView.text = consoleText
                                         Api.launchWxaApp(optLaunchAppId(), "").subscribe({
-                                            Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
+                                            Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                                         }, {
-                                            Log.e(DocumentActivity.TAG, "error: $it")
+                                            Log.e(TAG, "error: $it")
                                         })
                                     }
                                 }

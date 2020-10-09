@@ -2,6 +2,7 @@
 
 package com.tencent.wmpf.demo
 
+import android.hardware.display.DisplayManager
 import android.util.Log
 import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mm.ipcinvoker.IPCInvokeCallbackEx
@@ -65,6 +66,14 @@ object Api {
                                 it.onError(TaskErrorException(createTaskError(response)))
                             }
                         }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
                     })
 
             if (!result) {
@@ -95,6 +104,14 @@ object Api {
                                 it.onSuccess(response)
                             } else {
                                 it.onError(TaskErrorException(createTaskError(response)))
+                            }
+                        }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
                             }
                         }
                     })
@@ -252,6 +269,7 @@ object Api {
 //            request.mayRunInLandscapeCompatMode = true
             request.forceRequestFullscreen = false
             request.landscapeMode = landsapeMode // 0:和微信行为保持一致;1:允许横屏铺满显示，忽略小程序的pageOrientation配置;2:强制横屏并居中以16:9显示，忽略pageOrientation配置
+            request.displayId = 0 // 小程序想要显示的目标displayId，适用于某些双屏设备 DisplayManager.getDisplays()[0].getDisplayId()
             Log.i(TAG, "launchWxaApp: appId = " + launchAppId + ", hostAppID = " +
                     BuildConfig.HOST_APPID + ", deviceId = " + DeviceInfo.deviceId)
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaApp, WMPFLaunchWxaAppRequest,
@@ -437,6 +455,14 @@ object Api {
                                 it.onError(TaskErrorException(createTaskError(response)))
                             }
                         }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
                     })
 
             if (!result) {
@@ -466,10 +492,98 @@ object Api {
                                 it.onError(TaskErrorException(createTaskError(response)))
                             }
                         }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
                     })
 
             if (!result) {
                 it.onError(Exception("invoke activeStatus fail"))
+            }
+        }
+    }
+
+    fun initGlobalConfig(config: String): Single<WMPFInitGlobalConfigResponse> {
+        return Single.create {
+            val request = WMPFInitGlobalConfigRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+                this.globalConfigJson = config
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_InitGlobalConfig,WMPFInitGlobalConfigRequest,WMPFInitGlobalConfigResponse>(
+                    request,
+                    IPCInvokerTask_InitGlobalConfig::class.java,
+                    object :IPCInvokeCallbackEx<WMPFInitGlobalConfigResponse>{
+                        override fun onCallback(response: WMPFInitGlobalConfigResponse) {
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
+                        }
+
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
+                        }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
+
+                    }
+            )
+            if (!result) {
+                it.onError(Exception("invoke initGlobalConfig fail"))
+            }
+        }
+    }
+
+    // 预热启动小程序，加快小程序启动
+    fun warmLaunch(appId: String): Single<WMPFLaunchWxaAppResponse> {
+        return Single.create {
+            val request = WMPFLaunchWxaAppRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+                this.isForPreWarmLaunch = true
+                this.appId = appId
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaApp, WMPFLaunchWxaAppRequest, WMPFLaunchWxaAppResponse>(
+                    request,
+                    IPCInvokerTask_LaunchWxaApp::class.java,
+                    object : IPCInvokeCallbackEx<WMPFLaunchWxaAppResponse> {
+                        override fun onCallback(response: WMPFLaunchWxaAppResponse) {
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
+                        }
+
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
+                        }
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
+
+                    }
+            )
+            if (!result) {
+                it.onError(Exception("invoke initGlobalConfig fail"))
             }
         }
     }

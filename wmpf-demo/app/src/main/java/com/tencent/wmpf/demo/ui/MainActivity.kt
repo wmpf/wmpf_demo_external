@@ -115,6 +115,30 @@ class MainActivity : AppCompatActivity() {
                     })
         }
 
+        findViewById<Button>(R.id.btn_warm_launch).setOnClickListener { view ->
+
+            val appId = "wxe5f52902cf4de896"
+            Api.warmLaunch(appId)
+                    .subscribe({ it ->
+                        view.post {
+                            Toast.makeText(this, "success: 预热小程序 ${it.baseResponse.errCode} ${it.baseResponse.errMsg}", Toast.LENGTH_LONG).show()
+                            AlertDialog.Builder(this).setTitle("预热完成").setNegativeButton("启动小程序") { _, _ ->
+                                Api.launchWxaApp(appId, "").subscribe({ resp ->
+                                    Log.i(TAG, "success: $resp")
+                                }, {
+                                    Log.e(TAG, "error: $it")
+                                })
+                            }.show()
+                        }
+                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
+                    }, {
+                        view.post {
+                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
+                        }
+                        Log.e(TAG, "error: $it")
+                    })
+        }
+
         // Step 2.1
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
             AlertDialog.Builder(this).setNegativeButton("normal") { _, _ ->
