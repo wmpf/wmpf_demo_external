@@ -90,9 +90,9 @@ class ExperienceActivity : AppCompatActivity() {
                                         respTextView.text = consoleText
 
                                         Api.launchWxaApp(optLaunchAppId(), optPath(), landsapeMode = landscapeMode).subscribe({
-                                            Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
+                                            Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                                         }, {
-                                            Log.e(DocumentActivity.TAG, "error: $it")
+                                            Log.e(TAG, "error: $it")
                                         })
 
                                     } else {
@@ -107,9 +107,9 @@ class ExperienceActivity : AppCompatActivity() {
                                                     }
 
                                                     Api.launchWxaApp(optLaunchAppId(), optPath(), appType = versionType, landsapeMode = landscapeMode).subscribe({}, {})
-                                                    Log.i(DocumentActivity.TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
+                                                    Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
                                                 }, {
-                                                    Log.e(DocumentActivity.TAG, "error: $it")
+                                                    Log.e(TAG, "error: $it")
                                                 })
                                     }
                                 }
