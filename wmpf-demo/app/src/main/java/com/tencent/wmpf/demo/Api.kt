@@ -2,7 +2,7 @@
 
 package com.tencent.wmpf.demo
 
-import android.hardware.display.DisplayManager
+import android.content.Context
 import android.util.Log
 import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mm.ipcinvoker.IPCInvokeCallbackEx
@@ -10,12 +10,11 @@ import com.tencent.wmpf.cli.task.*
 import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
 import com.tencent.wmpf.cli.task.pb.WMPFIPCInvoker
 import com.tencent.wmpf.cli.task.pb.proto.WMPFResponse
+import com.tencent.wmpf.demo.utils.InvokeTokenHelper
 import com.tencent.wmpf.proto.*
 import com.tencent.wmpf.utils.WMPFHelper
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.json.JSONObject
-import org.json.JSONStringer
 
 object Api {
 
@@ -62,6 +61,10 @@ object Api {
                         override fun onCallback(response: WMPFActivateDeviceResponse) {
                             if (isSuccess(response)) {
                                 it.onSuccess(response)
+
+                                if (response != null && response.invokeToken.isNullOrEmpty()) {
+                                    InvokeTokenHelper.initInvokeToken(response.invokeToken)
+                                }
                             } else {
                                 it.onError(TaskErrorException(createTaskError(response)))
                             }

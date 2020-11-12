@@ -48,7 +48,6 @@ class FastExperienceActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_launch_login).setOnClickListener {
             Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion, DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .flatMap {
-                        InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                         Api.authorize()
                     }
                     .subscribe({
@@ -95,7 +94,6 @@ class FastExperienceActivity : AppCompatActivity() {
                                         respTextView.text = consoleText
                                     } else {
                                         val invokeToken = it.invokeToken
-                                        InvokeTokenHelper.initInvokeToken(this, invokeToken)
                                         consoleText += "\ninvoke authorizeNoLogin\n"
                                         respTextView.text = consoleText
                                         Api.launchWxaApp(optLaunchAppId(), "").subscribe({
@@ -155,7 +153,6 @@ class FastExperienceActivity : AppCompatActivity() {
     private fun launchWxa() {
         Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion, DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                 .flatMap {
-                    InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                     Api.launchWxaApp(optLaunchAppId(), "")
                 }
                 .subscribe({

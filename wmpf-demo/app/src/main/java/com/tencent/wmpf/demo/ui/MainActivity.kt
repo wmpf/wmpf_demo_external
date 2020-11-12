@@ -54,11 +54,6 @@ class MainActivity : AppCompatActivity() {
                             DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
                     .subscribe({
                         Log.i(TAG, "success: token = ${it.invokeToken}")
-                        if (it.invokeToken == null) {
-                            Log.e(TAG, "edit your device info on com.tencent.luggage.demo.wxapi.DeviceInfo")
-                            return@subscribe
-                        }
-                        InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                         postToMainThread(Runnable {
                             Toast.makeText(this, String.format("init finish, err %d",
                                     it?.baseResponse?.errCode), Toast.LENGTH_SHORT).show()

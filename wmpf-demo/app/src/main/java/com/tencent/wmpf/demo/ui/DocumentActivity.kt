@@ -27,10 +27,6 @@ class DocumentActivity : AppCompatActivity() {
                         view.post {
                             Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
                         }
-                        if (it.invokeToken != null && it.invokeToken.isNotEmpty()) {
-                            Log.i(TAG, "success: ${it.invokeToken} ")
-                            InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
-                        }
                     }, {
                         view.post {
                             Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
@@ -47,7 +43,6 @@ class DocumentActivity : AppCompatActivity() {
                         }
                         Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
                         Log.i(TAG, "success: ${it.invokeToken} ")
-                        InvokeTokenHelper.initInvokeToken(this, it.invokeToken)
                     }, {
                         view.post {
                             Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
