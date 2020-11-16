@@ -84,7 +84,7 @@ class ExperienceActivity : AppCompatActivity() {
                                     respTextView.text = consoleText
                                 } else {
                                     val invokeToken = it.invokeToken
-                                    InvokeTokenHelper.initInvokeToken(this, invokeToken)
+                                    InvokeTokenHelper.initInvokeToken(invokeToken)
                                     if (versionType == 0) {
                                         consoleText += "\ninvoke authorizeNoLogin\n"
                                         respTextView.text = consoleText
