@@ -15,6 +15,7 @@ object OpenSdkTestUtil {
 
     private const val TAG = "TEST.OpenSdkTestUtil"
 
+    private const val CODE_TO_SESSION_API = "https://api.weixin.qq.com/sns/jscode2session"
     private const val OAUTH_TOKEN_API = "https://api.weixin.qq.com/sns/oauth2/access_token"
     private const val RAW_TOKEN_API = "https://api.weixin.qq.com/cgi-bin/token"
     private const val SDK_TICKET_API = "https://api.weixin.qq.com/cgi-bin/ticket/getticket"
@@ -182,6 +183,27 @@ object OpenSdkTestUtil {
             val response = client.newCall(request).execute()
             val obj = JSONObject(response.body()!!.string())
             emitter.onSuccess(obj.optString("device_ticket", ""))
+        }
+    }
+
+    fun jscode2session(appId: String, secret: String, code: String): Single<JSONObject> {
+        Log.d(TAG, String.format("jscode 2 session, code=%s", code))
+
+        val urlBuilder = HttpUrl.parse(CODE_TO_SESSION_API)!!.newBuilder()
+        urlBuilder.addQueryParameter("appid", appId)
+        urlBuilder.addQueryParameter("secret", secret)
+        urlBuilder.addQueryParameter("js_code", code)
+        urlBuilder.addQueryParameter("grant_type", "authorization_code")
+
+        val url = urlBuilder.build().toString()
+        val request = Request.Builder().url(url).build()
+
+        return Single.create { emitter ->
+            val response = client.newCall(request).execute()
+            val obj = JSONObject(response.body()!!.string())
+            //obj.optString("openid")
+            //obj.optString("session_key")
+            emitter.onSuccess(obj)
         }
     }
 }

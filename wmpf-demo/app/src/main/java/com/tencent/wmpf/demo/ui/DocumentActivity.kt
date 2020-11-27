@@ -83,7 +83,7 @@ class DocumentActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_authorize_face).setOnClickListener { view ->
-            Api.authorizeFaceLogin()
+            Api.authorizeByWxFacePay()
                     .subscribe({
                         view.post {
                             Toast.makeText(this, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_LONG).show()
@@ -99,7 +99,7 @@ class DocumentActivity : AppCompatActivity() {
 
         //https://pay.weixin.qq.com/wiki/doc/wxfacepay/develop/sdk-android.html#%E4%BA%BA%E8%84%B8%E6%94%AF%E4%BB%98%E5%87%AD%E8%AF%81-getwxpayfacecode
         findViewById<Button>(R.id.btn_authorize_init_auth_info).setOnClickListener { view ->
-            Api.initWxPayInfoAuthInfo(mapOf(
+            Api.initWxPayInfo(mapOf(
                     "face_authtype" to "FACEPAY" as Object,
                     "appid" to "商户号绑定的公众号/小程序" as Object,
                     "mch_id" to "商户号" as Object,
