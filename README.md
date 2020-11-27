@@ -94,8 +94,9 @@ WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬�
 ##### 关于flavors构建变体
 demo有两种变体，供开发者使用。注意两个变体不能同时安装，否则安装过程会出现INSTALL_FAILED_CONFLICTING_PROVIDE错误
 
-* guide模式：提供API的使用示例，需要激活设备后使用
-* experience模式：供开发者进行体验与小程序的开发预览，不需要注册设备，只需要在[wecooper-快速体验-绑定小程序](https://wecooper.weixin.qq.com/)获取ticket即可运行
+* guide模式：提供API的使用示例，需要激活设备后使用   
+* experience模式：供开发者进行体验与小程序的开发预览，不需要注册设备，只需要在[wecooper-快速体验-绑定小程序](https://wecooper.weixin.qq.com/)获取ticket即可运行    
+* wxfacepay模式：提供给刷脸支付商户开发者的使用示例，需要激活设备后使用，主要演示商户应用调用刷脸支付和WMPF接口的流程和常见场景功能的代码实践    
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/wmpf/wmpf_demo_external/master/assets/favor-example.png" width = "400" alt="png" align=center />

@@ -10,6 +10,20 @@
         android:orientation="vertical"
         tools:context=".wxfacepay.IotActivity">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <TextView
+            android:id="@+id/text_init_wxfacepay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第1步：初始化刷脸支付SDK"/>
+
         <Button
             android:id="@+id/btn_init_wxfacepay"
             android:layout_width="match_parent"
@@ -17,7 +31,17 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="WxFacePaySDK — 初始化" />
+            android:text="WxFacePay — 初始化刷脸支付SDK" />
+
+        <TextView
+            android:id="@+id/text_get_rawdata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第2步：获取rawdata和authinfo"/>
 
         <Button
             android:id="@+id/btn_get_rawdata"
@@ -26,7 +50,17 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="WxFacePaySDK — 获取rawdata和authinfo" />
+            android:text="WxFacePay — 获取rawdata和authinfo" />
+
+        <TextView
+            android:id="@+id/text_active_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第3步：检查设备激活状态，若未激活则触发第4步设备激活，若已激活则直接触发第5步注入刷脸支付授权信息"/>
 
         <Button
             android:id="@+id/btn_active_status"
@@ -37,6 +71,16 @@
             android:layout_marginEnd="16dp"
             android:text="WMPF — 检查设备激活状态" />
 
+        <TextView
+            android:id="@+id/text_activate_device_by_iot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第4步：激活IoT设备，激活成功之后可调用WMPF接口"/>
+
         <Button
             android:id="@+id/btn_activate_device_by_iot"
             android:layout_width="match_parent"
@@ -46,6 +90,16 @@
             android:layout_marginEnd="16dp"
             android:text="WMPF — 激活IoT设备" />
 
+        <TextView
+            android:id="@+id/text_authorize_init_auth_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第5步：注入前面获取的authinfo等刷脸支付授权信息"/>
+
         <Button
             android:id="@+id/btn_authorize_init_auth_info"
             android:layout_width="match_parent"
@@ -53,7 +107,17 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="WMPF — 注入授权信息" />
+            android:text="WMPF — 注入刷脸支付授权信息" />
+
+        <TextView
+            android:id="@+id/text_authorize_face"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第6步：可选步骤，若小程序要登录再启动则刷脸授权登录，也可以选择先启动小程序，然后在小程序内刷脸登录"/>
 
         <Button
             android:id="@+id/btn_authorize_face"
@@ -64,6 +128,16 @@
             android:layout_marginEnd="16dp"
             android:text="WMPF — 刷脸授权登录" />
 
+        <TextView
+            android:id="@+id/text_ui_zoom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第7步：可选步骤，若需要调整小程序界面组件的显示大小可以设置全局配置中的uiZoom参数"/>
+
         <Button
             android:id="@+id/btn_ui_zoom"
             android:layout_width="match_parent"
@@ -73,6 +147,16 @@
             android:layout_marginEnd="16dp"
             android:text="WMPF — 初始化全局配置" />
 
+        <TextView
+            android:id="@+id/text_preload_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第8步：可选步骤，若期望加速下一个小程序启动速度的话可以先预载小程序运行环境"/>
+
         <Button
             android:id="@+id/btn_preload_time"
             android:layout_width="match_parent"
@@ -80,7 +164,17 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="WMPF — 预载小程序环境" />
+            android:text="WMPF — 预载小程序运行环境" />
+
+        <TextView
+            android:id="@+id/text_warm_launch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第9步：可选步骤，预热特定小程序的运行环境，在预热结束后启动小程序的话可实现小程序启动秒开"/>
 
         <Button
             android:id="@+id/btn_warm_launch"
@@ -91,14 +185,15 @@
             android:layout_marginEnd="16dp"
             android:text="WMPF — 预热启动正式版小程序" />
 
-        <Button
-            android:id="@+id/btn_launch_wxa_app"
+        <TextView
+            android:id="@+id/text_launch_wxa_app_dev"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="WMPF — 启动正式版小程序" />
+            android:lineSpacingMultiplier="1.2"
+            android:text="第10(b)步：启动小程序（开发版），开发阶段"/>
 
         <Button
             android:id="@+id/btn_launch_wxa_app_dev"
@@ -109,6 +204,16 @@
             android:layout_marginEnd="16dp"
             android:text="WMPF — 启动开发版小程序" />
 
+        <TextView
+            android:id="@+id/text_launch_wxa_app_trail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第10(c)步：启动小程序（体验版），产品体验"/>
+
         <Button
             android:id="@+id/btn_launch_wxa_app_trail"
             android:layout_width="match_parent"
@@ -117,6 +222,35 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:text="WMPF — 启动体验版小程序" />
+
+        <TextView
+            android:id="@+id/text_launch_wxa_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第10(a)步：启动小程序（正式版），正式环境"/>
+
+        <Button
+            android:id="@+id/btn_launch_wxa_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="WMPF — 启动正式版小程序" />
+
+        <TextView
+            android:id="@+id/text_close_wxa_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第11步：关闭小程序"/>
 
         <Button
             android:id="@+id/btn_close_wxa_app"
@@ -127,6 +261,16 @@
             android:layout_marginEnd="16dp"
             android:text="WMPF — 关闭小程序" />
 
+        <TextView
+            android:id="@+id/text_de_authorize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="第12步：销毁用户登录态，同时小程序也会被关闭"/>
+
         <Button
             android:id="@+id/btn_de_authorize"
             android:layout_width="match_parent"
@@ -134,7 +278,17 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="WMPF — 销毁登录态" />
+            android:text="WMPF — 销毁用户登录态" />
+
+        <TextView
+            android:id="@+id/text_launch_wxa_app_by_scan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="演示功能：通过扫码启动小程序"/>
 
         <Button
             android:id="@+id/btn_launch_wxa_app_by_scan"
