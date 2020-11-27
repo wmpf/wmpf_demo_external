@@ -62,7 +62,7 @@ object Api {
                             if (isSuccess(response)) {
                                 it.onSuccess(response)
 
-                                if (response != null && response.invokeToken.isNullOrEmpty()) {
+                                if (response != null && !response.invokeToken.isNullOrEmpty()) {
                                     InvokeTokenHelper.initInvokeToken(response.invokeToken)
                                 }
                             } else {
@@ -105,6 +105,10 @@ object Api {
                         override fun onCallback(response: WMPFActivateDeviceByIoTResponse) {
                             if (isSuccess(response)) {
                                 it.onSuccess(response)
+
+                                if (response != null && !response.invokeToken.isNullOrEmpty()) {
+                                    InvokeTokenHelper.initInvokeToken(response.invokeToken)
+                                }
                             } else {
                                 it.onError(TaskErrorException(createTaskError(response)))
                             }
