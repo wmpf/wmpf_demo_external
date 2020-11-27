@@ -2,7 +2,6 @@
 
 package com.tencent.wmpf.demo
 
-import android.content.Context
 import android.util.Log
 import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mm.ipcinvoker.IPCInvokeCallbackEx
@@ -149,7 +148,7 @@ object Api {
             }
 
             if (!result) {
-                it.onError(Exception("invoke authorize fail"))
+                it.onError(Exception("invoke preloadRuntime fail"))
             }
         }
     }
@@ -208,12 +207,12 @@ object Api {
             }
 
             if (!result) {
-                it.onError(Exception("invoke authorize fail"))
+                it.onError(Exception("invoke authorizeNoLogin fail"))
             }
         }
     }
 
-    fun initWxPayInfoAuthInfo(authInfoMap: Map<String, Object>): Single<WMPFInitWxFacePayInfoResponse> {
+    fun initWxPayInfo(authInfoMap: Map<String, Object>): Single<WMPFInitWxFacePayInfoResponse> {
         return Single.create {
 
             val request = WMPFInitWxFacePayInfoRequest()
@@ -233,12 +232,12 @@ object Api {
             }
 
             if (!result) {
-                it.onError(Exception("invoke authorize fail"))
+                it.onError(Exception("invoke initWxPayInfoAuthInfo fail"))
             }
         }
     }
 
-    fun authorizeFaceLogin(): Single<WMPFAuthorizeByWxFacePayResponse> {
+    fun authorizeByWxFacePay(): Single<WMPFAuthorizeByWxFacePayResponse> {
         return Single.create {
 
             val request = WMPFAuthorizeByWxFacePayRequest()
@@ -257,7 +256,7 @@ object Api {
             }
 
             if (!result) {
-                it.onError(Exception("invoke authorize fail"))
+                it.onError(Exception("invoke authorizeByWxFacePay fail"))
             }
         }
     }
@@ -345,7 +344,7 @@ object Api {
             }
 
             if (!result) {
-                it.onError(Exception("invoke launchWxaAppByScan fail"))
+                it.onError(Exception("invoke closeWxaApp fail"))
             }
         }
     }
@@ -510,7 +509,7 @@ object Api {
                     })
 
             if (!result) {
-                it.onError(Exception("invoke activeStatus fail"))
+                it.onError(Exception("invoke authorizeStatus fail"))
             }
         }
     }
@@ -590,7 +589,7 @@ object Api {
                     }
             )
             if (!result) {
-                it.onError(Exception("invoke initGlobalConfig fail"))
+                it.onError(Exception("invoke warmLaunch fail"))
             }
         }
     }

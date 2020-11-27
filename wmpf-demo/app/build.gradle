@@ -49,6 +49,11 @@ android {
             applicationIdSuffix ".experience"
             versionNameSuffix "-experience"
         }
+        wxfacepay {
+            dimension 'product'
+            applicationIdSuffix ".wxfacepay"
+            versionNameSuffix "-wxfacepay"
+        }
     }
 }
 
