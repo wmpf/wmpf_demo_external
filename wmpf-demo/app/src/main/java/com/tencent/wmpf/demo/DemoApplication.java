@@ -1,15 +1,15 @@
 package com.tencent.wmpf.demo;
 
+import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
 import com.tencent.mmkv.MMKV;
-import com.tencent.wmpf.app.WMPFApplication;
 
 /**
  * For 4.4 multi dex support
  */
-public class DemoApplication extends WMPFApplication {
+public class DemoApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
