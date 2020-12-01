@@ -25,7 +25,6 @@ import com.tencent.wmpf.cli.task.*
 import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
 import com.tencent.wmpf.demo.Api
 import com.tencent.wmpf.demo.R
-import com.tencent.wmpf.demo.utils.InvokeTokenHelper
 import com.tencent.wmpf.proto.*
 import com.tencent.wxapi.test.OpenSdkTestUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
