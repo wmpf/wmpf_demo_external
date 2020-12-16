@@ -10,7 +10,6 @@ import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.wmpf.cli.task.IPCInvokerTask_InitGlobalConfig
 import com.tencent.wmpf.demo.Api
 import com.tencent.wmpf.demo.R
-import com.tencent.wmpf.demo.utils.InvokeTokenHelper
 import io.reactivex.schedulers.Schedulers
 import org.json.JSONObject
 

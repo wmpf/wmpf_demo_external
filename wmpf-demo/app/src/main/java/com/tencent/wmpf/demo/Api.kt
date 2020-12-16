@@ -2,14 +2,15 @@
 
 package com.tencent.wmpf.demo
 
+import android.app.Application
 import android.util.Log
 import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mm.ipcinvoker.IPCInvokeCallbackEx
+import com.tencent.wmpf.app.WMPFBoot
 import com.tencent.wmpf.cli.task.*
 import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
 import com.tencent.wmpf.cli.task.pb.WMPFIPCInvoker
 import com.tencent.wmpf.cli.task.pb.proto.WMPFResponse
-import com.tencent.wmpf.demo.utils.InvokeTokenHelper
 import com.tencent.wmpf.proto.*
 import com.tencent.wmpf.utils.WMPFHelper
 import io.reactivex.Observable
@@ -21,6 +22,30 @@ object Api {
 
     private fun isSuccess(response: WMPFResponse): Boolean {
         return response != null && response.baseResponse.errCode == TaskError.ErrType_OK
+    }
+
+    fun init(context: Application) {
+        WMPFBoot.init(context)
+        val invokeToken = getInvokeToken()
+        WMPFIPCInvoker.initInvokeToken(invokeToken)
+    }
+
+    private fun getInvokeToken(): String {
+        if (WMPFBoot.getAppContext() == null) {
+            throw java.lang.Exception("need invoke Api.Init")
+        }
+        val pref = WMPFBoot.getAppContext()!!.getSharedPreferences("InvokeTokenHelper", 0)
+        return pref?.getString(TAG, "")!!
+    }
+
+    private fun initInvokeToken(invokeToken: String) {
+        if (WMPFBoot.getAppContext() == null) {
+            throw java.lang.Exception("need invoke Api.Init")
+        }
+        val pref = WMPFBoot.getAppContext()!!.getSharedPreferences("InvokeTokenHelper", 0)
+        val editor = pref?.edit()
+        editor?.putString(TAG, invokeToken)?.apply()
+        WMPFIPCInvoker.initInvokeToken(invokeToken)
     }
 
     private fun createTaskError(response: WMPFResponse?): TaskError {
@@ -62,7 +87,7 @@ object Api {
                                 it.onSuccess(response)
 
                                 if (response != null && !response.invokeToken.isNullOrEmpty()) {
-                                    InvokeTokenHelper.initInvokeToken(response.invokeToken)
+                                    initInvokeToken(response.invokeToken)
                                 }
                             } else {
                                 it.onError(TaskErrorException(createTaskError(response)))
@@ -106,7 +131,7 @@ object Api {
                                 it.onSuccess(response)
 
                                 if (response != null && !response.invokeToken.isNullOrEmpty()) {
-                                    InvokeTokenHelper.initInvokeToken(response.invokeToken)
+                                    initInvokeToken(response.invokeToken)
                                 }
                             } else {
                                 it.onError(TaskErrorException(createTaskError(response)))
