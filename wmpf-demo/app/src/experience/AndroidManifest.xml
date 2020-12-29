@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.tencent.wmpf.demo">
 
-    <application android:label="WMPF快速体验">
+    <application
+        tools:replace="android:label"
+        android:label="WMPF快速体验">
         <activity android:name=".experience.ExperienceActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
