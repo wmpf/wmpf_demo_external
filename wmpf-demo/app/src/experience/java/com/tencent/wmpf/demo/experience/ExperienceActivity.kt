@@ -9,8 +9,6 @@ import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.wmpf.demo.Api
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.RequestsRepo
-import com.tencent.wmpf.demo.ui.DocumentActivity
-import com.tencent.wmpf.demo.utils.InvokeTokenHelper
 import java.util.*
 
 /**
@@ -83,8 +81,6 @@ class ExperienceActivity : AppCompatActivity() {
                                     consoleText += "\nactivate device fail for a null token, may ticket is expired\n"
                                     respTextView.text = consoleText
                                 } else {
-                                    val invokeToken = it.invokeToken
-                                    InvokeTokenHelper.initInvokeToken(invokeToken)
                                     if (versionType == 0) {
                                         consoleText += "\ninvoke authorizeNoLogin\n"
                                         respTextView.text = consoleText
