@@ -12,7 +12,6 @@ import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.wmpf.cli.task.IPCInvokerTask_InitGlobalConfig
 import com.tencent.wmpf.demo.Api
 import com.tencent.wmpf.demo.R
-import com.tencent.wmpf.demo.utils.InvokeTokenHelper
 import com.tencent.wxpayface.IWxPayfaceCallback
 import com.tencent.wxpayface.WxPayFace
 import com.tencent.wxpayface.WxPayFace.RETURN_CODE
