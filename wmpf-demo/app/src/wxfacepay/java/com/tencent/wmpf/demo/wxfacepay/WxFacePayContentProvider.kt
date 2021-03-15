@@ -102,8 +102,9 @@ class WxFacePayContentProvider : ContentProvider() {
                         response?.body()?.string().let {
                             val jsonObject = JSONObject(it)
                             val returnCode = jsonObject.optString("return_code", "")
-                            Log.i(TAG, "[handleInvokeFromWmpf] success, returnCode:$returnCode")
-                            if (returnCode == "SUCCESS") {
+                            val errorCode = jsonObject.optString("err_code", "")
+                            Log.i(TAG, "[handleInvokeFromWmpf] success, returnCode:$returnCode, errorCode:$errorCode")
+                            if (returnCode == "SUCCESS" && errorCode.isNullOrEmpty()) {
                                 invokeChannelCallback(invokeId, command, "支付成功")
                             } else {
                                 invokeChannelCallback(invokeId, command, "支付失败")
