@@ -22,7 +22,6 @@ class WxFacePayContentProvider : ContentProvider() {
 
     companion object {
         private const val TAG = "WxFacePayInvokeChannelContentProvider"
-        private const val URL_PAY = "https://miniprog.pay.weixin.qq.com/xphp/cfacepaydemo/getWxpayfaceCode"
 
         private val sURIMatcher = UriMatcher(UriMatcher.NO_MATCH)
 
@@ -98,14 +97,13 @@ class WxFacePayContentProvider : ContentProvider() {
                 )
                 Log.i(TAG, "[handleInvokeFromWmpf] params: $params")
 
-                OkhttpUtils.getInstance().request(params, URL_PAY, object : OkhttpUtils.CallBack{
+                OkhttpUtils.getInstance().request(params, OkhttpUtils.URL_PAY, object : OkhttpUtils.CallBack{
                     override fun onSuccess(response: Response?) {
                         response?.body()?.string().let {
                             val jsonObject = JSONObject(it)
                             val returnCode = jsonObject.optString("return_code", "")
-                            val errorCode = jsonObject.optString("err_code", "")
-                            Log.i(TAG, "[handleInvokeFromWmpf] success, returnCode:$returnCode, errorCode:$errorCode")
-                            if (returnCode == "SUCCESS" && errorCode.isNullOrEmpty()) {
+                            Log.i(TAG, "[handleInvokeFromWmpf] success, returnCode:$returnCode")
+                            if (returnCode == "SUCCESS") {
                                 invokeChannelCallback(invokeId, command, "支付成功")
                             } else {
                                 invokeChannelCallback(invokeId, command, "支付失败")

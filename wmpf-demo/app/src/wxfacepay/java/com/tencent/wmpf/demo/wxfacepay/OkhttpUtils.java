@@ -33,6 +33,7 @@ import okhttp3.Response;
 public class OkhttpUtils {
 
     public static final String TAG = "OkhttpUtils";
+    public static final String URL_PAY = "https://miniprog.pay.weixin.qq.com/xphp/cfacepaydemo/getWxpayfaceCode";
 
     private static OkhttpUtils singleInstance = null;
 

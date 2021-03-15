@@ -53,6 +53,25 @@
             android:text="WxFacePay — 获取rawdata和authinfo" />
 
         <TextView
+            android:id="@+id/text_get_facecode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:lineSpacingMultiplier="1.2"
+            android:text="演示功能：直接调用刷脸支付 (请勿随意点击操作)"/>
+
+        <Button
+            android:id="@+id/btn_get_facecode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="WxFacePay — 直接调用刷脸支付" />
+
+        <TextView
             android:id="@+id/text_active_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
