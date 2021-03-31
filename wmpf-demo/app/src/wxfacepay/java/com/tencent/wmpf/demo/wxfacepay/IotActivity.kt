@@ -61,6 +61,10 @@ class IotActivity : AppCompatActivity() {
             doGetRawdata(view)
         }
 
+        findViewById<Button>(R.id.btn_get_facecode).setOnClickListener { view ->
+            doFacePay(view)
+        }
+
         findViewById<Button>(R.id.btn_authorize_face).setOnClickListener { view ->
             doAuthorizeByWxFacePay(view)
         }
@@ -140,6 +144,71 @@ class IotActivity : AppCompatActivity() {
         })
     }
 
+    private fun doFacePay(view: View) {
+        WxPayFace.getInstance().getWxpayfaceCode(getFacePayInfo(), object : IWxPayfaceCallback() {
+            override fun response(result: MutableMap<Any?, Any?>?) {
+                if (null == result) {
+                    Log.w(TAG, "[doFacePay] request fail, result is null")
+                    return
+                }
+
+                if ((result["return_code"] as? String).equals("SUCCESS")) {
+                    val openid = result["openid"]
+                    val faceCode = result["face_code"]
+
+                    // javayhu 注意这里的mch_id一定要传，不能支付可能就失败了，虽然这个参数在前面的info中已经有了，但是pay的时候还是要传过去才行
+                    val params = hashMapOf(
+                            "mch_id" to "1900007081" as Any, //"商户号"  1900007081 / 1900008081
+                            "total_fee" to "10" as Any, // "订单金额(数字)"，单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
+                            "out_trade_no" to out_trade_no as Any, //"商户订单号"，须与调用支付接口时字段一致，该字段在在face_code_type为"1"时可不填，为"0"时必填
+                            "openid" to openid as Any,
+                            "face_code" to faceCode as Any
+                    )
+                    Log.i(TAG, "[doFacePay] params: $params")
+
+                    OkhttpUtils.getInstance().request(params, OkhttpUtils.URL_PAY, object : OkhttpUtils.CallBack{
+                        override fun onSuccess(response: Response?) {
+                            response?.body()?.string().let {
+                                val jsonObject = JSONObject(it)
+                                val returnCode = jsonObject.optString("return_code", "")
+                                val errorCode = jsonObject.optString("err_code", "")
+                                Log.i(TAG, "[doFacePay] success, response:${jsonObject}")
+                                // javayhu 这里注意要判断errorCode，因为可能是请求SUCCESS，但是有其他的错误
+                                if (returnCode == "SUCCESS" && errorCode.isNullOrEmpty()) {
+                                    Log.i(TAG, "[doFacePay] success, face pay success")
+                                } else {
+                                    Log.i(TAG, "[doFacePay] fail, face pay failed")
+                                }
+                            }
+                        }
+
+                        override fun onFailed(e: Exception?) {
+                            Log.e(TAG, "[doFacePay] fail", e)
+                        }
+                    })
+                } else {
+                    Log.w(TAG, "[doFacePay] request fail, result not success")
+                }
+            }
+        })
+    }
+
+    private var out_trade_no: String? = null
+
+    private fun getFacePayInfo(): Map<String, Object> {
+        out_trade_no = System.currentTimeMillis().toString()
+        return hashMapOf(
+                "face_authtype" to "FACEPAY" as Object,
+                "authinfo" to authInfo as Object,
+                "appid" to "wx64b7714cf1f64585" as Object, //"商户号绑定的公众号/小程序"  wx2b029c08a6232582 / wx64b7714cf1f64585
+                "mch_id" to "1900008081" as Object, //"商户号"  1900007081 / 1900008081
+                "store_id" to "12345" as Object, //"门店编号"
+                "out_trade_no" to out_trade_no as Object, //"商户订单号"，须与调用支付接口时字段一致，该字段在在face_code_type为"1"时可不填，为"0"时必填
+                "total_fee" to "10" as Object, // "订单金额(数字)"，单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
+                "ignore_update_pay_result" to "1" as Object //不需要商户App更新支付结果
+        )
+    }
+
     private fun doActivateStatus(view: View) {
         Api.activeStatus()
                 .subscribe({
@@ -215,11 +284,11 @@ class IotActivity : AppCompatActivity() {
      * 诗词助手：wxf6a6a5d6654fd14c
      */
     private val APPID_MP_DEMO = "wxe5f52902cf4de896"
-    private val PATH_MP_DEMO = "pages/index/index"
+    private val PATH_MP_DEMO = ""
     private val APPID_LPOS_DEMO = "wxe48cfb127e3c4302"
     private val PATH_LPOS_DEMO = "pages/wmpf/wmpf"
-    private val MP_APPID = APPID_LPOS_DEMO
-    private val MP_PATH = PATH_LPOS_DEMO
+    private val MP_APPID = APPID_MP_DEMO
+    private val MP_PATH = PATH_MP_DEMO
 
     private fun doLaunchWxaApp(view: View, appType: Int = 0) {
         Api.launchWxaApp(MP_APPID, path = MP_PATH, appType = appType)
@@ -257,16 +326,7 @@ class IotActivity : AppCompatActivity() {
             Toast.makeText(this, "[doInitWxPayInfo] error: no authinfo", Toast.LENGTH_SHORT).show()
             return
         }
-        Api.initWxPayInfo(mapOf(
-                "face_authtype" to "FACEPAY" as Object,
-                "authinfo" to authInfo as Object,
-                "appid" to "wx64b7714cf1f64585" as Object, //"商户号绑定的公众号/小程序"  wx2b029c08a6232582 / wx64b7714cf1f64585
-                "mch_id" to "1900008081" as Object, //"商户号"  1900007081 / 1900008081
-                "store_id" to "12345" as Object, //"门店编号"
-                "out_trade_no" to "1234567890" as Object, //"商户订单号"，须与调用支付接口时字段一致，该字段在在face_code_type为"1"时可不填，为"0"时必填
-                "total_fee" to "10" as Object, // "订单金额(数字)"，单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
-                "ignore_update_pay_result" to "1" as Object //不需要商户App更新支付结果
-        )).subscribe({
+        Api.initWxPayInfo(getFacePayInfo()).subscribe({
             view.post {
                 Toast.makeText(this, "[doInitWxPayInfo] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_SHORT).show()
             }
