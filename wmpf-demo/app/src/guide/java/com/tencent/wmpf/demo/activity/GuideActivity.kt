@@ -7,7 +7,7 @@ import android.widget.Button
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.ui.DocumentActivity
 import com.tencent.wmpf.demo.ui.FastExperienceActivity
-import com.tencent.wmpf.demo.ui.MainActivity
+import com.tencent.wmpf.demo.ui.DetailActivity
 import com.tencent.wmpf.demo.ui.QAActivity
 
 class GuideActivity : AppCompatActivity() {
@@ -22,7 +22,7 @@ class GuideActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_detail).setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, DetailActivity::class.java))
         }
 
         findViewById<Button>(R.id.btn_document).setOnClickListener {

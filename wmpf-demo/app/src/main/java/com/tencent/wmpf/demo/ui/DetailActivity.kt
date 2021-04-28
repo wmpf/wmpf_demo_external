@@ -30,7 +30,7 @@ import com.tencent.wxapi.test.OpenSdkTestUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class MainActivity : AppCompatActivity() {
+class DetailActivity : AppCompatActivity() {
 
     private var userInfoTextView: TextView? = null
     private var avatarImageView: ImageView? = null
