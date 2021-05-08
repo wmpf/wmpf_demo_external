@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.wmpf.cli.task.IPCInvokerTask_InitGlobalConfig
@@ -31,11 +33,15 @@ class IotActivity : AppCompatActivity() {
         private const val TAG = "IotActivity"
     }
 
+    private lateinit var debugTxt: TextView
+
     private fun getContext() = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_iot)
+
+        debugTxt = findViewById(R.id.iot_debug_tv)
 
         findViewById<Button>(R.id.btn_active_status).setOnClickListener { view ->
             doActivateStatus(view)
@@ -100,13 +106,29 @@ class IotActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_launch_wxa_app_by_scan).setOnClickListener { view ->
             doLaunchWxaAppByScan(view)
         }
+
+        findViewById<TextView>(R.id.iot_debug_tv)?.apply {
+            movementMethod = ScrollingMovementMethod.getInstance()
+            isScrollbarFadingEnabled = false
+        }
+
     }
+    
+    private var TextView.safeText: CharSequence?
+        get() = text
+        set(value) {
+            post {
+                text = value
+                scrollTo(0, 0)
+            }
+        }
 
     private fun doInitWxFacePay(view: View) {
         WxPayFace.getInstance().initWxpayface(this, object : IWxPayfaceCallback() {
             override fun response(info: MutableMap<Any?, Any?>?) {
                 Log.i(TAG, "[doInitWxFacePay] success: ${info?.get(RETURN_CODE)} ${info?.get(RETURN_MSG)}")
                 Toast.makeText(getContext(), "[doInitWxFacePay] success: ${info?.get(RETURN_CODE)} ${info?.get(RETURN_MSG)}", Toast.LENGTH_SHORT).show()
+                debugTxt.safeText = info.toString()
             }
         })
     }
@@ -119,6 +141,7 @@ class IotActivity : AppCompatActivity() {
 
                 (info?.get("rawdata") as? String).let {
                     if (!it.isNullOrEmpty()) {
+                        debugTxt.safeText = it
                         getAuthInfo(it)
                     }
                 }
@@ -151,7 +174,7 @@ class IotActivity : AppCompatActivity() {
                     Log.w(TAG, "[doFacePay] request fail, result is null")
                     return
                 }
-
+                debugTxt.safeText = result.toString()
                 if ((result["return_code"] as? String).equals("SUCCESS")) {
                     val openid = result["openid"]
                     val faceCode = result["face_code"]
@@ -212,30 +235,38 @@ class IotActivity : AppCompatActivity() {
     private fun doActivateStatus(view: View) {
         Api.activeStatus()
                 .subscribe({
+                    val activateStatusResult = "[doActivateStatus] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
                     view.post {
-                        Toast.makeText(this, "[doActivateStatus] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, activateStatusResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.i(TAG, "[doActivateStatus] success: ${it.isActive} ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
+                    Log.i(TAG, "$activateStatusResult ${it.isActive}")
+                    debugTxt.safeText = "$activateStatusResult ${it.isActive}"
                 }, {
+                    val activateStatusResult = "[doActivateStatus] error: ${Log.getStackTraceString(it)}"
                     view.post {
-                        Toast.makeText(this, "[doActivateStatus] error: $it", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, activateStatusResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.e(TAG, "[doActivateStatus] error: $it")
+                    Log.e(TAG, activateStatusResult)
+                    debugTxt.safeText = activateStatusResult
                 })
     }
 
     private fun doActivateDeviceByIoT(view: View) {
         Api.activateDeviceByIoT(DeviceInfo.APP_ID)
                 .subscribe({
+                    val activateDeviceByIoTResult = "[doActivateDeviceByIoT] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
                     view.post {
-                        Toast.makeText(this, "[doActivateDeviceByIoT] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, activateDeviceByIoTResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.i(TAG, "[doActivateDeviceByIoT] success: ${it.invokeToken} ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
+                    Log.i(TAG, "$activateDeviceByIoTResult ${it.invokeToken}")
+                    debugTxt.safeText = "$activateDeviceByIoTResult ${it.invokeToken}"
                 }, {
+                    val activateDeviceByIoTResult = "[doActivateDeviceByIoT] error: ${Log.getStackTraceString(it)}"
                     view.post {
-                        Toast.makeText(this, "[doActivateDeviceByIoT] error: $it", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, activateDeviceByIoTResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.e(TAG, "[doActivateDeviceByIoT] error: $it")
+                    Log.e(TAG, activateDeviceByIoTResult)
+                    debugTxt.safeText = activateDeviceByIoTResult
                 })
     }
 
@@ -248,31 +279,39 @@ class IotActivity : AppCompatActivity() {
         val size = zoomArr[zoomIndex % zoomArr.size]
         jsonConfig.put(IPCInvokerTask_InitGlobalConfig.UI_ZOOM, size)
         Api.initGlobalConfig(jsonConfig.toString()).subscribe({
+            val initGlobalConfigResult = "[doInitGlobalConfig] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
             view.post {
                 Toast.makeText(this, "[doInitGlobalConfig] success: zoom set to ${size}, 下次启动小程序生效", Toast.LENGTH_SHORT).show()
                 zoomIndex++
             }
-            Log.i(TAG, "[doInitGlobalConfig] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
+            Log.i(TAG, initGlobalConfigResult)
+            debugTxt.safeText = initGlobalConfigResult
         }, {
+            val initGlobalConfigResult = "[doInitGlobalConfig] error: ${Log.getStackTraceString(it)}"
             view.post {
-                Toast.makeText(this, "[doInitGlobalConfig] error: $it", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, initGlobalConfigResult, Toast.LENGTH_SHORT).show()
             }
-            Log.e(TAG, "[doInitGlobalConfig] error: $it")
+            Log.e(TAG, initGlobalConfigResult)
+            debugTxt.safeText = initGlobalConfigResult
         })
     }
 
     private fun doPreloadRuntime(view: View) {
         Api.preloadRuntime()
                 .subscribe({
+                    val preloadRuntimeResult = "[doPreloadRuntime] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
                     view.post {
-                        Toast.makeText(this, "[doPreloadRuntime] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, preloadRuntimeResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.i(TAG, "[doPreloadRuntime] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
+                    Log.i(TAG, preloadRuntimeResult)
+                    debugTxt.safeText = preloadRuntimeResult
                 }, {
+                    val preloadRuntimeResult = "[doPreloadRuntime] error: ${Log.getStackTraceString(it)}"
                     view.post {
-                        Toast.makeText(this, "[doPreloadRuntime] error: $it", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, preloadRuntimeResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.e(TAG, "[doPreloadRuntime] error: $it")
+                    Log.e(TAG, preloadRuntimeResult)
+                    debugTxt.safeText = preloadRuntimeResult
                 })
     }
 
@@ -293,30 +332,38 @@ class IotActivity : AppCompatActivity() {
     private fun doLaunchWxaApp(view: View, appType: Int = 0) {
         Api.launchWxaApp(MP_APPID, path = MP_PATH, appType = appType)
                 .subscribe({
+                    val launchWxaResult = "[doLaunchWxaApp] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
                     view.post {
-                        Toast.makeText(this, "[doLaunchWxaApp] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, launchWxaResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.i(TAG, "[doLaunchWxaApp] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
+                    Log.i(TAG, launchWxaResult)
+                    debugTxt.safeText = launchWxaResult
                 }, {
+                    val launchWxaResult = "[doLaunchWxaApp] error: ${Log.getStackTraceString(it)}"
                     view.post {
-                        Toast.makeText(this, "[doLaunchWxaApp] error: $it", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, launchWxaResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.e(TAG, "[doLaunchWxaApp] error: $it")
+                    Log.e(TAG, launchWxaResult)
+                    debugTxt.safeText = launchWxaResult
                 })
     }
 
     private fun doCloseWxaApp(view: View) {
         Api.closeWxaApp(MP_APPID)
                 .subscribe({
+                    val closeWxaResult = "[doCloseWxaApp] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
                     view.post {
-                        Toast.makeText(this, "[doCloseWxaApp] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, closeWxaResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.i(TAG, "[doCloseWxaApp] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
+                    Log.i(TAG, closeWxaResult)
+                    debugTxt.safeText = closeWxaResult
                 }, {
+                    val closeWxaResult = "[doCloseWxaApp] error: ${Log.getStackTraceString(it)}"
                     view.post {
-                        Toast.makeText(this, "[doCloseWxaApp] error: $it", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, closeWxaResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.e(TAG, "[doCloseWxaApp] error: $it")
+                    Log.e(TAG, closeWxaResult)
+                    debugTxt.safeText = closeWxaResult
                 })
     }
 
@@ -327,45 +374,57 @@ class IotActivity : AppCompatActivity() {
             return
         }
         Api.initWxPayInfo(getFacePayInfo()).subscribe({
+            val initWxPayInfoResult = "[doInitWxPayInfo] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
             view.post {
-                Toast.makeText(this, "[doInitWxPayInfo] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, initWxPayInfoResult, Toast.LENGTH_SHORT).show()
             }
-            Log.i(TAG, "[doInitWxPayInfo] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
+            Log.i(TAG, initWxPayInfoResult)
+            debugTxt.safeText = initWxPayInfoResult
         }, {
+            val initWxPayInfoResult = "[doInitWxPayInfo] error: ${Log.getStackTraceString(it)}"
             view.post {
-                Toast.makeText(this, "[doInitWxPayInfo] error: $it", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, initWxPayInfoResult, Toast.LENGTH_SHORT).show()
             }
-            Log.e(TAG, "[doInitWxPayInfo] error: $it")
+            Log.e(TAG, initWxPayInfoResult)
+            debugTxt.safeText = initWxPayInfoResult
         })
     }
 
     private fun doAuthorizeByWxFacePay(view: View) {
         Api.authorizeByWxFacePay()
                 .subscribe({
+                    val authorizeResult = "[doAuthorizeByWxFacePay] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
                     view.post {
-                        Toast.makeText(this, "[doAuthorizeByWxFacePay] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, authorizeResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.i(TAG, "[doAuthorizeByWxFacePay] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
+                    Log.i(TAG, "$authorizeResult ${it.resultJson}")
+                    debugTxt.safeText = "$authorizeResult ${it.resultJson}"
                 }, {
+                    val authorizeResult = "[doAuthorizeByWxFacePay] error: ${Log.getStackTraceString(it)}"
                     view.post {
-                        Toast.makeText(this, "[doAuthorizeByWxFacePay] error: $it", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, authorizeResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.e(TAG, "[doAuthorizeByWxFacePay] error: $it")
+                    Log.e(TAG, authorizeResult)
+                    debugTxt.safeText = authorizeResult
                 })
     }
 
     private fun doDeauthorize(view: View) {
         Api.deauthorize()
                 .subscribe({
+                    val deauthorizeResult = "[doDeauthorize] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
                     view.post {
-                        Toast.makeText(this, "[doDeauthorize] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, deauthorizeResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.i(TAG, "[doDeauthorize] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
+                    Log.i(TAG, deauthorizeResult)
+                    debugTxt.safeText = deauthorizeResult
                 }, {
+                    val deauthorizeResult = "[doDeauthorize] error: ${Log.getStackTraceString(it)}"
                     view.post {
-                        Toast.makeText(this, "[doDeauthorize] error: $it", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, deauthorizeResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.e(TAG, "[doDeauthorize] error: $it")
+                    Log.e(TAG, deauthorizeResult)
+                    debugTxt.safeText = deauthorizeResult
                 })
     }
 
@@ -375,43 +434,56 @@ class IotActivity : AppCompatActivity() {
     private fun doLaunchWxaAppByScan(view: View) {
         Api.launchWxaAppByScan(URL_SCAN)
                 .subscribe({
+                    val launchResult = "[doLaunchWxaAppByScan] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
                     view.post {
-                        Toast.makeText(this, "[doLaunchWxaAppByScan] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, launchResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.i(TAG, "[doLaunchWxaAppByScan] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
+                    Log.i(TAG, launchResult)
+                    debugTxt.safeText = launchResult
                 }, {
+                    val launchResult = "[doLaunchWxaAppByScan] error: ${Log.getStackTraceString(it)}"
                     view.post {
-                        Toast.makeText(this, "[doLaunchWxaAppByScan] error: $it", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, launchResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.e(TAG, "[doLaunchWxaAppByScan] error: $it")
+                    Log.e(TAG, launchResult)
+                    debugTxt.safeText = launchResult
                 })
     }
 
     //预热启动小程序
     private fun doWarmLaunch(view: View) {
-        Log.i(TAG, "[doWarmLaunch] appid: $MP_APPID")
+        Log.i(TAG, "[doWarmLaunch] appId: $MP_APPID")
         Api.warmLaunch(MP_APPID)
                 .subscribe({ it ->
+                    val warmLaunchResult = "[doWarmLaunch] success: 预热小程序 ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
+                    debugTxt.safeText = warmLaunchResult
                     view.post {
-                        Toast.makeText(this, "[doWarmLaunch] success: 预热小程序 ${it.baseResponse.errCode} ${it.baseResponse.errMsg}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, warmLaunchResult, Toast.LENGTH_SHORT).show()
                         AlertDialog.Builder(this).setTitle("预热完成")
-                                .setPositiveButton("启动小程序", { _, _ ->
-                                    Api.launchWxaApp(MP_APPID, MP_PATH, appType = 0).subscribe({ resp ->
-                                        Log.i(TAG, "[doWarmLaunch] success: $resp")
+                                .setPositiveButton("启动小程序") { _, _ ->
+                                    Api.launchWxaApp(MP_APPID, MP_PATH, appType = 0).subscribe({
+                                        val launchResult = "[doLaunch] success: 启动小程序 ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
+                                        Log.i(TAG, launchResult)
+                                        debugTxt.safeText = launchResult
                                     }, {
-                                        Log.e(TAG, "[doWarmLaunch] error: $it")
+                                        val launchResult = "[doLaunch] error: 启动小程序 ${Log.getStackTraceString(it)}"
+                                        Log.e(TAG, launchResult)
+                                        debugTxt.safeText = launchResult
                                     })
-                                })
-                                .setNegativeButton("取消", { _, _ ->
-                                    Log.e(TAG, "[doWarmLaunch] cancel")
-                                }).show()
+                                }
+                            .setNegativeButton("取消") { _, _ ->
+                                Log.e(TAG, "[doLaunch] cancel")
+                                debugTxt.safeText = "[doLaunch] cancel"
+                            }.show()
                     }
-                    Log.i(TAG, "[doWarmLaunch] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
+                    Log.i(TAG, warmLaunchResult)
                 }, {
+                    val warmLaunchResult = "[doWarmLaunch] error: 预热小程序 ${Log.getStackTraceString(it)}"
                     view.post {
-                        Toast.makeText(this, "[doWarmLaunch] error: $it", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, warmLaunchResult, Toast.LENGTH_SHORT).show()
                     }
-                    Log.e(TAG, "[doWarmLaunch] error: $it")
+                    Log.e(TAG, warmLaunchResult)
+                    debugTxt.safeText = warmLaunchResult
                 })
     }
 
