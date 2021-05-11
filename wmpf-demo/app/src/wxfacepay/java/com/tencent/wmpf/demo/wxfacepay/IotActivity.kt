@@ -181,8 +181,8 @@ class IotActivity : AppCompatActivity() {
 
                     // javayhu 注意这里的mch_id一定要传，不能支付可能就失败了，虽然这个参数在前面的info中已经有了，但是pay的时候还是要传过去才行
                     val params = hashMapOf(
-                            "mch_id" to "1900007081" as Any, //"商户号"  1900007081 / 1900008081
-                            "total_fee" to "10" as Any, // "订单金额(数字)"，单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
+                            "mch_id" to "1900007081" as Any, //"商户号"  1900007081 / 1900008001
+                            "total_fee" to "1" as Any, // "订单金额(数字)"，单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
                             "out_trade_no" to out_trade_no as Any, //"商户订单号"，须与调用支付接口时字段一致，该字段在在face_code_type为"1"时可不填，为"0"时必填
                             "openid" to openid as Any,
                             "face_code" to faceCode as Any
@@ -224,10 +224,10 @@ class IotActivity : AppCompatActivity() {
                 "face_authtype" to "FACEPAY" as Object,
                 "authinfo" to authInfo as Object,
                 "appid" to "wx64b7714cf1f64585" as Object, //"商户号绑定的公众号/小程序"  wx2b029c08a6232582 / wx64b7714cf1f64585
-                "mch_id" to "1900008081" as Object, //"商户号"  1900007081 / 1900008081
+                "mch_id" to "1900007081" as Object, //"商户号"  1900007081 / 1900008001
                 "store_id" to "12345" as Object, //"门店编号"
                 "out_trade_no" to out_trade_no as Object, //"商户订单号"，须与调用支付接口时字段一致，该字段在在face_code_type为"1"时可不填，为"0"时必填
-                "total_fee" to "10" as Object, // "订单金额(数字)"，单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
+                "total_fee" to "1" as Object, // "订单金额(数字)"，单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
                 "ignore_update_pay_result" to "1" as Object //不需要商户App更新支付结果
         )
     }

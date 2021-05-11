@@ -89,8 +89,8 @@ class WxFacePayContentProvider : ContentProvider() {
             if (!openid.isNullOrEmpty() && !faceCode.isNullOrEmpty()) {
                 val outTradeNo = System.currentTimeMillis().toString()
                 val params = hashMapOf(
-                        "mch_id" to "1900007081" as Any, //"商户号"  1900007081 / 1900008081
-                        "total_fee" to "10" as Any, // "订单金额(数字)"，单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
+                        "mch_id" to "1900007081" as Any, //"商户号"  1900007081 / 1900008001
+                        "total_fee" to "1" as Any, // "订单金额(数字)"，单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
                         "out_trade_no" to outTradeNo as Any, //"商户订单号"，须与调用支付接口时字段一致，该字段在在face_code_type为"1"时可不填，为"0"时必填
                         "openid" to openid as Any,
                         "face_code" to faceCode as Any
