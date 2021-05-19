@@ -2,6 +2,7 @@ package com.tencent.wmpf.demo.wxfacepay
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.SystemClock
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
@@ -71,6 +72,10 @@ class IotActivity : AppCompatActivity() {
             doFacePay(view)
         }
 
+        findViewById<Button>(R.id.btn_clear_oauth).setOnClickListener { view ->
+            clearOAuth(view)
+        }
+
         findViewById<Button>(R.id.btn_authorize_face).setOnClickListener { view ->
             doAuthorizeByWxFacePay(view)
         }
@@ -113,7 +118,7 @@ class IotActivity : AppCompatActivity() {
         }
 
     }
-    
+
     private var TextView.safeText: CharSequence?
         get() = text
         set(value) {
@@ -228,8 +233,17 @@ class IotActivity : AppCompatActivity() {
                 "store_id" to "12345" as Object, //"门店编号"
                 "out_trade_no" to out_trade_no as Object, //"商户订单号"，须与调用支付接口时字段一致，该字段在在face_code_type为"1"时可不填，为"0"时必填
                 "total_fee" to "1" as Object, // "订单金额(数字)"，单位分. 该字段在在face_code_type为"1"时可不填，为"0"时必填
-                "ignore_update_pay_result" to "1" as Object //不需要商户App更新支付结果
+                "ignore_update_pay_result" to "1" as Object, //不需要商户App更新支付结果
+                "face_login_need_oauth" to true as Object
         )
+    }
+
+    private fun clearOAuth(view: View) {
+        WxPayFace.getInstance().clearOAuth(emptyMap<String, String>(), object : IWxPayfaceCallback() {
+            override fun response(result: MutableMap<Any?, Any?>?) {
+                debugTxt.safeText = result.toString()
+            }
+        })
     }
 
     private fun doActivateStatus(view: View) {
@@ -391,9 +405,10 @@ class IotActivity : AppCompatActivity() {
     }
 
     private fun doAuthorizeByWxFacePay(view: View) {
+        val start = SystemClock.elapsedRealtime()
         Api.authorizeByWxFacePay()
                 .subscribe({
-                    val authorizeResult = "[doAuthorizeByWxFacePay] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}"
+                    val authorizeResult = "[doAuthorizeByWxFacePay] success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} time cost: ${SystemClock.elapsedRealtime() - start}"
                     view.post {
                         Toast.makeText(this, authorizeResult, Toast.LENGTH_SHORT).show()
                     }
