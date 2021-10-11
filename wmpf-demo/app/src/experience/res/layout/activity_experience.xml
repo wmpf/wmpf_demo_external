@@ -6,8 +6,12 @@
     android:layout_height="match_parent">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:descendantFocusability="beforeDescendants"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:orientation="vertical"
         tools:context=".ui.FastExperienceActivity">
 
@@ -54,11 +58,16 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="启动小程序"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_ticket" />
+            android:text="启动小程序" />
+
+        <Button
+            android:id="@+id/btn_launch_float_wxa_app_quickly"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="浮窗启动小程序" />
 
         <Button
             android:id="@+id/btn_launch_wxa_dev_app"
@@ -68,11 +77,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:text="启动开发版小程序"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_launch_login" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/btn_launch_wxa_pre_app"
@@ -82,11 +87,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:text="启动体验版小程序"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_launch_login" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_console"
@@ -113,6 +114,7 @@
         <TextView
             android:id="@+id/resp_tv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="console:\n" />
     </LinearLayout>
 </ScrollView>
