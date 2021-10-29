@@ -32,6 +32,10 @@ class GuideActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_qa).setOnClickListener {
             startActivity(Intent(this, QAActivity::class.java))
         }
+
+        findViewById<Button>(R.id.btn_music).setOnClickListener {
+            startActivity(Intent(this, WMPFMusicControllerActivity::class.java))
+        }
     }
 
 }

@@ -3,7 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.tencent.wmpf.demo">
 
-    <application android:label="WMPF Launcher Demo" tools:replace="android:label">
+    <application
+        android:label="WMPF Launcher Demo"
+        tools:replace="android:label">
+        <activity
+            android:name=".activity.WMPFMusicControllerActivity"
+            android:exported="false" />
         <activity android:name=".activity.GuideActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

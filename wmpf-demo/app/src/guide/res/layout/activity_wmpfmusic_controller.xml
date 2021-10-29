@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
+
+    <Button
+        android:id="@+id/btn_play_or_pause"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Play Or Pause" />
+
+    <Button
+        android:id="@+id/btn_previous"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Previous" />
+
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Next" />
+
+    <Button
+        android:id="@+id/btn_start_qq_music"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="启动QQ音乐" />
+
+</LinearLayout>
