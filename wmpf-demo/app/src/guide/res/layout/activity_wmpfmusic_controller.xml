@@ -30,4 +30,10 @@
         android:layout_height="48dp"
         android:text="启动QQ音乐" />
 
+    <Button
+        android:id="@+id/is_playing"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="查询是否在播放音乐" />
+
 </LinearLayout>
