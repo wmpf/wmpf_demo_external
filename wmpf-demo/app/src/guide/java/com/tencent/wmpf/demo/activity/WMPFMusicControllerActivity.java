@@ -105,18 +105,7 @@ public class WMPFMusicControllerActivity extends AppCompatActivity {
                 thread.start();
             }
         });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         musicController.addMusicPlayStatusListener(listener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        musicController.removeMusicPlayStatusListener(listener);
     }
 
     @Override
