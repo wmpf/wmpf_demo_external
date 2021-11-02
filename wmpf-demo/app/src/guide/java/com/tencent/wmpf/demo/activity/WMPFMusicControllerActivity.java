@@ -2,19 +2,29 @@ package com.tencent.wmpf.demo.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.tencent.wmpf.cli.api.WMPFClientDefaultExecutor;
 import com.tencent.wmpf.cli.api.WMPFMusicController;
+import com.tencent.wmpf.cli.api.WMPFMusicControllerInterface;
+import com.tencent.wmpf.cli.api.WMPFMusicMetadata;
 import com.tencent.wmpf.demo.Api;
 import com.tencent.wmpf.demo.R;
 
 public class WMPFMusicControllerActivity extends AppCompatActivity {
 
-    private final WMPFClientDefaultExecutor executor = new WMPFClientDefaultExecutor();
-    private final WMPFMusicController musicController = new WMPFMusicController(executor);
+    private static final String TAG = "Demo.WMPFMusicCtrl";
+    private final WMPFMusicController musicController = new WMPFMusicController();
+    private final WMPFMusicControllerInterface.WMPFMusicStatusChangedListener listener
+            = new WMPFMusicControllerInterface.WMPFMusicStatusChangedListener() {
+
+        @Override
+        public void onChanged(WMPFMusicControllerInterface.WMPFMusicPlayStatus newStatus) {
+            Log.i(TAG, "new status = " + newStatus.name());
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +35,8 @@ public class WMPFMusicControllerActivity extends AppCompatActivity {
         Button previousBtn = findViewById(R.id.btn_previous);
         Button nextBtn = findViewById(R.id.btn_next);
         Button startQQMusicBtn = findViewById(R.id.btn_start_qq_music);
-        final Button queryIsPlaying = findViewById(R.id.is_playing);
+        final Button queryIsPlayingBtn = findViewById(R.id.is_playing);
+        Button getPlayingMusicBtn = findViewById(R.id.get_play_info);
 
         playOrPauseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,14 +66,14 @@ public class WMPFMusicControllerActivity extends AppCompatActivity {
             }
         });
 
-        queryIsPlaying.setOnClickListener(new View.OnClickListener() {
+        queryIsPlayingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         final boolean isPlaying = musicController.isPlaying();
-                        queryIsPlaying.post(new Runnable() {
+                        queryIsPlayingBtn.post(new Runnable() {
                             @Override
                             public void run() {
                                 Toast.makeText(WMPFMusicControllerActivity.this,
@@ -77,5 +88,40 @@ public class WMPFMusicControllerActivity extends AppCompatActivity {
             }
         });
 
+        getPlayingMusicBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WMPFMusicMetadata musicMetadata = musicController.getPlayingMetadata();
+                        if (musicMetadata != null) {
+                            Log.i(TAG, "metadata = " + musicMetadata);
+                        } else {
+                            Log.i(TAG, "metadata is null ");
+                        }
+                    }
+                });
+                thread.start();
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        musicController.addMusicPlayStatusListener(listener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        musicController.removeMusicPlayStatusListener(listener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        musicController.release();
     }
 }

@@ -36,4 +36,10 @@
         android:layout_height="48dp"
         android:text="查询是否在播放音乐" />
 
+    <Button
+        android:id="@+id/get_play_info"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="获取播放信息" />
+
 </LinearLayout>
