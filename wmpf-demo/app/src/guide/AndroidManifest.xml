@@ -9,6 +9,9 @@
         <activity
             android:name=".activity.WMPFMusicControllerActivity"
             android:exported="false" />
+        <activity
+            android:name=".activity.WMPFApiActivity"
+            android:exported="false" />
         <activity android:name=".activity.GuideActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
