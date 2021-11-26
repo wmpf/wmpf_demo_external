@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.tencent.wmpf.cli.api.IWMPFLifeCircleListener;
+import com.tencent.wmpf.cli.api.WMPF;
 import com.tencent.wmpf.cli.api.WMPFMusicController;
 import com.tencent.wmpf.cli.api.WMPFMusicControllerInterface;
 import com.tencent.wmpf.cli.api.WMPFMusicMetadata;
@@ -26,11 +28,34 @@ public class WMPFMusicControllerActivity extends AppCompatActivity {
         }
     };
 
+    private final IWMPFLifeCircleListener lifeCircleListener = new IWMPFLifeCircleListener() {
+        @Override
+        public void onAppForeground(String s) {
+
+        }
+
+        @Override
+        public void onAppBackground(String s) {
+
+        }
+
+        @Override
+        public void onAppFinish(String s) {
+
+        }
+
+        @Override
+        public void onWMPFFinish() {
+            Log.i(TAG, "onWMPFFinish");
+            musicController.removeMusicPlayStatusListener(listener);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wmpfmusic_controller);
-
+        WMPF.getInstance().addWMPFLifeCircleListener(lifeCircleListener);
         Button playOrPauseBtn = findViewById(R.id.btn_play_or_pause);
         Button previousBtn = findViewById(R.id.btn_previous);
         Button nextBtn = findViewById(R.id.btn_next);
@@ -112,5 +137,6 @@ public class WMPFMusicControllerActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         musicController.release();
+        WMPF.getInstance().removeWMPFLifeCircleListener(lifeCircleListener);
     }
 }
