@@ -12,4 +12,15 @@
         android:layout_height="48dp"
         android:text="键盘导航控制开关" />
 
+    <Button
+        android:id="@+id/btn_register_make_phone_call_event_handler"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="register make phone call event handler" />
+
+    <Button
+        android:id="@+id/btn_unregister_make_phone_call_event_handler"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="unregister make phone call event handler" />
 </LinearLayout>
