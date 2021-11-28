@@ -29,18 +29,19 @@ public class WMPFMusicControllerActivity extends AppCompatActivity {
     };
 
     private final IWMPFLifeCircleListener lifeCircleListener = new IWMPFLifeCircleListener() {
+
         @Override
-        public void onAppForeground(String s) {
+        public void onMiniProgramForeground(String s) {
 
         }
 
         @Override
-        public void onAppBackground(String s) {
+        public void onMiniProgramBackground(String s) {
 
         }
 
         @Override
-        public void onAppFinish(String s) {
+        public void onMiniProgramDestroy(String s) {
 
         }
 
