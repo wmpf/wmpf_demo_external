@@ -14,7 +14,7 @@ android {
         // WARNING: WXA Apps run on each host AppId could be limited.
         buildConfigField 'String', 'HOST_APPID', "\"wx94ef6bb77b573d05\""
         // TODO: Temp workaround. You should keep the APP_SECRET out from your apk.
-        buildConfigField 'String', 'HOST_APPSECRET', "\"b2fcefb0c24eaa9a243528b0d91ee039\""
+        buildConfigField 'String', 'HOST_APPSECRET', "app_secret"
     }
     signingConfigs {
         debug {
