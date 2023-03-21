@@ -52,8 +52,8 @@ actual object WmpfDeviceSignUpUtil {
     actual fun getSignature(productId: String, deviceId: String, privateKey: String): String {
         requestsCheck()
         val (ec_sign_info_file, ec_sign_info_sha256, ec_binary_sign_file) = createCommonFiles()
-        val privateKeyFile = File("${workingDir}privateKey.${secondsSinceEpoch()}").also { it.autoDelete() }
-        val signFile = File("${workingDir}sign.${secondsSinceEpoch()}").also { it.autoDelete() }
+        val privateKeyFile = File("${workingDir}privateKey.${deviceId}.${secondsSinceEpoch()}").also { it.autoDelete() }
+        val signFile = File("${workingDir}sign.${deviceId}.${secondsSinceEpoch()}").also { it.autoDelete() }
 
         privateKeyFile.writeText(privateKey)
         ec_sign_info_file.writeText("${productId}_$deviceId")
