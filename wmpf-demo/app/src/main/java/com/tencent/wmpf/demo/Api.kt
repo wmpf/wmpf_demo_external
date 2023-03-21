@@ -84,11 +84,11 @@ object Api {
 
                         override fun onCallback(response: WMPFActivateDeviceResponse) {
                             if (isSuccess(response)) {
-                                it.onSuccess(response)
-
                                 if (response != null && !response.invokeToken.isNullOrEmpty()) {
                                     initInvokeToken(response.invokeToken)
                                 }
+
+                                it.onSuccess(response)
                             } else {
                                 it.onError(TaskErrorException(createTaskError(response)))
                             }
