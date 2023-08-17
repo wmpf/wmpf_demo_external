@@ -77,11 +77,10 @@ WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬�
 
 注册后完成后，在设备上运行小程序，只需要以下4步
 
-
 1. 在[Releases Page](https://github.com/wmpf/wmpf_demo_external/releases)下载并安装最新版本的WMPF Service apk。alpha的WMPF apk有界面，方便调试，product的没有界面，可以用在正式使用（系统把应用保活即可）
 2. 在Android Studio中导入运行[wmpf-client-demo](https://github.com/wmpf/wmpf_demo_external/tree/master/wmpf-demo)，切换flavor为experience，并在demo的`首页-快速体验`页面填写小程序的appId和ticket，appId和ticket的获取如下图所示。**注意：快速体验实际上是临时生成了设备信息，用于激活，这组信息权限较低且会失效，因此不应该用于开发环境，更不能用于生产环境。步骤4中有介绍如何注册激活硬件**
 3. 在wmpf-client-demo中输入小程序的AppID，就可以运行和体验小程序了
-4. [注册激活硬件](https://github.com/wmpf/wmpf_demo_external/wiki/%E7%A1%AC%E4%BB%B6%E6%B3%A8%E5%86%8C%E6%AD%A5%E9%AA%A4)，将获取到的信息填入[DeviceInfo.kt](https://github.com/wmpf/wmpf_demo_external/blob/master/wmpf-demo/app/src/main/java/com/tencent/luggage/demo/wxapi/DeviceInfo.kt)及[build.gradle](https://github.com/wmpf/wmpf_demo_external/blob/master/wmpf-demo/app/build.gradle)，设置`DeviceInfo.isInProductionEnv = true`，**切换项目的flavor为guide**，然后修改定制你的wmpf-client！
+4. [注册激活硬件](https://developers.weixin.qq.com/doc/oplatform/Miniprogram_Frame/hardware-register.html)，将获取到的信息填入[DeviceInfo.kt](https://github.com/wmpf/wmpf_demo_external/blob/master/wmpf-demo/app/src/main/java/com/tencent/luggage/demo/wxapi/DeviceInfo.kt)及[build.gradle](https://github.com/wmpf/wmpf_demo_external/blob/master/wmpf-demo/app/build.gradle)，设置`DeviceInfo.isInProductionEnv = true`，**切换项目的flavor为guide**，然后修改定制你的wmpf-client！
 
 <p align="center">
 <img src="https://github.com/wmpf/wmpf_demo_external/blob/master/assets/boost.png" width = "800" alt="boost" align=center />
@@ -91,7 +90,7 @@ WMPF可以应用在各行各业的安卓系统平板电脑、大屏设备等硬�
 <img src="https://github.com/wmpf/wmpf_demo_external/blob/master/assets/wxa_demo.gif" width = "400" alt="gif" align=center />
 </p>
 
-##### 关于flavors构建变体
+#### 关于flavors构建变体
 demo有两种变体，供开发者使用。注意两个变体不能同时安装，否则安装过程会出现INSTALL_FAILED_CONFLICTING_PROVIDE错误
 
 * guide模式：提供API的使用示例，需要激活设备后使用   
@@ -104,15 +103,11 @@ demo有两种变体，供开发者使用。注意两个变体不能同时安装�
 
 ## 📖 文档
 
-项目的[Wiki](https://github.com/wmpf/wmpf_demo_external/wiki)提供了更详细的接入指南，后台API，专有接口，硬件注册步骤等文档
+项目的[官方文档](https://developers.weixin.qq.com/doc/oplatform/Miniprogram_Frame/)提供了更详细的接入指南，后台API，专有接口，硬件注册步骤等文档
 
 ## 🙋 帮助
 
-* 阅读[微信小程序硬件框架接入文档](https://developers.weixin.qq.com/doc/oplatform/Miniprogram_Frame/)和[Q&A](https://github.com/wmpf/wmpf_demo_external/wiki/Q&A)
-
-* 阅读项目[Wiki](https://github.com/wmpf/wmpf_demo_external/wiki)
-
-* 在[issues](https://github.com/wmpf/wmpf_demo_external/issues)中提出任何疑问与建议
+可以在[微信开放社区「硬件服务」板块](https://developers.weixin.qq.com/community/minihome/mixflow/2351405025148862470)发帖反馈
 
 ## ⚖️ License
 
