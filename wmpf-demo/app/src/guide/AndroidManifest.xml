@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.tencent.wmpf.demo">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application android:label="WMPF Launcher Demo" tools:replace="android:label">
         <activity android:name=".activity.GuideActivity">
