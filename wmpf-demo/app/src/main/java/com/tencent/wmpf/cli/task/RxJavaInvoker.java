@@ -33,25 +33,4 @@ public class RxJavaInvoker {
             }
         });
     }
-
-    public static Single<WMPFAuthorizeNoLoginResponse> invokeInitTask(final WMPFAuthorizeNoLoginRequest request) {
-        return Single.create(new SingleOnSubscribe<WMPFAuthorizeNoLoginResponse>() {
-            @Override
-            public void subscribe(final SingleEmitter<WMPFAuthorizeNoLoginResponse> emitter) {
-                final boolean result = WMPFIPCInvoker.invokeAsync(
-                        request,
-                        IPCInvokerTask_AuthorizeNoLogin.class,
-                        new IPCInvokeCallback<WMPFAuthorizeNoLoginResponse>() {
-                            @Override
-                            public void onCallback(WMPFAuthorizeNoLoginResponse response) {
-                                emitter.onSuccess(response);
-                            }
-                        });
-
-                if (!result) {
-                    emitter.onError(new Exception());
-                }
-            }
-        });
-    }
 }

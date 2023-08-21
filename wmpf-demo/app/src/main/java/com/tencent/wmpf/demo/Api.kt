@@ -207,36 +207,6 @@ object Api {
         }
     }
 
-    @Deprecated("Not needed")
-    // wmpf v1.0.3 激活即可保证小程序运行中登录
-    fun authorizeNoLogin(appId: String, ticket: String, scope: String): Single<WMPFAuthorizeNoLoginResponse> {
-        return Single.create {
-            val request = WMPFAuthorizeNoLoginRequest()
-            request.baseRequest = WMPFBaseRequestHelper.checked()
-            request.deviceInfo = ""
-            request.deviceTicket = ""
-            request.ticket = ticket
-            request.appId = appId // OpenSDK AppId for App
-            request.scope = scope
-
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_AuthorizeNoLogin,
-                    WMPFAuthorizeNoLoginRequest, WMPFAuthorizeNoLoginResponse>(
-                    request,
-                    IPCInvokerTask_AuthorizeNoLogin::class.java
-            ) { response ->
-                if (isSuccess(response)) {
-                    it.onSuccess(response)
-                } else {
-                    it.onError(TaskErrorException(createTaskError(response)))
-                }
-            }
-
-            if (!result) {
-                it.onError(Exception("invoke authorizeNoLogin fail"))
-            }
-        }
-    }
-
     fun initWxPayInfo(authInfoMap: Map<String, Object>): Single<WMPFInitWxFacePayInfoResponse> {
         return Single.create {
 
@@ -615,6 +585,85 @@ object Api {
             )
             if (!result) {
                 it.onError(Exception("invoke warmLaunch fail"))
+            }
+        }
+    }
+
+    fun registerMiniprogramDevice(appId: String, modelId: String,
+                                  deviceId: String, snTicket: String): Single<WMPFRegisterMiniProgramDeviceResponse> {
+        return Single.create {
+            val request = WMPFRegisterMiniProgramDeviceRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+                this.appId = appId
+                this.modelId = modelId
+                this.sn = deviceId
+                this.snTicket = snTicket
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_RegisterMiniProgramDevice, WMPFRegisterMiniProgramDeviceRequest, WMPFRegisterMiniProgramDeviceResponse>(
+                request,
+                IPCInvokerTask_RegisterMiniProgramDevice::class.java,
+                object : IPCInvokeCallbackEx<WMPFRegisterMiniProgramDeviceResponse> {
+                    override fun onCallback(response: WMPFRegisterMiniProgramDeviceResponse) {
+                        if (isSuccess(response)) {
+                            it.onSuccess(response)
+                        } else {
+                            it.onError(TaskErrorException(createTaskError(response)))
+                        }
+                    }
+
+                    override fun onBridgeNotFound() {
+                        it.onError(Exception("bridge not found"))
+                    }
+
+                    override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                        if (exception != null) {
+                            it.onError(exception)
+                        } else {
+                            it.onError(java.lang.Exception("null"))
+                        }
+                    }
+                })
+
+            if (!result) {
+                it.onError(Exception("invoke registerMiniprogramDevice fail"))
+            }
+        }
+    }
+
+    fun prefetchDeviceToken(): Single<WMPFPrefetchDeviceTokenResponse> {
+        return Single.create {
+            val request = WMPFPrefetchDeviceTokenRequest().apply {
+                this.baseRequest = WMPFBaseRequestHelper.checked()
+            }
+
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_RegisterMiniProgramDevice, WMPFPrefetchDeviceTokenRequest, WMPFPrefetchDeviceTokenResponse>(
+                request,
+                IPCInvokerTask_RegisterMiniProgramDevice::class.java,
+                object : IPCInvokeCallbackEx<WMPFPrefetchDeviceTokenResponse> {
+                    override fun onCallback(response: WMPFPrefetchDeviceTokenResponse) {
+                        if (isSuccess(response)) {
+                            it.onSuccess(response)
+                        } else {
+                            it.onError(TaskErrorException(createTaskError(response)))
+                        }
+                    }
+
+                    override fun onBridgeNotFound() {
+                        it.onError(Exception("bridge not found"))
+                    }
+
+                    override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                        if (exception != null) {
+                            it.onError(exception)
+                        } else {
+                            it.onError(java.lang.Exception("null"))
+                        }
+                    }
+                })
+
+            if (!result) {
+                it.onError(Exception("invoke prefetchDeviceToken fail"))
             }
         }
     }
