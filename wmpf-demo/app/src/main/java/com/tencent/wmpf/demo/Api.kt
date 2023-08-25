@@ -637,9 +637,9 @@ object Api {
                 this.baseRequest = WMPFBaseRequestHelper.checked()
             }
 
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_RegisterMiniProgramDevice, WMPFPrefetchDeviceTokenRequest, WMPFPrefetchDeviceTokenResponse>(
+            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_PrefetchDeviceToken, WMPFPrefetchDeviceTokenRequest, WMPFPrefetchDeviceTokenResponse>(
                 request,
-                IPCInvokerTask_RegisterMiniProgramDevice::class.java,
+                IPCInvokerTask_PrefetchDeviceToken::class.java,
                 object : IPCInvokeCallbackEx<WMPFPrefetchDeviceTokenResponse> {
                     override fun onCallback(response: WMPFPrefetchDeviceTokenResponse) {
                         if (isSuccess(response)) {
