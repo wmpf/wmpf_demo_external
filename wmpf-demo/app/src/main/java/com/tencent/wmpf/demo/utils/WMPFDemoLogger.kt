@@ -37,7 +37,7 @@ class WMPFDemoLogger(
         }
     }
 
-    fun e(text: String, error: Exception?) {
+    fun e(text: String, error: Exception? = null) {
         var msg = text
         if (error != null) {
             Log.e(tag, "$text: $error")

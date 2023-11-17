@@ -1,28 +1,23 @@
 package com.tencent.wmpf.demo.utils
 
+import android.app.Application
+import android.content.pm.PackageManager
+import android.content.pm.PackageManager.NameNotFoundException
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import android.widget.TextView
+import com.tencent.wmpf.app.WMPFInfo
 import com.tencent.wmpf.cli.api.WMPFClientDefaultExecutor
-import java.util.concurrent.Callable
-import java.util.concurrent.Future
 
 object WMPFDemoUtil {
     private const val TAG = "WMPF.DemoUtil"
-
-    class TextValue(private val view: TextView, private val defaultVal: String = "") {
-        override fun toString(): String {
-            val v = view.text.toString()
-            if (v.isNullOrBlank()) {
-                return defaultVal
-            }
-            return v
-        }
+    private val executor = WMPFClientDefaultExecutor()
+    private val mainHandler: Handler by lazy {
+        Handler(Looper.getMainLooper())
     }
 
-    private val executor = WMPFClientDefaultExecutor()
-
     fun execute(runnable: Runnable) {
-        execute(Callable<Void?> {
+        executor.submit {
             try {
                 runnable.run()
             } catch (throwable: Throwable) {
@@ -34,10 +29,29 @@ object WMPFDemoUtil {
                 throw IllegalStateException(throwable)
             }
             null
-        })
+        }
     }
 
-    fun <T> execute(callable: Callable<T>?): Future<T> {
-        return executor.submit(callable)
+    @Throws(NameNotFoundException::class)
+    fun getWmpfVersionCode(app: Application): Int {
+        val info = app.packageManager.getPackageInfo(WMPFInfo.WMPF_APP_PACKAGE_NAME, 0)
+        return info.versionCode
+    }
+
+    @Throws(NameNotFoundException::class)
+    fun getWmpfVersion(app: Application): String? {
+        val info = app.packageManager.getApplicationInfo(
+            WMPFInfo.WMPF_APP_PACKAGE_NAME,
+            PackageManager.GET_META_DATA
+        )
+        return info.metaData.getString(WMPFInfo.WMPF_APP_PACKAGE_NAME + ".BuildInfo.BUILD_WMPF_VERSION_NAME")
+    }
+
+    fun runOnUiThread(runnable: Runnable) {
+        if (Looper.getMainLooper().thread === Thread.currentThread()) {
+            runnable.run()
+        } else {
+            mainHandler.post(runnable)
+        }
     }
 }

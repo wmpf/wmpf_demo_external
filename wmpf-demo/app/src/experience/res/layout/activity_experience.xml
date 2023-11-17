@@ -36,7 +36,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:hint="小程序启动页面路径（可选项，默认启动首页）" />
+            android:hint="小程序启动页面路径（可选，默认为首页）" />
 
         <Switch
             android:id="@+id/switch_landscape"

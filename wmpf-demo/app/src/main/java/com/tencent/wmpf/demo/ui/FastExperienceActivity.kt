@@ -9,21 +9,23 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+
 import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mmkv.MMKV
-import com.tencent.wmpf.cli.task.*
-import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
-import com.tencent.wmpf.demo.Api
+import com.tencent.wmpf.cli.api.WMPF
+import com.tencent.wmpf.cli.api.WMPFAccountApi
+import com.tencent.wmpf.cli.api.WMPFApiException
+import com.tencent.wmpf.cli.model.WMPFStartAppParams
+import com.tencent.wmpf.cli.model.WMPFStartAppParams.WMPFAppType
 import com.tencent.wmpf.demo.R
-import com.tencent.wmpf.demo.RequestsRepo
-import com.tencent.wmpf.proto.*
-import java.util.*
+import com.tencent.wmpf.demo.utils.WMPFDemoLogger
+import com.tencent.wmpf.demo.utils.WMPFDemoUtil.execute
 
 class FastExperienceActivity : AppCompatActivity() {
+    private lateinit var logger: WMPFDemoLogger
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,170 +36,83 @@ class FastExperienceActivity : AppCompatActivity() {
             requestPermission(this)
         }
 
-//        findViewById<EditText>(R.id.et_launch_app_id).setText("wxe5f52902cf4de896")
-        findViewById<EditText>(R.id.et_app_secret).setText(DeviceInfo.APP_SECRET)
+        logger = WMPFDemoLogger(TAG, this, findViewById(R.id.tv_device_info_resp))
+
         findViewById<EditText>(R.id.et_app_id).setText(DeviceInfo.APP_ID)
 
+
+        val appIdView = findViewById<TextView>(R.id.et_launch_app_id)
+
+        val kv = MMKV.mmkvWithID(TAG)
+        val savedAppId = kv.getString("appId", "")
+        if (!savedAppId.isNullOrBlank()) {
+            appIdView.text = savedAppId
+        }
+
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
-            launchWxa()
+            val appId = appIdView.text.toString()
+            kv.putString("appId", appId)
+            execute {
+                launchMiniProgram(appId)
+            }
         }
 
         findViewById<Button>(R.id.btn_launch_login).setOnClickListener {
-            Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion, DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
-                    .flatMap {
-                        Api.authorize()
-                    }
-                    .subscribe({
-                        Log.e(TAG, "success: ${it.baseResponse.errCode}")
-                    }, {
-                        Log.e(TAG, "error: $it")
-                    })
-        }
-
-        val appIdEditView = findViewById<EditText>(R.id.et_launch_app_id)
-        val ticketEditView = findViewById<EditText>(R.id.et_ticket)
-        val kv = MMKV.mmkvWithID(TAG)
-        if (!kv.getString("appId", "").isNullOrBlank() && !kv.getString("ticket", "").isNullOrBlank()) {
-            appIdEditView.setText(kv.getString("appId", ""))
-            ticketEditView.setText(kv.getString("ticket", ""))
-        }
-        val respTextView = findViewById<TextView>(R.id.tv_device_info_resp)
-
-        findViewById<Button>(R.id.btn_launch_wxa_app_quickly).setOnClickListener {
-            respTextView.text = ""
-            val appId = appIdEditView.text.toString().trim()
-            val ticket = ticketEditView.text.toString().trim()
-            kv.putString("appId", appId)
-            kv.putString("ticket", ticket)
-            RequestsRepo.getTestDeviceInfo(ticket, appId, DeviceInfo.APP_ID) {
-                respTextView.post {
-                    respTextView.text = it
-                    val temp = it
-                    if (temp.toLowerCase(Locale.ROOT).contains("error")) {
-                        DeviceInfo.reset()
-                        return@post
-                    }
-                    var consoleText = respTextView.text.toString() + "\n" + "--------激活设备中--------\n"
-                    respTextView.text = consoleText
-                    Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
-                            DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
-                            .subscribe({
-                                Log.i(TAG, "success: $it")
-                                respTextView.post {
-                                    consoleText += String.format("init finish, err %d",
-                                            it?.baseResponse?.errCode)
-                                    if (it.invokeToken == null) {
-                                        consoleText += "\nactivate device fail for a null token, may ticket is expired\n"
-                                        respTextView.text = consoleText
-                                    } else {
-                                        val invokeToken = it.invokeToken
-                                        consoleText += "\ninvoke authorizeNoLogin\n"
-                                        respTextView.text = consoleText
-                                        Api.launchWxaApp(optLaunchAppId(), "").subscribe({
-                                            Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
-                                        }, {
-                                            Log.e(TAG, "error: $it")
-                                        })
-                                    }
-                                }
-
-                            }, {
-                                Log.e(TAG, "error: $it")
-                                respTextView.post {
-                                    var errorMsg = it.message ?: ""
-                                    if (errorMsg.contains("bridge not found")) {
-                                        errorMsg += ", 确认WMPF框架处于运行状态"
-                                    }
-                                    consoleText += "激活设备失败, error: $errorMsg"
-
-                                    respTextView.text = consoleText
-
-                                }
-                            })
+            logger.clear()
+            execute {
+                try {
+                    WMPF.getInstance().accountApi.login(WMPFAccountApi.WMPFLoginUIStyle.FULLSCREEN)
+                    logger.i("扫码登录成功")
+                } catch (e: WMPFApiException) {
+                    logger.e("扫码登录失败", e)
                 }
             }
         }
 
         findViewById<Button>(R.id.btn_launch_wxa_dev_app).setOnClickListener {
-            launchDevWxaApp()
+            val appId = appIdView.text.toString()
+            kv.putString("appId", appId)
+            execute {
+                launchMiniProgram(appId, WMPFAppType.APP_TYPE_DEV)
+            }
         }
 
         findViewById<Button>(R.id.btn_launch_wxa_pre_app).setOnClickListener {
-            /**
-            启动开发版小程序必须先登录
-            0   // 正式版
-            1   // 开发版
-            2   // 体验
-             **/
-            Api.launchWxaApp(optLaunchAppId(), "", 1)
-                    .subscribe({
-                        Log.e(TAG, "success: $it")
-                    }, {
-                        Log.e(TAG, "error: $it")
-                    })
+            val appId = appIdView.text.toString()
+            kv.putString("appId", appId)
+            execute {
+                launchMiniProgram(appId, WMPFAppType.APP_TYPE_EXP)
+            }
         }
 
         findViewById<Button>(R.id.btn_launch_remote_debug).setOnClickListener {
-            val request = WMPFLaunchWxaAppByQRCodeRequest()
-            request.baseRequest = WMPFBaseRequestHelper.checked()
-            request.baseRequest.clientApplicationId = ""
-            LaunchWxaAppByScanInvoker.launchWxaByScanUI(this, request)
-        }
-
-    }
-
-    @SuppressLint("CheckResult")
-    private fun launchWxa() {
-        Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion, DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
-                .flatMap {
-                    Api.launchWxaApp(optLaunchAppId(), "")
+            logger.clear()
+            execute {
+                try {
+                    WMPF.getInstance().miniProgramApi.launchByQRScanCode()
+                } catch (e: WMPFApiException) {
+                    logger.e("扫码打开小程序失败", e)
                 }
-                .subscribe({
-                    Log.e(TAG, "success: $it")
-                }, {
-                    Log.e(TAG, "error: $it")
-                })
-    }
-
-    /**
-    启动开发版小程序必须先登录
-    0   // 正式版
-    1   // 开发版
-    2   // 体验
-     **/
-    @SuppressLint("CheckResult")
-    private fun launchDevWxaApp() {
-        Api.launchWxaApp(optLaunchAppId(), "", 1)
-                .subscribe({
-                    Log.e(TAG, "success: $it")
-                }, {
-                    Log.e(TAG, "error: $it")
-                })
-    }
-
-    private fun optLaunchAppId(): String {
-        var launchAppId = findViewById<EditText>(R.id.et_launch_app_id).text.toString()
-        if (launchAppId == null || launchAppId.isEmpty()) {
-            launchAppId = "wxe5f52902cf4de896"
+            }
         }
-        return launchAppId
     }
 
-    private fun optAppSecret(): String {
-        var appSecret = findViewById<EditText>(R.id.et_app_secret).text.toString()
-        if (appSecret == null || appSecret.isEmpty()) {
-            appSecret = DeviceInfo.APP_SECRET
+    private fun launchMiniProgram(appId: String, type: WMPFAppType = WMPFAppType.APP_TYPE_RELEASE) {
+        logger.clear()
+        if (type == WMPFAppType.APP_TYPE_EXP || type == WMPFAppType.APP_TYPE_DEV) {
+            if (!WMPF.getInstance().accountApi.isLogin) {
+                logger.e("启动${if (type === WMPFAppType.APP_TYPE_EXP) "体验" else "开发"}版小程序请先登录")
+                return
+            }
         }
-
-        return appSecret
-    }
-
-    private fun optAppId(): String {
-        var appId = findViewById<EditText>(R.id.et_app_id).text.toString()
-        if (appId == null || appId.isEmpty()) {
-            appId = DeviceInfo.APP_ID
+        logger.i("启动小程序：$appId")
+        try {
+            WMPF.getInstance().miniProgramApi.launchMiniProgram(
+                WMPFStartAppParams(appId, "", type)
+            )
+        } catch (e: WMPFApiException) {
+            logger.e("启动小程序失败", e)
         }
-        return appId
     }
 
     private fun checkPermission(context: Context): Boolean {
@@ -220,14 +135,17 @@ class FastExperienceActivity : AppCompatActivity() {
 
     private fun requestPermission(context: Activity) {
         try {
-            ActivityCompat.requestPermissions(context, arrayOf(
+            ActivityCompat.requestPermissions(
+                context, arrayOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.CAMERA,
-                    Manifest.permission.READ_PHONE_STATE),
-                    0)
+                    Manifest.permission.READ_PHONE_STATE
+                ),
+                0
+            )
         } catch (e: Exception) {
 
         }

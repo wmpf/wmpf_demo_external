@@ -6,46 +6,32 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.tencent.mm.ipcinvoker.IPCInvokeCallback;
 import com.tencent.mm.ipcinvoker.annotation.Nullable;
 import com.tencent.mm.ipcinvoker.tools.Log;
-import com.tencent.wmpf.cli.task.pb.WMPFIPCInvoker;
-import com.tencent.wmpf.proto.WMPFLaunchWxaAppByQRCodeRequest;
-import com.tencent.wmpf.proto.WMPFLaunchWxaAppByQRCodeResponse;
+import com.tencent.wmpf.cli.api.WMPF;
+import com.tencent.wmpf.cli.api.WMPFApiException;
+import com.tencent.wmpf.demo.utils.WMPFDemoUtil;
 import com.uuzuche.lib_zxing.activity.CaptureActivity;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 
 public class LaunchWxaAppByScanInvoker extends Activity {
-    private static final String TAG = "MicroMsg.ScanProxyUI";
+    private static final String TAG = "WMPF.ScanProxyUI";
 
-    private static final String KEY_REQ = "key_req";
-    public static void launchWxaByScanUI(@NonNull Context context,
-                                  @NonNull WMPFLaunchWxaAppByQRCodeRequest request) {
+    public static void launchWxaByScanUI(@NonNull Context context) {
         Intent intent = new Intent(context, LaunchWxaAppByScanInvoker.class);
-        intent.putExtra(KEY_REQ, request);
         context.startActivity(intent);
     }
-
-    private WMPFLaunchWxaAppByQRCodeRequest request;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        request = getIntent().getParcelableExtra(KEY_REQ);
-
-        if (request == null) {
-            Log.e(TAG, "request is null,return");
-            finish();
-            return;
-        }
-
         ZXingLibrary.initDisplayOpinion(this);
         doScanImpl();
     }
 
     private final static int REQ_CODE = 100;
+
     private void doScanImpl() {
         Intent intent = new Intent(this, CaptureActivity.class);
         startActivityForResult(intent, REQ_CODE);
@@ -63,17 +49,14 @@ public class LaunchWxaAppByScanInvoker extends Activity {
                     case CodeUtils.RESULT_SUCCESS: {
                         String rawData = bundle.getString(CodeUtils.RESULT_STRING);
                         Log.i(TAG, "rawData:%s", rawData);
-                        request.rawData = rawData;
-                        WMPFIPCInvoker.invokeAsync(
-                                request,
-                                IPCInvokerTask_LaunchWxaAppByQrCode.class,
-                                new IPCInvokeCallback<WMPFLaunchWxaAppByQRCodeResponse>() {
-                                    @Override
-                                    public void onCallback(WMPFLaunchWxaAppByQRCodeResponse response) {
-                                        Log.i(TAG, "response:%s", response);
-                                        finish();
-                                    }
-                                });
+
+                        WMPFDemoUtil.INSTANCE.execute(() -> {
+                            try {
+                                WMPF.getInstance().getMiniProgramApi().launchByQRScanCode(rawData);
+                            } catch (WMPFApiException e) {
+                                Log.e(TAG, "launchByQRScanCode fail: " + e);
+                            }
+                        });
                         break;
                     }
 

@@ -49,88 +49,109 @@ class DetailActivity : AppCompatActivity() {
 
         // Step 1.1
         findViewById<Button>(R.id.btn_init_wmpf_activate_device).setOnClickListener {
-            Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
-                            DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
-                    .subscribe({
-                        Log.i(TAG, "success: token = ${it.invokeToken}")
-                        postToMainThread(Runnable {
-                            Toast.makeText(this, String.format("init finish, err %d",
-                                    it?.baseResponse?.errCode), Toast.LENGTH_SHORT).show()
-                        })
-                    }, {
-                        Log.e(TAG, "error: $it")
+            Api.activateDevice(
+                DeviceInfo.productId, DeviceInfo.keyVersion,
+                DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID
+            )
+                .subscribe({
+                    Log.i(TAG, "success: token = ${it.invokeToken}")
+                    postToMainThread(Runnable {
+                        Toast.makeText(
+                            this, String.format(
+                                "init finish, err %d",
+                                it?.baseResponse?.errCode
+                            ), Toast.LENGTH_SHORT
+                        ).show()
                     })
+                }, {
+                    Log.e(TAG, "error: $it")
+                })
         }
 
         // Step 1.2
         findViewById<Button>(R.id.btn_init_wmpf).setOnClickListener {
             // Initialize wmpf runtime first
             Api.authorize()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
-                    .flatMap { response ->
-                        Log.e(TAG, "init response callback %d, code=%s".format(response.baseResponse.errCode, response.oauthCode))
-                        if (response.baseResponse.errCode != 0) {
-                            throw Throwable("err, ret:${response.baseResponse.errCode}")
-                        } else {
-                            OpenSdkTestUtil.getOAuthInfo(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET, response.oauthCode)
-                                    .flatMap { jsonObject ->
-                                        val openId = jsonObject.getString("openid")
-                                        val accessToken = jsonObject.getString("access_token")
-                                        OpenSdkTestUtil.getUserInfo(openId, accessToken)
-                                    }
-                        }
-                    }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ jsonObject ->
-                        Log.d(TAG, "userInfo=$jsonObject")
-                        updateUserInfo(
-                                jsonObject.getString("openid"),
-                                jsonObject.getString("nickname"),
-                                jsonObject.getInt("sex"),
-                                jsonObject.getString("province"),
-                                jsonObject.getString("city"),
-                                jsonObject.getString("country"),
-                                jsonObject.getString("unionid"),
-                                jsonObject.getString("headimgurl"),
-                                getIMEI()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .flatMap { response ->
+                    Log.e(
+                        TAG,
+                        "init response callback %d, code=%s".format(
+                            response.baseResponse.errCode,
+                            response.oauthCode
                         )
-                    }, {
-                        Log.e(TAG, "fail ${it.message}")
-                    })
+                    )
+                    if (response.baseResponse.errCode != 0) {
+                        throw Throwable("err, ret:${response.baseResponse.errCode}")
+                    } else {
+                        OpenSdkTestUtil.getOAuthInfo(
+                            DeviceInfo.APP_ID,
+                            DeviceInfo.APP_SECRET,
+                            response.oauthCode
+                        )
+                            .flatMap { jsonObject ->
+                                val openId = jsonObject.getString("openid")
+                                val accessToken = jsonObject.getString("access_token")
+                                OpenSdkTestUtil.getUserInfo(openId, accessToken)
+                            }
+                    }
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ jsonObject ->
+                    Log.d(TAG, "userInfo=$jsonObject")
+                    updateUserInfo(
+                        jsonObject.getString("openid"),
+                        jsonObject.getString("nickname"),
+                        jsonObject.getInt("sex"),
+                        jsonObject.getString("province"),
+                        jsonObject.getString("city"),
+                        jsonObject.getString("country"),
+                        jsonObject.getString("unionid"),
+                        jsonObject.getString("headimgurl"),
+                        getIMEI()
+                    )
+                }, {
+                    Log.e(TAG, "fail ${it.message}")
+                })
         }
 
         findViewById<Button>(R.id.btn_wmpf_runtime_preload).setOnClickListener {
             Api.preloadRuntime()
-                    .subscribe({
-                        Log.i(TAG, "success: $it")
-                    }, {
-                        Log.e(TAG, "error: $it")
-                    })
+                .subscribe({
+                    Log.i(TAG, "success: $it")
+                }, {
+                    Log.e(TAG, "error: $it")
+                })
         }
 
         findViewById<Button>(R.id.btn_warm_launch).setOnClickListener { view ->
 
             val appId = "wxe5f52902cf4de896"
             Api.warmLaunch(appId)
-                    .subscribe({ it ->
-                        view.post {
-                            Toast.makeText(this, "success: 预热小程序 ${it.baseResponse.errCode} ${it.baseResponse.errMsg}", Toast.LENGTH_LONG).show()
-                            AlertDialog.Builder(this).setTitle("预热完成").setNegativeButton("启动小程序") { _, _ ->
+                .subscribe({ it ->
+                    view.post {
+                        Toast.makeText(
+                            this,
+                            "success: 预热小程序 ${it.baseResponse.errCode} ${it.baseResponse.errMsg}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        AlertDialog.Builder(this).setTitle("预热完成")
+                            .setNegativeButton("启动小程序") { _, _ ->
                                 Api.launchWxaApp(appId, "").subscribe({ resp ->
                                     Log.i(TAG, "success: $resp")
                                 }, {
                                     Log.e(TAG, "error: $it")
                                 })
                             }.show()
-                        }
-                        Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
-                    }, {
-                        view.post {
-                            Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
-                        }
-                        Log.e(TAG, "error: $it")
-                    })
+                    }
+                    Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
+                }, {
+                    view.post {
+                        Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
+                    }
+                    Log.e(TAG, "error: $it")
+                })
         }
 
         // Step 2.1
@@ -139,27 +160,27 @@ class DetailActivity : AppCompatActivity() {
 
                 // Start wxa app
                 Api.launchWxaApp("wxe5f52902cf4de896", "", landsapeMode = 0)
-                        .subscribe({
-                            Log.i(TAG, "success: $it")
-                        }, {
-                            Log.e(TAG, "error: $it")
-                        })
+                    .subscribe({
+                        Log.i(TAG, "success: $it")
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
             }.setNeutralButton("landscape compat") { _, _ ->
                 // Start wxa app
                 Api.launchWxaApp("wxe5f52902cf4de896", "", landsapeMode = 2)
-                        .subscribe({
-                            Log.i(TAG, "success: $it")
-                        }, {
-                            Log.e(TAG, "error: $it")
-                        })
+                    .subscribe({
+                        Log.i(TAG, "success: $it")
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
             }.setPositiveButton("landscape") { _, _ ->
                 // Start wxa app
                 Api.launchWxaApp("wxe5f52902cf4de896", "", landsapeMode = 1)
-                        .subscribe({
-                            Log.i(TAG, "success: $it")
-                        }, {
-                            Log.e(TAG, "error: $it")
-                        })
+                    .subscribe({
+                        Log.i(TAG, "success: $it")
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
             }.show()
         }
 
@@ -167,35 +188,28 @@ class DetailActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_launch_wxa_app_by_target_path).setOnClickListener {
             // Start wxa target path app
             Api.launchWxaApp("wxe5f52902cf4de896", "page/component/pages/view/view")
-                    .subscribe({
-                        Log.i(TAG, "success: $it")
-                    }, {
-                        Log.e(TAG, "error: $it")
-                    })
+                .subscribe({
+                    Log.i(TAG, "success: $it")
+                }, {
+                    Log.e(TAG, "error: $it")
+                })
         }
 
         // Step 2.2
         findViewById<Button>(R.id.btn_launch_wxa_app_by_scan).setOnClickListener {
             // Start wxa app by scan
 
-            // Api.launchWxaAppByScan("")
-
-            // U can direct send request
-            val request = WMPFLaunchWxaAppByQRCodeRequest()
-            request.baseRequest = WMPFBaseRequestHelper.checked()
-            request.baseRequest.clientApplicationId = ""
-
             // U also can use scan invoker, contain scan ui
-            LaunchWxaAppByScanInvoker.launchWxaByScanUI(this, request)
+            LaunchWxaAppByScanInvoker.launchWxaByScanUI(this)
 
         }
 
         Api.notifyBackgroundMusic()
-                .subscribe({
-                    Log.e(TAG, "music state:${it.state}")
-                }, {
-                    Log.e(TAG, "error: $it")
-                })
+            .subscribe({
+                Log.e(TAG, "music state:${it.state}")
+            }, {
+                Log.e(TAG, "error: $it")
+            })
     }
 
     private fun postToMainThread(action: Runnable) {
@@ -212,13 +226,14 @@ class DetailActivity : AppCompatActivity() {
         return when (item?.itemId) {
             0 -> {
                 Api.manageBackgroundMusic(true)
-                        .subscribe({
-                            Log.i(TAG, "success: $it")
-                        }, {
-                            Log.e(TAG, "error: $it")
-                        })
+                    .subscribe({
+                        Log.i(TAG, "success: $it")
+                    }, {
+                        Log.e(TAG, "error: $it")
+                    })
                 true
             }
+
             else -> {
                 false
             }
@@ -236,16 +251,27 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUserInfo(openId: String, nickname: String, sex: Int, province: String, city: String, country: String, unionId: String, avatarUrl: String, deviceId: String) {
-        userInfoTextView!!.text = String.format("openId:%s\nnick: %s\nsex: %d\nprovince: %s\ncity: %s\ncountry: %s\nunionId: %s\ndeviceId:%s",
-                openId,
-                nickname,
-                sex,
-                province,
-                city,
-                country,
-                unionId,
-                deviceId
+    private fun updateUserInfo(
+        openId: String,
+        nickname: String,
+        sex: Int,
+        province: String,
+        city: String,
+        country: String,
+        unionId: String,
+        avatarUrl: String,
+        deviceId: String
+    ) {
+        userInfoTextView!!.text = String.format(
+            "openId:%s\nnick: %s\nsex: %d\nprovince: %s\ncity: %s\ncountry: %s\nunionId: %s\ndeviceId:%s",
+            openId,
+            nickname,
+            sex,
+            province,
+            city,
+            country,
+            unionId,
+            deviceId
         )
 
         userInfoTextView!!.setOnLongClickListener {
@@ -277,14 +303,17 @@ class DetailActivity : AppCompatActivity() {
 
     private fun requestPermission(context: Activity) {
         try {
-            ActivityCompat.requestPermissions(context, arrayOf(
+            ActivityCompat.requestPermissions(
+                context, arrayOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.CAMERA,
-                    Manifest.permission.READ_PHONE_STATE),
-                    0)
+                    Manifest.permission.READ_PHONE_STATE
+                ),
+                0
+            )
         } catch (e: Exception) {
 
         }

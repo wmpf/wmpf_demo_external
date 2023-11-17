@@ -1,13 +1,15 @@
 package com.tencent.wmpf.demo.experience
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Switch
+import android.widget.TextView
 import com.tencent.luggage.demo.wxapi.DeviceInfo
+import com.tencent.mmkv.MMKV
 import com.tencent.wmpf.app.WMPFBoot
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFApiException
@@ -26,7 +28,7 @@ import com.tencent.wmpf.demo.utils.WMPFDemoUtil
  */
 class ExperienceActivity : AppCompatActivity() {
     private companion object {
-        private const val TAG = "WMPF.ExperienceActivity"
+        private const val TAG = "ExperienceActivity"
     }
 
     private var landscapeMode = LandscapeMode.NORMAL
@@ -44,7 +46,7 @@ class ExperienceActivity : AppCompatActivity() {
     private fun init(
         appId: String,
         ticket: String,
-    ): Boolean {
+    ) {
         if (appId.isEmpty() || ticket.isEmpty()) {
             throw Exception("请输入 appId 和 ticket")
         }
@@ -74,6 +76,7 @@ class ExperienceActivity : AppCompatActivity() {
             throw Exception("设备信息发生变化，请重新启动应用。")
         }
 
+        // 从 WMPF-cli 2.2 开始，可以不显式调用 activateDevice
         try {
             logger.i("--------设备激活中--------")
             WMPF.getInstance().deviceApi.activateDevice()
@@ -86,14 +89,12 @@ class ExperienceActivity : AppCompatActivity() {
             }
         }
         logger.i("设备激活成功，初始化完成")
-        return true
     }
 
     private fun launchMiniProgram(
         appId: String,
         ticket: String,
         path: String,
-        versionType: WMPFAppType,
         landscapeMode: LandscapeMode
     ) {
         this.hideKeyboard()
@@ -108,7 +109,7 @@ class ExperienceActivity : AppCompatActivity() {
         logger.i("--------开始启动小程序--------")
         try {
             WMPF.getInstance().miniProgramApi.launchMiniProgram(
-                WMPFStartAppParams(appId, path, versionType), false, landscapeMode
+                WMPFStartAppParams(appId, path, WMPFAppType.APP_TYPE_RELEASE), false, landscapeMode
             )
             logger.i("启动小程序成功")
         } catch (e: Exception) {
@@ -130,31 +131,38 @@ class ExperienceActivity : AppCompatActivity() {
             }
         }
 
-        val appId =
-            WMPFDemoUtil.TextValue(
-                findViewById<EditText>(R.id.et_launch_app_id),
-                "wxe5f52902cf4de896"
-            )
+        val appIdView = findViewById<TextView>(R.id.et_launch_app_id)
+        val ticketView = findViewById<TextView>(R.id.et_ticket)
+        val pathView = findViewById<TextView>(R.id.et_path)
 
-        val ticket =
-            WMPFDemoUtil.TextValue(
-                findViewById<EditText>(R.id.et_ticket)
-            )
+        val kv = MMKV.mmkvWithID(TAG)
 
-        val path =
-            WMPFDemoUtil.TextValue(
-                findViewById(R.id.et_path)
-            )
+        val savedAppId = kv.getString("appId", "")
+        val savedTicket = kv.getString("ticket", "")
+        val savedPath = kv.getString("path", "")
+
+        if (!savedAppId.isNullOrBlank()) {
+            appIdView.text = savedAppId
+        }
+
+        if (!savedTicket.isNullOrBlank()) {
+            ticketView.text = savedTicket
+        }
+
+        if (!savedPath.isNullOrBlank()) {
+            pathView.text = savedPath
+        }
 
         findViewById<Button>(R.id.btn_launch_wxa_app_quickly).setOnClickListener {
+            val appId = appIdView.text.toString()
+            val ticket = ticketView.text.toString()
+            val path = pathView.text.toString()
+            kv.putString("appId", appId)
+            kv.putString("ticket", ticket)
+            kv.putString("path", path)
+
             WMPFDemoUtil.execute {
-                launchMiniProgram(
-                    appId.toString(),
-                    ticket.toString(),
-                    path.toString(),
-                    WMPFAppType.APP_TYPE_RELEASE,
-                    landscapeMode
-                )
+                launchMiniProgram(appId, ticket, path, landscapeMode)
             }
         }
     }
