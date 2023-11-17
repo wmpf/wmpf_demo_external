@@ -6,6 +6,7 @@ android {
     defaultConfig {
         applicationId "com.tencent.wmpf.demo"
         minSdkVersion 21
+        //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -15,6 +16,13 @@ android {
         buildConfigField 'String', 'HOST_APPID', "\"wx94ef6bb77b573d05\""
         // TODO: Temp workaround. You should keep the APP_SECRET out from your apk.
         buildConfigField 'String', 'HOST_APPSECRET', "\"app_secret\""
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
     signingConfigs {
         debug {
@@ -62,10 +70,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:recyclerview-v7:26.1.0'
 
-    // TODO
-//    api("com.tencent.wmpf:wmpf-cli:0.1.5.2-SNAPSHOT") {changing = true}
-//    api("com.tencent.wmpf:wmpf-cli-addon:0.1.5.2-SNAPSHOT") {changing = true}
-
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
 
     api('com.github.bumptech.glide:glide:4.5.0') {
@@ -75,7 +79,8 @@ dependencies {
     }
     api 'io.reactivex.rxjava2:rxandroid:2.0.2'
     api 'io.reactivex.rxjava2:rxjava:2.1.16'
-    api 'com.squareup.okhttp3:okhttp:3.10.0'
+
+    api 'com.squareup.okhttp3:okhttp:4.11.0'
 
     api 'cn.yipianfengye.android:zxing-library:2.2'
 

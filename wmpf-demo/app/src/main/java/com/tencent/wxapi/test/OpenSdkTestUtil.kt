@@ -3,6 +3,8 @@ package com.tencent.wxapi.test
 import android.util.Log
 import io.reactivex.Single
 import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
 
 /**
@@ -36,7 +38,7 @@ object OpenSdkTestUtil {
     @JvmStatic
     fun getSDKTicket(appId: String, appSecret: String): Single<String> {
         return OpenSdkTestUtil.getRawToken(appId, appSecret)
-                .flatMap { rawToken -> OpenSdkTestUtil.getSDKTicket(rawToken) }
+            .flatMap { rawToken -> OpenSdkTestUtil.getSDKTicket(rawToken) }
     }
 
     /**
@@ -46,7 +48,7 @@ object OpenSdkTestUtil {
      * @return
      */
     private fun getSDKTicket(token: String): Single<String> {
-        val builder = HttpUrl.parse(SDK_TICKET_API)!!.newBuilder()
+        val builder = SDK_TICKET_API.toHttpUrlOrNull()!!.newBuilder()
         builder.addQueryParameter("access_token", token)
         builder.addQueryParameter("type", "2")
         val url = builder.build().toString()
@@ -54,7 +56,7 @@ object OpenSdkTestUtil {
         val request = Request.Builder().url(url).build()
         return Single.create { emitter ->
             val response = client.newCall(request).execute()
-            val obj = JSONObject(response.body()!!.string())
+            val obj = JSONObject(response.body!!.string())
             emitter.onSuccess(obj.getString("ticket"))
         }
     }
@@ -62,7 +64,7 @@ object OpenSdkTestUtil {
     fun getOAuthInfo(appId: String, secret: String, code: String): Single<JSONObject> {
         Log.d(TAG, String.format("get oauth info, code=%s", code))
 
-        val urlBuilder = HttpUrl.parse(OAUTH_TOKEN_API)!!.newBuilder()
+        val urlBuilder = OAUTH_TOKEN_API.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("appid", appId)
         urlBuilder.addQueryParameter("secret", secret)
         urlBuilder.addQueryParameter("code", code)
@@ -73,7 +75,7 @@ object OpenSdkTestUtil {
 
         return Single.create { emitter ->
             val response = client.newCall(request).execute()
-            val obj = JSONObject(response.body()!!.string())
+            val obj = JSONObject(response.body!!.string())
             openId = obj.optString("openid")
             oauthToken = obj.optString("access_token")
             emitter.onSuccess(obj)
@@ -81,7 +83,7 @@ object OpenSdkTestUtil {
     }
 
     fun getOAuthToken(appId: String, secret: String, code: String): Single<String> {
-        val urlBuilder = HttpUrl.parse(OAUTH_TOKEN_API)!!.newBuilder()
+        val urlBuilder = OAUTH_TOKEN_API.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("appid", appId)
         urlBuilder.addQueryParameter("secret", secret)
         urlBuilder.addQueryParameter("code", code)
@@ -92,7 +94,7 @@ object OpenSdkTestUtil {
 
         return Single.create { emitter ->
             val response = client.newCall(request).execute()
-            val obj = JSONObject(response.body()!!.string())
+            val obj = JSONObject(response.body!!.string())
             openId = obj.optString("openid")
             oauthToken = obj.optString("access_token")
             emitter.onSuccess(obj.getString("access_token"))
@@ -100,7 +102,7 @@ object OpenSdkTestUtil {
     }
 
     private fun getRawToken(appId: String, secret: String): Single<String> {
-        val urlBuilder = HttpUrl.parse(RAW_TOKEN_API)!!.newBuilder()
+        val urlBuilder = RAW_TOKEN_API.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("appid", appId)
         urlBuilder.addQueryParameter("secret", secret)
         urlBuilder.addQueryParameter("grant_type", "client_credential")
@@ -110,20 +112,20 @@ object OpenSdkTestUtil {
 
         return Single.create { emitter ->
             val response = client.newCall(request).execute()
-            val obj = JSONObject(response.body()!!.string())
+            val obj = JSONObject(response.body!!.string())
             emitter.onSuccess(obj.getString("access_token"))
         }
     }
 
     fun getRuntimeCode(token: String): Single<String> {
-        val builder = HttpUrl.parse(RUNTIME_CODE_API)!!.newBuilder()
+        val builder = RUNTIME_CODE_API.toHttpUrlOrNull()!!.newBuilder()
         builder.addQueryParameter("access_token", token)
         val url = builder.build().toString()
 
         val request = Request.Builder().url(url).build()
         return Single.create { emitter ->
             val response = client.newCall(request).execute()
-            val obj = JSONObject(response.body()!!.string())
+            val obj = JSONObject(response.body!!.string())
             emitter.onSuccess(obj.getString("code"))
         }
     }
@@ -137,7 +139,7 @@ object OpenSdkTestUtil {
     fun getUserInfo(openId: String?, accessToken: String?): Single<JSONObject> {
         Log.d(TAG, String.format("get user info, openId=%s, accessToken=%s", openId, accessToken))
 
-        val builder = HttpUrl.parse(USER_INFO_API)!!.newBuilder()
+        val builder = USER_INFO_API.toHttpUrlOrNull()!!.newBuilder()
         builder.addQueryParameter("openid", openId)
         builder.addQueryParameter("access_token", accessToken)
         val url = builder.build().toString()
@@ -145,7 +147,7 @@ object OpenSdkTestUtil {
         val request = Request.Builder().url(url).build()
         return Single.create { emitter ->
             val response = client.newCall(request).execute()
-            val obj = JSONObject(response.body()!!.string())
+            val obj = JSONObject(response.body!!.string())
             emitter.onSuccess(obj)
         }
     }
@@ -157,13 +159,13 @@ object OpenSdkTestUtil {
     @Throws(Exception::class)
     fun getDeviceTicket(appId: String, appSecret: String, deviceInfo: String?): Single<String> {
         return OpenSdkTestUtil.getRawToken(appId, appSecret)
-                .flatMap { rawToken -> OpenSdkTestUtil.getDeviceTicket(rawToken, deviceInfo) }
+            .flatMap { rawToken -> OpenSdkTestUtil.getDeviceTicket(rawToken, deviceInfo) }
     }
 
     @JvmStatic
     @Throws(Exception::class)
     fun getDeviceTicket(accessToken: String?, deviceInfo: String?): Single<String> {
-        val builder = HttpUrl.parse(REGISTER)!!.newBuilder()
+        val builder = REGISTER.toHttpUrlOrNull()!!.newBuilder()
 //        builder.addQueryParameter("access_token", accessToken)
         val url = builder.build().toString()
 
@@ -176,12 +178,12 @@ object OpenSdkTestUtil {
         }
 
         val request = Request.Builder().url(url)
-                .post(RequestBody.create(MediaType.parse("application/json;"), reqObj.toString()))
-                .build()
+            .post(RequestBody.create("application/json;".toMediaTypeOrNull(), reqObj.toString()))
+            .build()
 
         return Single.create { emitter ->
             val response = client.newCall(request).execute()
-            val obj = JSONObject(response.body()!!.string())
+            val obj = JSONObject(response.body!!.string())
             emitter.onSuccess(obj.optString("device_ticket", ""))
         }
     }
@@ -189,7 +191,7 @@ object OpenSdkTestUtil {
     fun jscode2session(appId: String, secret: String, code: String): Single<JSONObject> {
         Log.d(TAG, String.format("jscode 2 session, code=%s", code))
 
-        val urlBuilder = HttpUrl.parse(CODE_TO_SESSION_API)!!.newBuilder()
+        val urlBuilder = CODE_TO_SESSION_API.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("appid", appId)
         urlBuilder.addQueryParameter("secret", secret)
         urlBuilder.addQueryParameter("js_code", code)
@@ -200,7 +202,7 @@ object OpenSdkTestUtil {
 
         return Single.create { emitter ->
             val response = client.newCall(request).execute()
-            val obj = JSONObject(response.body()!!.string())
+            val obj = JSONObject(response.body!!.string())
             //obj.optString("openid")
             //obj.optString("session_key")
             emitter.onSuccess(obj)
