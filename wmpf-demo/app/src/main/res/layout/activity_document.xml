@@ -70,30 +70,6 @@
             app:layout_constraintTop_toBottomOf="@id/btn_preload_time" />
 
         <Button
-            android:id="@+id/btn_authorize_init_auth_info"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="注入人脸登录信息"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_authorize" />
-
-        <Button
-            android:id="@+id/btn_authorize_face"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="人脸登录"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_authorize_init_auth_info" />
-
-        <Button
             android:id="@+id/btn_authorize_status"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -103,7 +79,7 @@
             android:text="授权状态获取"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_authorize_face" />
+            app:layout_constraintTop_toBottomOf="@id/btn_authorize" />
 
         <Button
             android:id="@+id/btn_launch_wxa_app"

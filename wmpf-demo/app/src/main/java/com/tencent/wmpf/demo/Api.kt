@@ -12,7 +12,6 @@ import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
 import com.tencent.wmpf.cli.task.pb.WMPFIPCInvoker
 import com.tencent.wmpf.cli.task.pb.proto.WMPFResponse
 import com.tencent.wmpf.proto.*
-import com.tencent.wmpf.utils.WMPFHelper
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -52,17 +51,23 @@ object Api {
         if (response == null) {
             return TaskError(TaskError.ErrType_NORMAL, -1, "response is null")
         }
-        return TaskError(response.baseResponse.errType, response.baseResponse.errCode, response.baseResponse.errMsg)
+        return TaskError(
+            response.baseResponse.errType,
+            response.baseResponse.errCode,
+            response.baseResponse.errMsg
+        )
     }
 
-    class TaskErrorException(val taskError: TaskError): java.lang.Exception() {
+    class TaskErrorException(val taskError: TaskError) : java.lang.Exception() {
         override fun toString(): String {
             return "TaskErrorException(taskError=$taskError)"
         }
     }
 
-    fun activateDevice(productId: Int, keyVerion: Int,
-                       deviceId: String, signature: String, hostAppId: String): Single<WMPFActivateDeviceResponse> {
+    fun activateDevice(
+        productId: Int, keyVerion: Int,
+        deviceId: String, signature: String, hostAppId: String
+    ): Single<WMPFActivateDeviceResponse> {
         return Single.create {
             Log.i(TAG, "activateDevice: isInProductionEnv = " + DeviceInfo.isInProductionEnv)
             val request = WMPFActivateDeviceRequest().apply {
@@ -74,7 +79,8 @@ object Api {
                 this.hostAppId = hostAppId
             }
 
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_ActivateDevice, WMPFActivateDeviceRequest, WMPFActivateDeviceResponse>(
+            val result =
+                WMPFIPCInvoker.invokeAsync<IPCInvokerTask_ActivateDevice, WMPFActivateDeviceRequest, WMPFActivateDeviceResponse>(
                     request,
                     IPCInvokerTask_ActivateDevice::class.java,
                     object : IPCInvokeCallbackEx<WMPFActivateDeviceResponse> {
@@ -119,33 +125,33 @@ object Api {
 
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_ActivateDeviceByIoT,
                     WMPFActivateDeviceByIoTRequest, WMPFActivateDeviceByIoTResponse>(
-                    request,
-                    IPCInvokerTask_ActivateDeviceByIoT::class.java,
-                    object : IPCInvokeCallbackEx<WMPFActivateDeviceByIoTResponse> {
-                        override fun onBridgeNotFound() {
-                            it.onError(Exception("bridge not found"))
-                        }
+                request,
+                IPCInvokerTask_ActivateDeviceByIoT::class.java,
+                object : IPCInvokeCallbackEx<WMPFActivateDeviceByIoTResponse> {
+                    override fun onBridgeNotFound() {
+                        it.onError(Exception("bridge not found"))
+                    }
 
-                        override fun onCallback(response: WMPFActivateDeviceByIoTResponse) {
-                            if (isSuccess(response)) {
-                                if (response != null && !response.invokeToken.isNullOrEmpty()) {
-                                    initInvokeToken(response.invokeToken)
-                                }
-
-                                it.onSuccess(response)
-                            } else {
-                                it.onError(TaskErrorException(createTaskError(response)))
+                    override fun onCallback(response: WMPFActivateDeviceByIoTResponse) {
+                        if (isSuccess(response)) {
+                            if (response != null && !response.invokeToken.isNullOrEmpty()) {
+                                initInvokeToken(response.invokeToken)
                             }
-                        }
 
-                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
-                            if (exception != null) {
-                                it.onError(exception)
-                            } else {
-                                it.onError(java.lang.Exception("null"))
-                            }
+                            it.onSuccess(response)
+                        } else {
+                            it.onError(TaskErrorException(createTaskError(response)))
                         }
-                    })
+                    }
+
+                    override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                        if (exception != null) {
+                            it.onError(exception)
+                        } else {
+                            it.onError(java.lang.Exception("null"))
+                        }
+                    }
+                })
 
             if (!result) {
                 it.onError(Exception("invoke activateDeviceByIoT fail"))
@@ -162,8 +168,8 @@ object Api {
 
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_PreloadRuntime,
                     WMPFPreloadRuntimeRequest, WMPFPreloadRuntimeResponse>(
-                    request,
-                    IPCInvokerTask_PreloadRuntime::class.java
+                request,
+                IPCInvokerTask_PreloadRuntime::class.java
             ) { response ->
                 if (isSuccess(response)) {
                     it.onSuccess(response)
@@ -189,10 +195,9 @@ object Api {
 
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_Authorize,
                     WMPFAuthorizeRequest, WMPFAuthorizeResponse>(
-                    request,
-                    IPCInvokerTask_Authorize::class.java
-            ) {
-                response ->
+                request,
+                IPCInvokerTask_Authorize::class.java
+            ) { response ->
                 Log.i(TAG, ": $response")
                 if (isSuccess(response)) {
                     it.onSuccess(response)
@@ -207,57 +212,12 @@ object Api {
         }
     }
 
-    fun initWxPayInfo(authInfoMap: Map<String, Object>): Single<WMPFInitWxFacePayInfoResponse> {
-        return Single.create {
-
-            val request = WMPFInitWxFacePayInfoRequest()
-            request.baseRequest = WMPFBaseRequestHelper.checked()
-            request.wxFacePayInfo = WMPFHelper.map2Json(authInfoMap)
-
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_InitWxFacePayInfo,
-                    WMPFInitWxFacePayInfoRequest, WMPFInitWxFacePayInfoResponse>(
-                    request,
-                    IPCInvokerTask_InitWxFacePayInfo::class.java
-            ) { response ->
-                if (isSuccess(response)) {
-                    it.onSuccess(response)
-                } else {
-                    it.onError(TaskErrorException(createTaskError(response)))
-                }
-            }
-
-            if (!result) {
-                it.onError(Exception("invoke initWxPayInfoAuthInfo fail"))
-            }
-        }
-    }
-
-    fun authorizeByWxFacePay(): Single<WMPFAuthorizeByWxFacePayResponse> {
-        return Single.create {
-
-            val request = WMPFAuthorizeByWxFacePayRequest()
-            request.baseRequest = WMPFBaseRequestHelper.checked()
-
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_AuthorizeByWxFacePay,
-                    WMPFAuthorizeByWxFacePayRequest, WMPFAuthorizeByWxFacePayResponse>(
-                    request,
-                    IPCInvokerTask_AuthorizeByWxFacePay::class.java
-            ) { response ->
-                if (isSuccess(response)) {
-                    it.onSuccess(response)
-                } else {
-                    it.onError(TaskErrorException(createTaskError(response)))
-                }
-            }
-
-            if (!result) {
-                it.onError(Exception("invoke authorizeByWxFacePay fail"))
-            }
-        }
-    }
-
-
-    fun launchWxaApp(launchAppId: String, path: String, appType: Int = 0, landsapeMode: Int = 0): Single<WMPFLaunchWxaAppResponse> {
+    fun launchWxaApp(
+        launchAppId: String,
+        path: String,
+        appType: Int = 0,
+        landsapeMode: Int = 0
+    ): Single<WMPFLaunchWxaAppResponse> {
         return Single.create {
             val request = WMPFLaunchWxaAppRequest()
             request.baseRequest = WMPFBaseRequestHelper.checked()
@@ -269,21 +229,26 @@ object Api {
             // mayRunInLandscapeCompatMode Deprecated
 //            request.mayRunInLandscapeCompatMode = true
             request.forceRequestFullscreen = false
-            request.landscapeMode = landsapeMode // 0:和微信行为保持一致;1:允许横屏铺满显示，忽略小程序的pageOrientation配置;2:强制横屏并居中以16:9显示，忽略pageOrientation配置
-            request.displayId = 0 // 小程序想要显示的目标displayId，适用于某些双屏设备 DisplayManager.getDisplays()[0].getDisplayId()
-            Log.i(TAG, "launchWxaApp: appId = " + launchAppId + ", hostAppID = " +
-                    BuildConfig.HOST_APPID + ", deviceId = " + DeviceInfo.deviceId)
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaApp, WMPFLaunchWxaAppRequest,
-                    WMPFLaunchWxaAppResponse>(
+            request.landscapeMode =
+                landsapeMode // 0:和微信行为保持一致;1:允许横屏铺满显示，忽略小程序的pageOrientation配置;2:强制横屏并居中以16:9显示，忽略pageOrientation配置
+            request.displayId =
+                0 // 小程序想要显示的目标displayId，适用于某些双屏设备 DisplayManager.getDisplays()[0].getDisplayId()
+            Log.i(
+                TAG, "launchWxaApp: appId = " + launchAppId + ", hostAppID = " +
+                        BuildConfig.HOST_APPID + ", deviceId = " + DeviceInfo.deviceId
+            )
+            val result =
+                WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaApp, WMPFLaunchWxaAppRequest,
+                        WMPFLaunchWxaAppResponse>(
                     request,
                     IPCInvokerTask_LaunchWxaApp::class.java
-            ) { response ->
-                if (isSuccess(response)) {
-                    it.onSuccess(response)
-                } else {
-                    it.onError(TaskErrorException(createTaskError(response)))
+                ) { response ->
+                    if (isSuccess(response)) {
+                        it.onSuccess(response)
+                    } else {
+                        it.onError(TaskErrorException(createTaskError(response)))
+                    }
                 }
-            }
 
             if (!result) {
                 it.onError(Exception("invoke launchWxaApp fail"))
@@ -298,13 +263,15 @@ object Api {
             request.baseRequest.clientApplicationId = ""
             request.rawData = rawData // rawData from qrcode
 
-            Log.i(TAG, "launchWxaApp: " + "hostAppID = " +
-                    BuildConfig.HOST_APPID + ", deviceId = " + DeviceInfo.deviceId)
+            Log.i(
+                TAG, "launchWxaApp: " + "hostAppID = " +
+                        BuildConfig.HOST_APPID + ", deviceId = " + DeviceInfo.deviceId
+            )
 
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaAppByQrCode,
                     WMPFLaunchWxaAppByQRCodeRequest, WMPFLaunchWxaAppByQRCodeResponse>(
-                        request,
-                        IPCInvokerTask_LaunchWxaAppByQrCode::class.java
+                request,
+                IPCInvokerTask_LaunchWxaAppByQrCode::class.java
             ) { response ->
                 if (isSuccess(response)) {
                     it.onSuccess(response)
@@ -328,8 +295,8 @@ object Api {
 
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_CloseWxaApp,
                     WMPFCloseWxaAppRequest, WMPFCloseWxaAppResponse>(
-                    request,
-                    IPCInvokerTask_CloseWxaApp::class.java
+                request,
+                IPCInvokerTask_CloseWxaApp::class.java
             ) { response ->
                 if (isSuccess(response)) {
                     it.onSuccess(response)
@@ -344,23 +311,27 @@ object Api {
         }
     }
 
-    fun manageBackgroundMusic(showManageUI: Boolean = true, forceRequestFullscreen: Boolean = false): Single<WMPFManageBackgroundMusicResponse> {
+    fun manageBackgroundMusic(
+        showManageUI: Boolean = true,
+        forceRequestFullscreen: Boolean = false
+    ): Single<WMPFManageBackgroundMusicResponse> {
         return Single.create {
             val request = WMPFManageBackgroundMusicRequest()
             request.baseRequest = WMPFBaseRequestHelper.checked()
             request.showManageUI = showManageUI
             request.forceRequestFullscreen = forceRequestFullscreen
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_ManageBackgroundMusic, WMPFManageBackgroundMusicRequest,
-                    WMPFManageBackgroundMusicResponse>(
+            val result =
+                WMPFIPCInvoker.invokeAsync<IPCInvokerTask_ManageBackgroundMusic, WMPFManageBackgroundMusicRequest,
+                        WMPFManageBackgroundMusicResponse>(
                     request,
                     IPCInvokerTask_ManageBackgroundMusic::class.java
-            ) { response ->
-                if (isSuccess(response)) {
-                    it.onSuccess(response)
-                } else {
-                    it.onError(TaskErrorException(createTaskError(response)))
+                ) { response ->
+                    if (isSuccess(response)) {
+                        it.onSuccess(response)
+                    } else {
+                        it.onError(TaskErrorException(createTaskError(response)))
+                    }
                 }
-            }
 
             if (!result) {
                 it.onError(Exception("invoke manageBackgroundMusic fail"))
@@ -376,10 +347,9 @@ object Api {
             request.notify = true
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_NotifyBackgroundMusic,
                     WMPFNotifyBackgroundMusicRequest, WMPFNotifyBackgroundMusicResponse>(
-                    request,
-                    IPCInvokerTask_NotifyBackgroundMusic::class.java
-            ) {
-                response ->
+                request,
+                IPCInvokerTask_NotifyBackgroundMusic::class.java
+            ) { response ->
                 /**
                  * {@see com.tencent.wmpf.cli.task.IPCInvokerTask_NotifyBackgroundMusic}
                  * val START = 1
@@ -405,8 +375,8 @@ object Api {
 
             val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_Deauthorize,
                     WMPFDeauthorizeRequest, WMPFDeauthorizeResponse>(
-                    request,
-                    IPCInvokerTask_Deauthorize::class.java
+                request,
+                IPCInvokerTask_Deauthorize::class.java
             ) { response ->
                 if (isSuccess(response)) {
                     it.onSuccess(response)
@@ -426,7 +396,10 @@ object Api {
             val request = WMPFPushMsgRequest()
             request.baseRequest = WMPFBaseRequestHelper.checked()
             val result = WMPFIPCInvoker.invokeAsync<IPCInovkerTask_SetPushMsgCallback,
-                    WMPFPushMsgRequest, WMPFPushMsgResponse>(request, IPCInovkerTask_SetPushMsgCallback::class.java) { response ->
+                    WMPFPushMsgRequest, WMPFPushMsgResponse>(
+                request,
+                IPCInovkerTask_SetPushMsgCallback::class.java
+            ) { response ->
                 it.onNext(response)
             }
             if (!result) {
@@ -441,7 +414,8 @@ object Api {
                 this.baseRequest = WMPFBaseRequestHelper.checked()
             }
 
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_ActiveStatus, WMPFActiveStatusRequest, WMPFActiveStatusResponse>(
+            val result =
+                WMPFIPCInvoker.invokeAsync<IPCInvokerTask_ActiveStatus, WMPFActiveStatusRequest, WMPFActiveStatusResponse>(
                     request,
                     IPCInvokerTask_ActiveStatus::class.java,
                     object : IPCInvokeCallbackEx<WMPFActiveStatusResponse> {
@@ -478,7 +452,8 @@ object Api {
                 this.baseRequest = WMPFBaseRequestHelper.checked()
             }
 
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_AuthorizeStatus, WMPFAuthorizeStatusRequest, WMPFAuthorizeStatusResponse>(
+            val result =
+                WMPFIPCInvoker.invokeAsync<IPCInvokerTask_AuthorizeStatus, WMPFAuthorizeStatusRequest, WMPFAuthorizeStatusResponse>(
                     request,
                     IPCInvokerTask_AuthorizeStatus::class.java,
                     object : IPCInvokeCallbackEx<WMPFAuthorizeStatusResponse> {
@@ -516,10 +491,11 @@ object Api {
                 this.globalConfigJson = config
             }
 
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_InitGlobalConfig,WMPFInitGlobalConfigRequest,WMPFInitGlobalConfigResponse>(
+            val result =
+                WMPFIPCInvoker.invokeAsync<IPCInvokerTask_InitGlobalConfig, WMPFInitGlobalConfigRequest, WMPFInitGlobalConfigResponse>(
                     request,
                     IPCInvokerTask_InitGlobalConfig::class.java,
-                    object :IPCInvokeCallbackEx<WMPFInitGlobalConfigResponse>{
+                    object : IPCInvokeCallbackEx<WMPFInitGlobalConfigResponse> {
                         override fun onCallback(response: WMPFInitGlobalConfigResponse) {
                             if (isSuccess(response)) {
                                 it.onSuccess(response)
@@ -541,7 +517,7 @@ object Api {
                         }
 
                     }
-            )
+                )
             if (!result) {
                 it.onError(Exception("invoke initGlobalConfig fail"))
             }
@@ -557,7 +533,8 @@ object Api {
                 this.appId = appId
             }
 
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaApp, WMPFLaunchWxaAppRequest, WMPFLaunchWxaAppResponse>(
+            val result =
+                WMPFIPCInvoker.invokeAsync<IPCInvokerTask_LaunchWxaApp, WMPFLaunchWxaAppRequest, WMPFLaunchWxaAppResponse>(
                     request,
                     IPCInvokerTask_LaunchWxaApp::class.java,
                     object : IPCInvokeCallbackEx<WMPFLaunchWxaAppResponse> {
@@ -582,15 +559,17 @@ object Api {
                         }
 
                     }
-            )
+                )
             if (!result) {
                 it.onError(Exception("invoke warmLaunch fail"))
             }
         }
     }
 
-    fun registerMiniprogramDevice(appId: String, modelId: String,
-                                  deviceId: String, snTicket: String): Single<WMPFRegisterMiniProgramDeviceResponse> {
+    fun registerMiniprogramDevice(
+        appId: String, modelId: String,
+        deviceId: String, snTicket: String
+    ): Single<WMPFRegisterMiniProgramDeviceResponse> {
         return Single.create {
             val request = WMPFRegisterMiniProgramDeviceRequest().apply {
                 this.baseRequest = WMPFBaseRequestHelper.checked()
@@ -600,30 +579,31 @@ object Api {
                 this.snTicket = snTicket
             }
 
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_RegisterMiniProgramDevice, WMPFRegisterMiniProgramDeviceRequest, WMPFRegisterMiniProgramDeviceResponse>(
-                request,
-                IPCInvokerTask_RegisterMiniProgramDevice::class.java,
-                object : IPCInvokeCallbackEx<WMPFRegisterMiniProgramDeviceResponse> {
-                    override fun onCallback(response: WMPFRegisterMiniProgramDeviceResponse) {
-                        if (isSuccess(response)) {
-                            it.onSuccess(response)
-                        } else {
-                            it.onError(TaskErrorException(createTaskError(response)))
+            val result =
+                WMPFIPCInvoker.invokeAsync<IPCInvokerTask_RegisterMiniProgramDevice, WMPFRegisterMiniProgramDeviceRequest, WMPFRegisterMiniProgramDeviceResponse>(
+                    request,
+                    IPCInvokerTask_RegisterMiniProgramDevice::class.java,
+                    object : IPCInvokeCallbackEx<WMPFRegisterMiniProgramDeviceResponse> {
+                        override fun onCallback(response: WMPFRegisterMiniProgramDeviceResponse) {
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
                         }
-                    }
 
-                    override fun onBridgeNotFound() {
-                        it.onError(Exception("bridge not found"))
-                    }
-
-                    override fun onCaughtInvokeException(exception: java.lang.Exception?) {
-                        if (exception != null) {
-                            it.onError(exception)
-                        } else {
-                            it.onError(java.lang.Exception("null"))
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
                         }
-                    }
-                })
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
+                    })
 
             if (!result) {
                 it.onError(Exception("invoke registerMiniprogramDevice fail"))
@@ -637,30 +617,31 @@ object Api {
                 this.baseRequest = WMPFBaseRequestHelper.checked()
             }
 
-            val result = WMPFIPCInvoker.invokeAsync<IPCInvokerTask_PrefetchDeviceToken, WMPFPrefetchDeviceTokenRequest, WMPFPrefetchDeviceTokenResponse>(
-                request,
-                IPCInvokerTask_PrefetchDeviceToken::class.java,
-                object : IPCInvokeCallbackEx<WMPFPrefetchDeviceTokenResponse> {
-                    override fun onCallback(response: WMPFPrefetchDeviceTokenResponse) {
-                        if (isSuccess(response)) {
-                            it.onSuccess(response)
-                        } else {
-                            it.onError(TaskErrorException(createTaskError(response)))
+            val result =
+                WMPFIPCInvoker.invokeAsync<IPCInvokerTask_PrefetchDeviceToken, WMPFPrefetchDeviceTokenRequest, WMPFPrefetchDeviceTokenResponse>(
+                    request,
+                    IPCInvokerTask_PrefetchDeviceToken::class.java,
+                    object : IPCInvokeCallbackEx<WMPFPrefetchDeviceTokenResponse> {
+                        override fun onCallback(response: WMPFPrefetchDeviceTokenResponse) {
+                            if (isSuccess(response)) {
+                                it.onSuccess(response)
+                            } else {
+                                it.onError(TaskErrorException(createTaskError(response)))
+                            }
                         }
-                    }
 
-                    override fun onBridgeNotFound() {
-                        it.onError(Exception("bridge not found"))
-                    }
-
-                    override fun onCaughtInvokeException(exception: java.lang.Exception?) {
-                        if (exception != null) {
-                            it.onError(exception)
-                        } else {
-                            it.onError(java.lang.Exception("null"))
+                        override fun onBridgeNotFound() {
+                            it.onError(Exception("bridge not found"))
                         }
-                    }
-                })
+
+                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                            if (exception != null) {
+                                it.onError(exception)
+                            } else {
+                                it.onError(java.lang.Exception("null"))
+                            }
+                        }
+                    })
 
             if (!result) {
                 it.onError(Exception("invoke prefetchDeviceToken fail"))

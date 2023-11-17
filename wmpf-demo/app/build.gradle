@@ -37,7 +37,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    flavorDimensions 'product'
+    flavorDimensions += 'product'
     productFlavors {
         guide {
             dimension 'product'
@@ -48,11 +48,6 @@ android {
             dimension 'product'
             applicationIdSuffix ".experience"
             versionNameSuffix "-experience"
-        }
-        wxfacepay {
-            dimension 'product'
-            applicationIdSuffix ".wxfacepay"
-            versionNameSuffix "-wxfacepay"
         }
     }
     namespace 'com.tencent.wmpf.demo'
