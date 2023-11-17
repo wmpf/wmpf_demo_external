@@ -1,15 +1,11 @@
 package com.tencent.wmpf.demo.ui
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.telephony.TelephonyManager
@@ -19,201 +15,159 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+
 import com.bumptech.glide.Glide
 import com.tencent.luggage.demo.wxapi.DeviceInfo
+import com.tencent.wmpf.cli.api.WMPF
+import com.tencent.wmpf.cli.api.WMPFAccountApi
+import com.tencent.wmpf.cli.api.WMPFApiException
+import com.tencent.wmpf.cli.api.WMPFMiniProgramApi
+import com.tencent.wmpf.cli.api.WMPFMusicController
+import com.tencent.wmpf.cli.model.WMPFStartAppParams
 import com.tencent.wmpf.cli.task.*
-import com.tencent.wmpf.cli.task.pb.WMPFBaseRequestHelper
 import com.tencent.wmpf.demo.Api
+import com.tencent.wmpf.demo.Cgi
 import com.tencent.wmpf.demo.R
+import com.tencent.wmpf.demo.utils.WMPFDemoUtil
+import com.tencent.wmpf.demo.utils.WMPFDemoUtil.execute
 import com.tencent.wmpf.proto.*
-import com.tencent.wxapi.test.OpenSdkTestUtil
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 
 class DetailActivity : AppCompatActivity() {
-
     private var userInfoTextView: TextView? = null
     private var avatarImageView: ImageView? = null
+    private var musicController = WMPFMusicController()
+    private fun showOk(apiName: String) {
+        val message = "$apiName success"
+        Log.i(TAG, message)
+        WMPFDemoUtil.runOnUiThread {
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun showFail(apiName: String, e: Exception) {
+        val message = "$apiName fail: ${e.message}"
+        Log.e(TAG, message)
+        WMPFDemoUtil.runOnUiThread {
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun invokeWMPFApi(name: String, runnable: Runnable) {
+        execute {
+            try {
+                runnable.run()
+                showOk(name)
+            } catch (e: WMPFApiException) {
+                // WMPF 主动抛出的异常
+                showFail(name, e)
+            } catch (e: Exception) {
+                showFail(name, e)
+            }
+        }
+    }
 
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (!checkPermission(this)) {
-            requestPermission(this)
+        if (!WMPFDemoUtil.checkPermission(this)) {
+            WMPFDemoUtil.requestPermission(this)
         }
 
-        userInfoTextView = findViewById<TextView>(R.id.userInfoTextView)
-        avatarImageView = findViewById<ImageView>(R.id.avatarImageView)
+        userInfoTextView = findViewById(R.id.userInfoTextView)
+        avatarImageView = findViewById(R.id.avatarImageView)
 
         // Step 1.1
         findViewById<Button>(R.id.btn_init_wmpf_activate_device).setOnClickListener {
-            Api.activateDevice(
-                DeviceInfo.productId, DeviceInfo.keyVersion,
-                DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID
-            )
-                .subscribe({
-                    Log.i(TAG, "success: token = ${it.invokeToken}")
-                    postToMainThread(Runnable {
-                        Toast.makeText(
-                            this, String.format(
-                                "init finish, err %d",
-                                it?.baseResponse?.errCode
-                            ), Toast.LENGTH_SHORT
-                        ).show()
-                    })
-                }, {
-                    Log.e(TAG, "error: $it")
-                })
+            invokeWMPFApi("activateDevice") {
+                WMPF.getInstance().deviceApi.activateDevice()
+            }
         }
 
         // Step 1.2
         findViewById<Button>(R.id.btn_init_wmpf).setOnClickListener {
-            // Initialize wmpf runtime first
-            Api.authorize()
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .flatMap { response ->
-                    Log.e(
-                        TAG,
-                        "init response callback %d, code=%s".format(
-                            response.baseResponse.errCode,
-                            response.oauthCode
-                        )
-                    )
-                    if (response.baseResponse.errCode != 0) {
-                        throw Throwable("err, ret:${response.baseResponse.errCode}")
-                    } else {
-                        OpenSdkTestUtil.getOAuthInfo(
-                            DeviceInfo.APP_ID,
-                            DeviceInfo.APP_SECRET,
-                            response.oauthCode
-                        )
-                            .flatMap { jsonObject ->
-                                val openId = jsonObject.getString("openid")
-                                val accessToken = jsonObject.getString("access_token")
-                                OpenSdkTestUtil.getUserInfo(openId, accessToken)
-                            }
+            invokeWMPFApi("login") {
+                val oauthCode = WMPF.getInstance().accountApi.login(WMPFAccountApi.WMPFLoginUIStyle.FULLSCREEN)
+                Log.i(TAG, "Login oauthCode: $oauthCode")
+                if (oauthCode != null) {
+                    val authInfo = Cgi.getOAuthInfo(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET, oauthCode)
+                    val userInfo = Cgi.getUserInfo(DeviceInfo.APP_ID, authInfo.accessToken)
+                    Log.d(TAG, "userInfo: $userInfo")
+                    WMPFDemoUtil.runOnUiThread {
+                        updateUserInfo(userInfo, getIMEI())
                     }
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ jsonObject ->
-                    Log.d(TAG, "userInfo=$jsonObject")
-                    updateUserInfo(
-                        jsonObject.getString("openid"),
-                        jsonObject.getString("nickname"),
-                        jsonObject.getInt("sex"),
-                        jsonObject.getString("province"),
-                        jsonObject.getString("city"),
-                        jsonObject.getString("country"),
-                        jsonObject.getString("unionid"),
-                        jsonObject.getString("headimgurl"),
-                        getIMEI()
-                    )
-                }, {
-                    Log.e(TAG, "fail ${it.message}")
-                })
+            }
         }
 
         findViewById<Button>(R.id.btn_wmpf_runtime_preload).setOnClickListener {
-            Api.preloadRuntime()
-                .subscribe({
-                    Log.i(TAG, "success: $it")
-                }, {
-                    Log.e(TAG, "error: $it")
-                })
+            invokeWMPFApi("preload") {
+                WMPF.getInstance().miniProgramApi.preload(null)
+            }
         }
 
-        findViewById<Button>(R.id.btn_warm_launch).setOnClickListener { view ->
-
-            val appId = "wxe5f52902cf4de896"
-            Api.warmLaunch(appId)
-                .subscribe({ it ->
-                    view.post {
-                        Toast.makeText(
-                            this,
-                            "success: 预热小程序 ${it.baseResponse.errCode} ${it.baseResponse.errMsg}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        AlertDialog.Builder(this).setTitle("预热完成")
+        findViewById<Button>(R.id.btn_warm_launch).setOnClickListener {
+            invokeWMPFApi("warmUpApp") {
+                val startParams = WMPFStartAppParams(
+                        DEMO_APP_ID, "", WMPFStartAppParams.WMPFAppType.APP_TYPE_RELEASE
+                )
+                WMPF.getInstance().miniProgramApi.warmUpApp(startParams)
+                WMPFDemoUtil.runOnUiThread {
+                    AlertDialog.Builder(this).setTitle("预热完成")
                             .setNegativeButton("启动小程序") { _, _ ->
-                                Api.launchWxaApp(appId, "").subscribe({ resp ->
-                                    Log.i(TAG, "success: $resp")
-                                }, {
-                                    Log.e(TAG, "error: $it")
-                                })
+                                invokeWMPFApi("launchMiniProgram") {
+                                    WMPF.getInstance().miniProgramApi.launchMiniProgram(startParams)
+                                }
                             }.show()
-                    }
-                    Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} ")
-                }, {
-                    view.post {
-                        Toast.makeText(this, "error: $it", Toast.LENGTH_LONG).show()
-                    }
-                    Log.e(TAG, "error: $it")
-                })
+                }
+            }
         }
 
         // Step 2.1
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
-            AlertDialog.Builder(this).setNegativeButton("normal") { _, _ ->
+            val startParams = WMPFStartAppParams(
+                    DEMO_APP_ID, "", WMPFStartAppParams.WMPFAppType.APP_TYPE_RELEASE
+            )
 
-                // Start wxa app
-                Api.launchWxaApp("wxe5f52902cf4de896", "", landsapeMode = 0)
-                    .subscribe({
-                        Log.i(TAG, "success: $it")
-                    }, {
-                        Log.e(TAG, "error: $it")
-                    })
+            AlertDialog.Builder(this).setNegativeButton("normal") { _, _ ->
+                invokeWMPFApi("launchMiniProgram") {
+                    WMPF.getInstance().miniProgramApi.launchMiniProgram(startParams,
+                            false, WMPFMiniProgramApi.LandscapeMode.NORMAL)
+                }
             }.setNeutralButton("landscape compat") { _, _ ->
-                // Start wxa app
-                Api.launchWxaApp("wxe5f52902cf4de896", "", landsapeMode = 2)
-                    .subscribe({
-                        Log.i(TAG, "success: $it")
-                    }, {
-                        Log.e(TAG, "error: $it")
-                    })
+                invokeWMPFApi("launchMiniProgram") {
+                    WMPF.getInstance().miniProgramApi.launchMiniProgram(startParams,
+                            false, WMPFMiniProgramApi.LandscapeMode.LANDSCAPE_COMPAT)
+                }
             }.setPositiveButton("landscape") { _, _ ->
-                // Start wxa app
-                Api.launchWxaApp("wxe5f52902cf4de896", "", landsapeMode = 1)
-                    .subscribe({
-                        Log.i(TAG, "success: $it")
-                    }, {
-                        Log.e(TAG, "error: $it")
-                    })
+                invokeWMPFApi("launchMiniProgram") {
+                    WMPF.getInstance().miniProgramApi.launchMiniProgram(startParams,
+                            false, WMPFMiniProgramApi.LandscapeMode.LANDSCAPE)
+                }
             }.show()
         }
 
         // Step 2.2
         findViewById<Button>(R.id.btn_launch_wxa_app_by_target_path).setOnClickListener {
-            // Start wxa target path app
-            Api.launchWxaApp("wxe5f52902cf4de896", "page/component/pages/view/view")
-                .subscribe({
-                    Log.i(TAG, "success: $it")
-                }, {
-                    Log.e(TAG, "error: $it")
-                })
+            invokeWMPFApi("launchMiniProgram") {
+                WMPF.getInstance().miniProgramApi.launchMiniProgram(WMPFStartAppParams(
+                        DEMO_APP_ID, "page/component/pages/view/view", WMPFStartAppParams.WMPFAppType.APP_TYPE_RELEASE
+                ))
+            }
         }
 
         // Step 2.2
         findViewById<Button>(R.id.btn_launch_wxa_app_by_scan).setOnClickListener {
             // Start wxa app by scan
-
             // U also can use scan invoker, contain scan ui
             LaunchWxaAppByScanInvoker.launchWxaByScanUI(this)
-
         }
 
-        Api.notifyBackgroundMusic()
-            .subscribe({
-                Log.e(TAG, "music state:${it.state}")
-            }, {
-                Log.e(TAG, "error: $it")
-            })
-    }
-
-    private fun postToMainThread(action: Runnable) {
-        userInfoTextView?.post(action)
+        musicController.addMusicPlayStatusListener {
+            // 在这里监听 newStatus
+            Log.i(TAG, "music state: $it")
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -226,11 +180,11 @@ class DetailActivity : AppCompatActivity() {
         return when (item?.itemId) {
             0 -> {
                 Api.manageBackgroundMusic(true)
-                    .subscribe({
-                        Log.i(TAG, "success: $it")
-                    }, {
-                        Log.e(TAG, "error: $it")
-                    })
+                        .subscribe({
+                            Log.i(TAG, "success: $it")
+                        }, {
+                            Log.e(TAG, "error: $it")
+                        })
                 true
             }
 
@@ -252,26 +206,19 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun updateUserInfo(
-        openId: String,
-        nickname: String,
-        sex: Int,
-        province: String,
-        city: String,
-        country: String,
-        unionId: String,
-        avatarUrl: String,
-        deviceId: String
+            userInfo: Cgi.UserInfo,
+            deviceId: String
     ) {
         userInfoTextView!!.text = String.format(
-            "openId:%s\nnick: %s\nsex: %d\nprovince: %s\ncity: %s\ncountry: %s\nunionId: %s\ndeviceId:%s",
-            openId,
-            nickname,
-            sex,
-            province,
-            city,
-            country,
-            unionId,
-            deviceId
+                "openId:%s\nnick: %s\nsex: %d\nprovince: %s\ncity: %s\ncountry: %s\nunionId: %s\ndeviceId:%s",
+                userInfo.openId,
+                userInfo.nickname,
+                userInfo.sex,
+                userInfo.province,
+                userInfo.city,
+                userInfo.country,
+                userInfo.unionId,
+                deviceId
         )
 
         userInfoTextView!!.setOnLongClickListener {
@@ -280,44 +227,7 @@ class DetailActivity : AppCompatActivity() {
             true
         }
 
-        Glide.with(this).load(avatarUrl).into(avatarImageView!!)
-    }
-
-    private fun checkPermission(context: Context): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val ret0 = context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-            val ret1 = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            val ret2 = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-            val ret3 = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            val ret4 = context.checkSelfPermission(Manifest.permission.CAMERA)
-            val ret5 = context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-            return ret0 == PackageManager.PERMISSION_GRANTED &&
-                    ret1 == PackageManager.PERMISSION_GRANTED &&
-                    ret2 == PackageManager.PERMISSION_GRANTED &&
-                    ret3 == PackageManager.PERMISSION_GRANTED &&
-                    ret4 == PackageManager.PERMISSION_GRANTED &&
-                    ret5 == PackageManager.PERMISSION_GRANTED
-        }
-        return false
-    }
-
-    private fun requestPermission(context: Activity) {
-        try {
-            ActivityCompat.requestPermissions(
-                context, arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.READ_PHONE_STATE
-                ),
-                0
-            )
-        } catch (e: Exception) {
-
-        }
-
+        Glide.with(this).load(userInfo.avatarUrl).into(avatarImageView!!)
     }
 
     @SuppressLint("MissingPermission", "HardwareIds")
@@ -333,5 +243,6 @@ class DetailActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "WMPF.Demo.MainActivity"
+        private const val DEMO_APP_ID = "wxe5f52902cf4de896"
     }
 }

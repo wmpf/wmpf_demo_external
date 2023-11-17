@@ -24,23 +24,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.PushMsgQuickStartActivity"/>
+        <activity android:name=".ui.PushMsgQuickStartActivity" />
         <activity android:name=".ui.FastExperienceActivity" />
         <activity android:name=".ui.DetailActivity" />
         <activity android:name=".ui.DocumentActivity" />
         <activity android:name=".ui.QAActivity" /> <!-- 扫码打开小程序 -->
         <activity android:name="com.tencent.wmpf.cli.task.LaunchWxaAppByScanInvoker" />
-        <activity android:name=".ui.GetDeviceInfoActivity" />
         <activity android:name=".thirdpart.ThirdPartApiDemoActivity">
             <intent-filter>
-                <action android:name="com.tencent.wmpf.action.WMPF_PRINTER"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.tencent.wmpf.action.WMPF_PRINTER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <provider
             android:authorities="com.tencent.wmpf.cli.provider"
             android:name=".contentprovider.ThirdPartContentProvider"
-            android:exported="true"/>
+            android:exported="true" />
     </application>
 
 </manifest>

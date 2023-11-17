@@ -22,6 +22,7 @@ import com.tencent.wmpf.cli.model.WMPFStartAppParams
 import com.tencent.wmpf.cli.model.WMPFStartAppParams.WMPFAppType
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.utils.WMPFDemoLogger
+import com.tencent.wmpf.demo.utils.WMPFDemoUtil
 import com.tencent.wmpf.demo.utils.WMPFDemoUtil.execute
 
 class FastExperienceActivity : AppCompatActivity() {
@@ -32,8 +33,8 @@ class FastExperienceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fast_experience)
 
-        if (!checkPermission(this)) {
-            requestPermission(this)
+        if (!WMPFDemoUtil.checkPermission(this)){
+            WMPFDemoUtil.requestPermission(this)
         }
 
         logger = WMPFDemoLogger(TAG, this, findViewById(R.id.tv_device_info_resp))
@@ -113,43 +114,6 @@ class FastExperienceActivity : AppCompatActivity() {
         } catch (e: WMPFApiException) {
             logger.e("启动小程序失败", e)
         }
-    }
-
-    private fun checkPermission(context: Context): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val ret0 = context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-            val ret1 = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            val ret2 = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-            val ret3 = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            val ret4 = context.checkSelfPermission(Manifest.permission.CAMERA)
-            val ret5 = context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-            return ret0 == PackageManager.PERMISSION_GRANTED &&
-                    ret1 == PackageManager.PERMISSION_GRANTED &&
-                    ret2 == PackageManager.PERMISSION_GRANTED &&
-                    ret3 == PackageManager.PERMISSION_GRANTED &&
-                    ret4 == PackageManager.PERMISSION_GRANTED &&
-                    ret5 == PackageManager.PERMISSION_GRANTED
-        }
-        return false
-    }
-
-    private fun requestPermission(context: Activity) {
-        try {
-            ActivityCompat.requestPermissions(
-                context, arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.READ_PHONE_STATE
-                ),
-                0
-            )
-        } catch (e: Exception) {
-
-        }
-
     }
 
     companion object {

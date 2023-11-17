@@ -7,7 +7,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.tencent.mm.opensdk.utils.Log
-import com.tencent.wmpf.demo.utils.MD5Util
+import com.tencent.wmpf.demo.utils.WMPFDemoUtil
 
 class ThirdPartApiDemoActivity : AppCompatActivity() {
     private var mDialog: AlertDialog? = null
@@ -17,7 +17,7 @@ class ThirdPartApiDemoActivity : AppCompatActivity() {
             val appId = "replace with your invoke appId here"
             val timeStamp = intent.extras?.getLong(ThirdpartConstants.Printer.Key.KEY_TIME_STAMP)
             val token = intent.extras?.getString(ThirdpartConstants.Printer.Key.KEY_TOKEN)
-            val tokenLocalGen= MD5Util.getMD5String(appId + "_" + timeStamp)
+            val tokenLocalGen= WMPFDemoUtil.getMD5String(appId + "_" + timeStamp)
             if (tokenLocalGen != token) {
                 Log.e(TAG, "token invalid")
                 Toast.makeText(applicationContext, "printer: token invalid!", Toast.LENGTH_LONG).show()

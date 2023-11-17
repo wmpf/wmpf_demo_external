@@ -9,10 +9,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.widget.Toast
+
 import com.tencent.mm.opensdk.utils.Log
-import com.tencent.wmpf.demo.contentprovider.ContentProvideConstants.*
-import com.tencent.wmpf.demo.utils.MD5Util
-import java.util.*
+import com.tencent.wmpf.demo.contentprovider.ContentProvideConstants.InvokeChannelConstants
+import com.tencent.wmpf.demo.contentprovider.ContentProvideConstants.SpeakerConstants
+import com.tencent.wmpf.demo.utils.WMPFDemoUtil
+import java.util.Vector
 
 class ThirdPartContentProvider : ContentProvider() {
     private val mHandler by lazy {
@@ -133,7 +135,7 @@ class ThirdPartContentProvider : ContentProvider() {
         val appId = "replace with your invoke appId here"
         val timeStamp = cv.getAsLong(SpeakerConstants.Key.KEY_TIME_STAMP)
         val token = cv.getAsString(SpeakerConstants.Key.KEY_TOKEN)
-        val tokenLocalGen= MD5Util.getMD5String(appId + "_" + timeStamp)
+        val tokenLocalGen= WMPFDemoUtil.getMD5String(appId + "_" + timeStamp)
         if (tokenLocalGen != token) {
             Log.e(TAG, "token invalid")
             runOnUiThread (Runnable {

@@ -1,6 +1,5 @@
 package com.tencent.wmpf.demo.experience
 
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -18,8 +17,8 @@ import com.tencent.wmpf.cli.model.WMPFDevice
 import com.tencent.wmpf.cli.model.WMPFStartAppParams
 import com.tencent.wmpf.cli.model.WMPFStartAppParams.WMPFAppType
 import com.tencent.wmpf.cli.task.TaskError
+import com.tencent.wmpf.demo.Cgi
 import com.tencent.wmpf.demo.R
-import com.tencent.wmpf.demo.RequestsRepo
 import com.tencent.wmpf.demo.utils.WMPFDemoLogger
 import com.tencent.wmpf.demo.utils.WMPFDemoUtil
 
@@ -44,26 +43,26 @@ class ExperienceActivity : AppCompatActivity() {
     }
 
     private fun init(
-        appId: String,
-        ticket: String,
+            appId: String,
+            ticket: String,
     ) {
         if (appId.isEmpty() || ticket.isEmpty()) {
             throw Exception("请输入 appId 和 ticket")
         }
 
         try {
-            RequestsRepo.getTestDeviceInfoSync(ticket, appId, DeviceInfo.APP_ID)
+            Cgi.getTestDeviceInfo(ticket, appId, DeviceInfo.APP_ID)
         } catch (e: Exception) {
             DeviceInfo.reset()
             throw Exception("请求设备信息失败: " + e.message)
         }
 
         val newDevice = WMPFDevice(
-            DeviceInfo.APP_ID,
-            DeviceInfo.productId,
-            DeviceInfo.keyVersion,
-            DeviceInfo.deviceId,
-            DeviceInfo.signature
+                DeviceInfo.APP_ID,
+                DeviceInfo.productId,
+                DeviceInfo.keyVersion,
+                DeviceInfo.deviceId,
+                DeviceInfo.signature
         )
         logger.i("设备信息获取成功: $newDevice")
 
@@ -92,10 +91,10 @@ class ExperienceActivity : AppCompatActivity() {
     }
 
     private fun launchMiniProgram(
-        appId: String,
-        ticket: String,
-        path: String,
-        landscapeMode: LandscapeMode
+            appId: String,
+            ticket: String,
+            path: String,
+            landscapeMode: LandscapeMode
     ) {
         this.hideKeyboard()
         logger.clear()
@@ -109,7 +108,7 @@ class ExperienceActivity : AppCompatActivity() {
         logger.i("--------开始启动小程序--------")
         try {
             WMPF.getInstance().miniProgramApi.launchMiniProgram(
-                WMPFStartAppParams(appId, path, WMPFAppType.APP_TYPE_RELEASE), false, landscapeMode
+                    WMPFStartAppParams(appId, path, WMPFAppType.APP_TYPE_RELEASE), false, landscapeMode
             )
             logger.i("启动小程序成功")
         } catch (e: Exception) {
