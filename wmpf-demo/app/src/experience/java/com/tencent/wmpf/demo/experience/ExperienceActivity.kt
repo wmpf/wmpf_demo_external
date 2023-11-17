@@ -1,146 +1,161 @@
 package com.tencent.wmpf.demo.experience
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.*
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Switch
 import com.tencent.luggage.demo.wxapi.DeviceInfo
-import com.tencent.wmpf.demo.Api
+import com.tencent.wmpf.app.WMPFBoot
+import com.tencent.wmpf.cli.api.WMPF
+import com.tencent.wmpf.cli.api.WMPFApiException
+import com.tencent.wmpf.cli.api.WMPFMiniProgramApi.LandscapeMode
+import com.tencent.wmpf.cli.model.WMPFDevice
+import com.tencent.wmpf.cli.model.WMPFStartAppParams
+import com.tencent.wmpf.cli.model.WMPFStartAppParams.WMPFAppType
+import com.tencent.wmpf.cli.task.TaskError
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.RequestsRepo
-import java.util.*
+import com.tencent.wmpf.demo.utils.WMPFDemoLogger
+import com.tencent.wmpf.demo.utils.WMPFDemoUtil
 
 /**
  * Created by complexzeng on 2020/6/17 2:59 PM.
  */
-@SuppressLint("LongLogTag", "SetTextI18n")
 class ExperienceActivity : AppCompatActivity() {
-
     private companion object {
-        private const val TAG = "MicroMsg.ExperienceActivity"
+        private const val TAG = "WMPF.ExperienceActivity"
     }
 
-    private var landscapeMode = 0
+    private var landscapeMode = LandscapeMode.NORMAL
+    private lateinit var logger: WMPFDemoLogger
+    private var wmpfDevice: WMPFDevice? = null
 
-    private lateinit var pathTv: TextView
+    private fun hideKeyboard() {
+        val view = this.currentFocus
+        if (view != null) {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
+
+    private fun init(
+        appId: String,
+        ticket: String,
+    ): Boolean {
+        if (appId.isEmpty() || ticket.isEmpty()) {
+            throw Exception("请输入 appId 和 ticket")
+        }
+
+        try {
+            RequestsRepo.getTestDeviceInfoSync(ticket, appId, DeviceInfo.APP_ID)
+        } catch (e: Exception) {
+            DeviceInfo.reset()
+            throw Exception("请求设备信息失败: " + e.message)
+        }
+
+        val newDevice = WMPFDevice(
+            DeviceInfo.APP_ID,
+            DeviceInfo.productId,
+            DeviceInfo.keyVersion,
+            DeviceInfo.deviceId,
+            DeviceInfo.signature
+        )
+        logger.i("设备信息获取成功: $newDevice")
+
+
+        if (wmpfDevice == null) {
+            wmpfDevice = newDevice
+            // init 只能调用一次
+            WMPFBoot.init(this.applicationContext, wmpfDevice)
+        } else if (wmpfDevice != newDevice) {
+            throw Exception("设备信息发生变化，请重新启动应用。")
+        }
+
+        try {
+            logger.i("--------设备激活中--------")
+            WMPF.getInstance().deviceApi.activateDevice()
+        } catch (e: WMPFApiException) {
+            Log.e(TAG, "error: $e")
+            if (e.errCode == TaskError.DISCONNECTED.errCode) {
+                throw Exception("设备激活失败，请确认 WMPF 处于运行状态")
+            } else {
+                throw Exception("设备激活失败: " + e.message)
+            }
+        }
+        logger.i("设备激活成功，初始化完成")
+        return true
+    }
+
+    private fun launchMiniProgram(
+        appId: String,
+        ticket: String,
+        path: String,
+        versionType: WMPFAppType,
+        landscapeMode: LandscapeMode
+    ) {
+        this.hideKeyboard()
+        logger.clear()
+        try {
+            init(appId, ticket)
+        } catch (e: Exception) {
+            logger.e("初始化失败", e)
+            return
+        }
+
+        logger.i("--------开始启动小程序--------")
+        try {
+            WMPF.getInstance().miniProgramApi.launchMiniProgram(
+                WMPFStartAppParams(appId, path, versionType), false, landscapeMode
+            )
+            logger.i("启动小程序成功")
+        } catch (e: Exception) {
+            logger.e("启动小程序失败", e)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_experience)
-        val appIdEditView = findViewById<EditText>(R.id.et_launch_app_id)
-        val ticketEditView = findViewById<EditText>(R.id.et_ticket)
-        val respTextView = findViewById<TextView>(R.id.resp_tv)
+        logger = WMPFDemoLogger(TAG, this, findViewById(R.id.resp_tv))
+
         val landscapeSwitch = findViewById<Switch>(R.id.switch_landscape)
-        landscapeSwitch.setOnCheckedChangeListener { view, isClicked ->
+        landscapeSwitch.setOnCheckedChangeListener { _, isClicked ->
             landscapeMode = if (isClicked) {
-                2
+                LandscapeMode.LANDSCAPE_COMPAT
             } else {
-                0
+                LandscapeMode.NORMAL
             }
         }
+
+        val appId =
+            WMPFDemoUtil.TextValue(
+                findViewById<EditText>(R.id.et_launch_app_id),
+                "wxe5f52902cf4de896"
+            )
+
+        val ticket =
+            WMPFDemoUtil.TextValue(
+                findViewById<EditText>(R.id.et_ticket)
+            )
+
+        val path =
+            WMPFDemoUtil.TextValue(
+                findViewById(R.id.et_path)
+            )
 
         findViewById<Button>(R.id.btn_launch_wxa_app_quickly).setOnClickListener {
-            launchWxa(respTextView, appIdEditView, ticketEditView, 0)
-        }
-
-        findViewById<Button>(R.id.btn_launch_wxa_dev_app).setOnClickListener {
-            launchWxa(respTextView, appIdEditView, ticketEditView, 1)
-        }
-
-        findViewById<Button>(R.id.btn_launch_wxa_pre_app).setOnClickListener {
-            launchWxa(respTextView, appIdEditView, ticketEditView, 2)
-        }
-
-        pathTv = findViewById(R.id.et_path)
-    }
-
-    private fun launchWxa(respTextView: TextView, appIdEditView: EditText, ticketEditView: EditText, versionType: Int) {
-        respTextView.text = ""
-        val appId = appIdEditView.text.toString().trim()
-        val ticket = ticketEditView.text.toString().trim()
-
-        RequestsRepo.getTestDeviceInfo(ticket, appId, DeviceInfo.APP_ID) {
-            respTextView.post {
-                respTextView.text = it
-                val temp = it
-                if (temp.toLowerCase(Locale.ROOT).contains("error")) {
-                    DeviceInfo.reset()
-                    return@post
-                }
-                var consoleText = respTextView.text.toString() + "\n" + "--------激活设备中--------\n"
-                respTextView.text = consoleText
-                Api.activateDevice(DeviceInfo.productId, DeviceInfo.keyVersion,
-                        DeviceInfo.deviceId, DeviceInfo.signature, DeviceInfo.APP_ID)
-                        .subscribe({
-                            Log.i(TAG, "success: $it")
-                            respTextView.post {
-                                consoleText += String.format("init finish, err %d",
-                                        it?.baseResponse?.errCode)
-                                if (it.invokeToken == null) {
-                                    consoleText += "\nactivate device fail for a null token, may ticket is expired\n"
-                                    respTextView.text = consoleText
-                                } else {
-                                    if (versionType == 0) {
-                                        consoleText += "\ninvoke authorizeNoLogin\n"
-                                        respTextView.text = consoleText
-
-                                        Api.launchWxaApp(optLaunchAppId(), optPath(), landsapeMode = landscapeMode).subscribe({
-                                            Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
-                                        }, {
-                                            Log.e(TAG, "error: $it")
-                                        })
-
-                                    } else {
-                                        consoleText += "\ninvoke authorize\n"
-                                        respTextView.text = consoleText
-                                        Api.authorize()
-                                                .subscribe({
-                                                    runOnUiThread {
-                                                        consoleText += "\ninvoke authorize result: ${it.baseResponse.errCode} ${it.baseResponse.errMsg} \n"
-                                                        respTextView.text = consoleText
-                                                        respTextView.text = "$consoleText\n--------启动小程序--------\n"
-                                                    }
-
-                                                    Api.launchWxaApp(optLaunchAppId(), optPath(), appType = versionType, landsapeMode = landscapeMode).subscribe({}, {})
-                                                    Log.i(TAG, "success: ${it.baseResponse.errCode} ${it.baseResponse.errMsg}")
-                                                }, {
-                                                    Log.e(TAG, "error: $it")
-                                                })
-                                    }
-                                }
-                            }
-                        }, {
-                            Log.e(TAG, "error: $it")
-                            respTextView.post {
-                                var errorMsg = it.message ?: ""
-                                if (errorMsg.contains("bridge not found")) {
-                                    errorMsg += ", 确认WMPF框架处于运行状态"
-                                }
-                                Toast.makeText(this, "激活设备失败, error: $errorMsg", Toast.LENGTH_SHORT).show()
-                                consoleText += "激活设备失败, error: $errorMsg"
-                                respTextView.text = consoleText
-
-                            }
-                        })
+            WMPFDemoUtil.execute {
+                launchMiniProgram(
+                    appId.toString(),
+                    ticket.toString(),
+                    path.toString(),
+                    WMPFAppType.APP_TYPE_RELEASE,
+                    landscapeMode
+                )
             }
         }
-    }
-
-    private fun optPath(): String {
-        val path = pathTv.text?.toString()
-        return if (path == null || path.isBlank()) {
-            ""
-        } else {
-            path
-        }
-    }
-
-    private fun optLaunchAppId(): String {
-        var launchAppId = findViewById<EditText>(R.id.et_launch_app_id).text.toString()
-        if (launchAppId.isEmpty()) {
-            launchAppId = "wxe5f52902cf4de896"
-        }
-        return launchAppId
     }
 }
