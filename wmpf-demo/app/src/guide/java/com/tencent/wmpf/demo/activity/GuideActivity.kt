@@ -8,7 +8,6 @@ import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.ui.DocumentActivity
 import com.tencent.wmpf.demo.ui.FastExperienceActivity
 import com.tencent.wmpf.demo.ui.DetailActivity
-import com.tencent.wmpf.demo.ui.QAActivity
 
 class GuideActivity : AppCompatActivity() {
 
@@ -27,10 +26,6 @@ class GuideActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btn_document).setOnClickListener {
             startActivity(Intent(this, DocumentActivity::class.java))
-        }
-
-        findViewById<Button>(R.id.btn_qa).setOnClickListener {
-            startActivity(Intent(this, QAActivity::class.java))
         }
     }
 

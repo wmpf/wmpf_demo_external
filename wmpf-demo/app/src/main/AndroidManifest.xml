@@ -28,7 +28,7 @@
         <activity android:name=".ui.FastExperienceActivity" />
         <activity android:name=".ui.DetailActivity" />
         <activity android:name=".ui.DocumentActivity" />
-        <activity android:name=".ui.QAActivity" /> <!-- 扫码打开小程序 -->
+        <!-- 扫码打开小程序 -->
         <activity android:name="com.tencent.wmpf.cli.task.LaunchWxaAppByScanInvoker" />
         <activity android:name=".thirdpart.ThirdPartApiDemoActivity">
             <intent-filter>
