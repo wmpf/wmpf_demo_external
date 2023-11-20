@@ -43,28 +43,29 @@ class ExperienceActivity : AppCompatActivity() {
     }
 
     private fun init(
-            appId: String,
-            ticket: String,
+        appId: String,
+        ticket: String,
     ) {
         if (appId.isEmpty() || ticket.isEmpty()) {
             throw Exception("请输入 appId 和 ticket")
         }
 
+        var newDevice: WMPFDevice? = null
+
         try {
-            Cgi.getTestDeviceInfo(ticket, appId, DeviceInfo.APP_ID)
+            val res = Cgi.getTestDeviceInfo(ticket, appId, DeviceInfo.APP_ID)
+            newDevice = WMPFDevice(
+                DeviceInfo.APP_ID,
+                res.productId,
+                res.keyVersion,
+                res.deviceId,
+                res.signature
+            )
+            logger.i("设备信息获取成功: $newDevice")
         } catch (e: Exception) {
             DeviceInfo.reset()
             throw Exception("请求设备信息失败: " + e.message)
         }
-
-        val newDevice = WMPFDevice(
-                DeviceInfo.APP_ID,
-                DeviceInfo.productId,
-                DeviceInfo.keyVersion,
-                DeviceInfo.deviceId,
-                DeviceInfo.signature
-        )
-        logger.i("设备信息获取成功: $newDevice")
 
 
         if (wmpfDevice == null) {
@@ -83,6 +84,8 @@ class ExperienceActivity : AppCompatActivity() {
             Log.e(TAG, "error: $e")
             if (e.errCode == TaskError.DISCONNECTED.errCode) {
                 throw Exception("设备激活失败，请确认 WMPF 处于运行状态")
+            } else if (e.errMsg == "DEVICE_CHANGED") {
+                throw Exception("deviceId 发生变化，请清除 WMPF Apk 缓存后重试")
             } else {
                 throw Exception("设备激活失败: " + e.message)
             }
@@ -91,10 +94,10 @@ class ExperienceActivity : AppCompatActivity() {
     }
 
     private fun launchMiniProgram(
-            appId: String,
-            ticket: String,
-            path: String,
-            landscapeMode: LandscapeMode
+        appId: String,
+        ticket: String,
+        path: String,
+        landscapeMode: LandscapeMode
     ) {
         this.hideKeyboard()
         logger.clear()
@@ -108,7 +111,7 @@ class ExperienceActivity : AppCompatActivity() {
         logger.i("--------开始启动小程序--------")
         try {
             WMPF.getInstance().miniProgramApi.launchMiniProgram(
-                    WMPFStartAppParams(appId, path, WMPFAppType.APP_TYPE_RELEASE), false, landscapeMode
+                WMPFStartAppParams(appId, path, WMPFAppType.APP_TYPE_RELEASE), false, landscapeMode
             )
             logger.i("启动小程序成功")
         } catch (e: Exception) {
