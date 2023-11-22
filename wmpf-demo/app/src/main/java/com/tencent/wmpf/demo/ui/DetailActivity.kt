@@ -25,7 +25,6 @@ import com.tencent.wmpf.cli.api.WMPFMiniProgramApi
 import com.tencent.wmpf.cli.api.WMPFMusicController
 import com.tencent.wmpf.cli.model.WMPFStartAppParams
 import com.tencent.wmpf.cli.task.*
-import com.tencent.wmpf.demo.Api
 import com.tencent.wmpf.demo.Cgi
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.utils.WMPFDemoUtil
@@ -39,15 +38,15 @@ class DetailActivity : AppCompatActivity() {
     private fun showOk(apiName: String) {
         val message = "$apiName success"
         Log.i(TAG, message)
-        WMPFDemoUtil.runOnUiThread {
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        runOnUiThread {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun showFail(apiName: String, e: Exception) {
         val message = "$apiName fail: ${e.message}"
         Log.e(TAG, message)
-        WMPFDemoUtil.runOnUiThread {
+        runOnUiThread {
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         }
     }
@@ -66,7 +65,7 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -88,13 +87,19 @@ class DetailActivity : AppCompatActivity() {
         // Step 1.2
         findViewById<Button>(R.id.btn_init_wmpf).setOnClickListener {
             invokeWMPFApi("login") {
-                val oauthCode = WMPF.getInstance().accountApi.login(WMPFAccountApi.WMPFLoginUIStyle.FULLSCREEN)
+                val oauthCode =
+                    WMPF.getInstance().accountApi.login(WMPFAccountApi.WMPFLoginUIStyle.FULLSCREEN)
                 Log.i(TAG, "Login oauthCode: $oauthCode")
+                runOnUiThread {
+                    userInfoTextView!!.text = "Login"
+
+                }
                 if (oauthCode != null) {
-                    val authInfo = Cgi.getOAuthInfo(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET, oauthCode)
+                    val authInfo =
+                        Cgi.getOAuthInfo(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET, oauthCode)
                     val userInfo = Cgi.getUserInfo(DeviceInfo.APP_ID, authInfo.accessToken)
                     Log.d(TAG, "userInfo: $userInfo")
-                    WMPFDemoUtil.runOnUiThread {
+                    runOnUiThread {
                         updateUserInfo(userInfo, getIMEI())
                     }
                 }
@@ -110,16 +115,16 @@ class DetailActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_warm_launch).setOnClickListener {
             invokeWMPFApi("warmUpApp") {
                 val startParams = WMPFStartAppParams(
-                        DEMO_APP_ID, "", WMPFStartAppParams.WMPFAppType.APP_TYPE_RELEASE
+                    DEMO_APP_ID, "", WMPFStartAppParams.WMPFAppType.APP_TYPE_RELEASE
                 )
                 WMPF.getInstance().miniProgramApi.warmUpApp(startParams)
-                WMPFDemoUtil.runOnUiThread {
+                runOnUiThread {
                     AlertDialog.Builder(this).setTitle("预热完成")
-                            .setNegativeButton("启动小程序") { _, _ ->
-                                invokeWMPFApi("launchMiniProgram") {
-                                    WMPF.getInstance().miniProgramApi.launchMiniProgram(startParams)
-                                }
-                            }.show()
+                        .setNegativeButton("启动小程序") { _, _ ->
+                            invokeWMPFApi("launchMiniProgram") {
+                                WMPF.getInstance().miniProgramApi.launchMiniProgram(startParams)
+                            }
+                        }.show()
                 }
             }
         }
@@ -127,23 +132,29 @@ class DetailActivity : AppCompatActivity() {
         // Step 2.1
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
             val startParams = WMPFStartAppParams(
-                    DEMO_APP_ID, "", WMPFStartAppParams.WMPFAppType.APP_TYPE_RELEASE
+                DEMO_APP_ID, "", WMPFStartAppParams.WMPFAppType.APP_TYPE_RELEASE
             )
 
             AlertDialog.Builder(this).setNegativeButton("normal") { _, _ ->
                 invokeWMPFApi("launchMiniProgram") {
-                    WMPF.getInstance().miniProgramApi.launchMiniProgram(startParams,
-                            false, WMPFMiniProgramApi.LandscapeMode.NORMAL)
+                    WMPF.getInstance().miniProgramApi.launchMiniProgram(
+                        startParams,
+                        false, WMPFMiniProgramApi.LandscapeMode.NORMAL
+                    )
                 }
             }.setNeutralButton("landscape compat") { _, _ ->
                 invokeWMPFApi("launchMiniProgram") {
-                    WMPF.getInstance().miniProgramApi.launchMiniProgram(startParams,
-                            false, WMPFMiniProgramApi.LandscapeMode.LANDSCAPE_COMPAT)
+                    WMPF.getInstance().miniProgramApi.launchMiniProgram(
+                        startParams,
+                        false, WMPFMiniProgramApi.LandscapeMode.LANDSCAPE_COMPAT
+                    )
                 }
             }.setPositiveButton("landscape") { _, _ ->
                 invokeWMPFApi("launchMiniProgram") {
-                    WMPF.getInstance().miniProgramApi.launchMiniProgram(startParams,
-                            false, WMPFMiniProgramApi.LandscapeMode.LANDSCAPE)
+                    WMPF.getInstance().miniProgramApi.launchMiniProgram(
+                        startParams,
+                        false, WMPFMiniProgramApi.LandscapeMode.LANDSCAPE
+                    )
                 }
             }.show()
         }
@@ -151,9 +162,13 @@ class DetailActivity : AppCompatActivity() {
         // Step 2.2
         findViewById<Button>(R.id.btn_launch_wxa_app_by_target_path).setOnClickListener {
             invokeWMPFApi("launchMiniProgram") {
-                WMPF.getInstance().miniProgramApi.launchMiniProgram(WMPFStartAppParams(
-                        DEMO_APP_ID, "page/component/pages/view/view", WMPFStartAppParams.WMPFAppType.APP_TYPE_RELEASE
-                ))
+                WMPF.getInstance().miniProgramApi.launchMiniProgram(
+                    WMPFStartAppParams(
+                        DEMO_APP_ID,
+                        "packageComponent/pages/view/view/view",
+                        WMPFStartAppParams.WMPFAppType.APP_TYPE_RELEASE
+                    )
+                )
             }
         }
 
@@ -179,12 +194,9 @@ class DetailActivity : AppCompatActivity() {
         Log.i(TAG, "menuItem id" + item?.itemId)
         return when (item?.itemId) {
             0 -> {
-                Api.manageBackgroundMusic(true)
-                        .subscribe({
-                            Log.i(TAG, "success: $it")
-                        }, {
-                            Log.e(TAG, "error: $it")
-                        })
+                invokeWMPFApi("showManageUI") {
+                    WMPF.getInstance().musicApi.showManageUI()
+                }
                 true
             }
 
@@ -206,19 +218,19 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun updateUserInfo(
-            userInfo: Cgi.UserInfo,
-            deviceId: String
+        userInfo: Cgi.UserInfo,
+        deviceId: String
     ) {
         userInfoTextView!!.text = String.format(
-                "openId:%s\nnick: %s\nsex: %d\nprovince: %s\ncity: %s\ncountry: %s\nunionId: %s\ndeviceId:%s",
-                userInfo.openId,
-                userInfo.nickname,
-                userInfo.sex,
-                userInfo.province,
-                userInfo.city,
-                userInfo.country,
-                userInfo.unionId,
-                deviceId
+            "openId:%s\nnick: %s\nsex: %d\nprovince: %s\ncity: %s\ncountry: %s\nunionId: %s\ndeviceId:%s",
+            userInfo.openId,
+            userInfo.nickname,
+            userInfo.sex,
+            userInfo.province,
+            userInfo.city,
+            userInfo.country,
+            userInfo.unionId,
+            deviceId
         )
 
         userInfoTextView!!.setOnLongClickListener {
@@ -230,12 +242,14 @@ class DetailActivity : AppCompatActivity() {
         Glide.with(this).load(userInfo.avatarUrl).into(avatarImageView!!)
     }
 
+    @Suppress("DEPRECATION")
     @SuppressLint("MissingPermission", "HardwareIds")
     fun getIMEI(): String {
         val telephonyMgr = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
         return telephonyMgr.deviceId ?: "error"
     }
 
+    @Suppress("DEPRECATION")
     private fun copyToClip(content: String?) {
         val cmb = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         cmb.text = content ?: ""

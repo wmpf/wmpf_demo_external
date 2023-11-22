@@ -20,14 +20,6 @@
         android:layout_height="50dp"
         android:hint="Msg Content" />
 
-    <EditText
-        android:id="@+id/et_delay"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:hint="Delay Second (optional)"
-        android:text="0"
-        android:visibility="gone" />
-
     <Button
         android:id="@+id/emitter"
         android:layout_width="match_parent"

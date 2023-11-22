@@ -38,7 +38,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="Step 1.2 Init WMPF Service"
+        android:text="Step 1.2 Login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_init_wmpf_activate_device" />
@@ -53,7 +53,7 @@
         android:text="Step 1-BONUS 触发WMPF Runtime预载用于加快小程序启动"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_init_wmpf"/>
+        app:layout_constraintTop_toBottomOf="@id/btn_init_wmpf" />
 
 
     <Button

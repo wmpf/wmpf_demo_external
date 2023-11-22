@@ -5,7 +5,6 @@ import android.os.Looper
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
-import java.lang.Error
 
 class WMPFDemoLogger(
     private val tag: String,

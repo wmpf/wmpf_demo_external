@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.Toast
-import com.tencent.mm.opensdk.utils.Log
 import com.tencent.wmpf.demo.utils.WMPFDemoUtil
 
 class ThirdPartApiDemoActivity : AppCompatActivity() {
@@ -17,10 +17,11 @@ class ThirdPartApiDemoActivity : AppCompatActivity() {
             val appId = "replace with your invoke appId here"
             val timeStamp = intent.extras?.getLong(ThirdpartConstants.Printer.Key.KEY_TIME_STAMP)
             val token = intent.extras?.getString(ThirdpartConstants.Printer.Key.KEY_TOKEN)
-            val tokenLocalGen= WMPFDemoUtil.getMD5String(appId + "_" + timeStamp)
+            val tokenLocalGen = WMPFDemoUtil.getMD5String(appId + "_" + timeStamp)
             if (tokenLocalGen != token) {
                 Log.e(TAG, "token invalid")
-                Toast.makeText(applicationContext, "printer: token invalid!", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "printer: token invalid!", Toast.LENGTH_LONG)
+                    .show()
                 setResult(Activity.RESULT_CANCELED)
                 finish()
                 return
@@ -33,7 +34,10 @@ class ThirdPartApiDemoActivity : AppCompatActivity() {
                 setOnCancelListener {
                     val intent = Intent().apply {
                         // 将执行结果通知到wmpf，否则前端接受到的回调参数会错误
-                        putExtra(ThirdpartConstants.Printer.Key.KEY_RESULT_CODE, ThirdpartConstants.Printer.Code.CODE_SUCCESS)
+                        putExtra(
+                            ThirdpartConstants.Printer.Key.KEY_RESULT_CODE,
+                            ThirdpartConstants.Printer.Code.CODE_SUCCESS
+                        )
                     }
                     setResult(RESULT_OK, intent)
                     finish()
@@ -44,7 +48,7 @@ class ThirdPartApiDemoActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "ThirdPartApiDemoActivity"
+        private const val TAG = "ThirdPartApiDemo"
     }
 
     override fun onDestroy() {

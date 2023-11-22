@@ -3,8 +3,11 @@ package com.tencent.wmpf.demo
 import android.util.Log
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
 /**
@@ -20,21 +23,32 @@ object Cgi {
     private const val OAUTH_TOKEN_API = "https://api.weixin.qq.com/sns/oauth2/access_token"
     private const val USER_INFO_API = "https://api.weixin.qq.com/sns/userinfo"
     private const val DEMO_DEVICE_INFO = "https://open.weixin.qq.com/wxaruntime/getdemodeviceinfo"
+    private const val ACCESS_TOKEN = "https://api.weixin.qq.com/cgi-bin/token"
+    private const val PUSH_MSG = "https://api.weixin.qq.com/wxa/business/runtime/pushappmsg"
 
-
-    private fun getJSON(url: HttpUrl): JSONObject {
+    private fun getJSON(url: HttpUrl, postBody: RequestBody? = null): JSONObject {
         Log.d(TAG, "send request: $url")
 
-        val req = Request.Builder().url(url).build()
-        val res = client.newCall(req).execute()
+        val req = Request.Builder().url(url)
+
+        if (postBody != null) {
+            req.post(postBody)
+        }
+
+        val res = client.newCall(req.build()).execute()
         if (res.isSuccessful) {
             val body = res.body!!.string()
             val json = JSONObject(body)
             val errCode = json.optInt("ErrCode", 0)
             val errMsg = json.optString("ErrMsg", "")
+            val errCode1 = json.optInt("errcode", 0)
+            val errMsg1 = json.optString("errmsg", "")
             if (errCode != 0) {
                 Log.e(TAG, "request failed: $body")
                 throw RuntimeException("request failed: $errMsg (errCode=$errCode)")
+            } else if (errCode1 != 0) {
+                Log.e(TAG, "request failed: $body")
+                throw RuntimeException("request failed: $errMsg1 (errCode=$errCode1)")
             } else {
                 Log.d(TAG, "request success: $body")
             }
@@ -120,8 +134,40 @@ object Cgi {
             result.optInt("key_version", 0),
             result.optLong("expiredTimeMs") * 1000L + System.currentTimeMillis()
         )
-        Log.d(RequestsRepo.TAG, "getDeviceInfo: $deviceInfo, appIdList = $appIdList")
+        Log.d(TAG, "getDeviceInfo: $deviceInfo, appIdList = $appIdList")
 
         return deviceInfo
+    }
+
+    fun getAccessToken(hostAppId: String, secret: String): String {
+        Log.d(TAG, "getAccessToken, hostAppId=$hostAppId")
+
+        val builder = ACCESS_TOKEN.toHttpUrl().newBuilder()
+            .addQueryParameter("grant_type", "client_credential")
+            .addQueryParameter("appid", hostAppId)
+            .addQueryParameter("secret", secret)
+
+        val result = getJSON(builder.build())
+
+        return result.optString("access_token")
+    }
+
+    fun postMsg(
+        accessToken: String,
+        token: String,
+        msg: String,
+    ): JSONObject {
+        Log.d(TAG, "postMsg, pushToken=$token msg=$msg")
+
+        val builder = PUSH_MSG.toHttpUrl().newBuilder()
+            .addQueryParameter("grant_type", "client_credential")
+            .addQueryParameter("access_token", accessToken)
+
+        val body = JSONObject().put("msg", msg).put("push_token", token)
+
+        return getJSON(
+            builder.build(),
+            body.toString().toRequestBody("application/json".toMediaType())
+        )
     }
 }

@@ -1,18 +1,11 @@
 package com.tencent.wmpf.demo.ui
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-
 import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mmkv.MMKV
 import com.tencent.wmpf.cli.api.WMPF
@@ -33,7 +26,7 @@ class FastExperienceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fast_experience)
 
-        if (!WMPFDemoUtil.checkPermission(this)){
+        if (!WMPFDemoUtil.checkPermission(this)) {
             WMPFDemoUtil.requestPermission(this)
         }
 

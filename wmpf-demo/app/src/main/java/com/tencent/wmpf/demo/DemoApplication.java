@@ -17,9 +17,9 @@ import com.tencent.wmpf.demo.utils.WMPFDemoUtil;
  * For 4.4 multi dex support
  */
 public class DemoApplication extends Application {
-    static String TAG = "WMPFDemoApplication";
-    static String ERR_NOT_INSTALLED = "WMPF Service APK 未安装。";
-    static String ERR_LOW_VERSION = "WMPF 版本过低，请升级到 2.1 及以上版本。当前版本为 ";
+    private static String TAG = "WMPFDemoApplication";
+    private static String ERR_NOT_INSTALLED = "WMPF Service APK 未安装。";
+    private static String ERR_LOW_VERSION = "WMPF 版本过低，请升级到 2.1 及以上版本。当前版本为 ";
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -41,7 +41,7 @@ public class DemoApplication extends Application {
             String version = WMPFDemoUtil.INSTANCE.getWmpfVersion(this);
 
             Log.i(TAG, "WMPF Service APK Version: " + version + "(" + versionCode + ")");
-            if (versionCode < 9010001) {
+            if (versionCode < 9010001) { // 9010001 为 2.1.0
                 Log.e(TAG, ERR_LOW_VERSION + version);
                 Toast.makeText(this, ERR_LOW_VERSION + version, Toast.LENGTH_LONG).show();
             }

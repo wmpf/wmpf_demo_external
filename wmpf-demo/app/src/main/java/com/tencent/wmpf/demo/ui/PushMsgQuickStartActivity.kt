@@ -1,16 +1,19 @@
 package com.tencent.wmpf.demo.ui
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
+import com.tencent.wmpf.cli.api.WMPF
+import com.tencent.wmpf.cli.api.WMPFLifecycleListener
+import com.tencent.wmpf.cli.event.AbstractOnPushMsgEventListener
+import com.tencent.wmpf.cli.event.WMPFPushMsgData
+import com.tencent.wmpf.demo.BuildConfig
+import com.tencent.wmpf.demo.Cgi
 import com.tencent.wmpf.demo.R
-import com.tencent.wmpf.demo.RequestsRepo
+import com.tencent.wmpf.demo.utils.WMPFDemoLogger
+import com.tencent.wmpf.demo.utils.WMPFDemoUtil
 
 class PushMsgQuickStartActivity : AppCompatActivity() {
 
@@ -18,102 +21,102 @@ class PushMsgQuickStartActivity : AppCompatActivity() {
         private const val TAG = "PushMsgActivity"
     }
 
-    private val consoleView: TextView by lazy {
-        findViewById<TextView>(R.id.console)
-    }
+    private lateinit var logger: WMPFDemoLogger
 
-    private val delayView by lazy {
-        findViewById<EditText>(R.id.et_delay)
+    private val consoleView: TextView by lazy {
+        findViewById(R.id.console)
     }
 
     private val appIdView: EditText by lazy {
-        findViewById<EditText>(R.id.et_app_id)
+        findViewById(R.id.et_app_id)
     }
 
     private val msgView: EditText by lazy {
-        findViewById<EditText>(R.id.et_msg)
+        findViewById(R.id.et_msg)
     }
 
     private val emitterView: Button by lazy {
-        findViewById<Button>(R.id.emitter)
+        findViewById(R.id.emitter)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_push_msg_quick_start)
+        logger = WMPFDemoLogger(TAG, this, consoleView)
+
         emitterView.setOnClickListener {
-            try {
-                if (pushToken.isNotBlank() && accessToken.isNotBlank()) {
-                    RequestsRepo.postMsg(accessToken, pushToken, msgView.text.toString(), 0) { success, ret ->
-                        printlnToView("3. 推送请求: isSuccess = $success, ret = $ret")
-                        printlnToView("4. 等待推送消息返回...")
-                    }
-                } else {
-                    start()
-                }
-            } catch (e: Exception) {
-                Log.d(TAG, "onCreate: ")
+            val appId = appIdView.text.toString()
+            val msg = msgView.text.toString()
+
+            if (appId.isBlank()) {
+                logger.e("appId can not be blank")
+                return@setOnClickListener
             }
+
+            WMPFDemoUtil.execute {
+                start(appId, msg)
+            }
+
         }
     }
 
     private var pushToken = ""
     private var accessToken = ""
-
-    private fun start() {
-        val appId = appIdView.text.toString()
-        val msg = msgView.text.toString()
-        var delay = Integer.valueOf(delayView.text.toString())
-        if (delay < 0) delay = 0
-
-        if (appId.isBlank()) {
-            toast("appId can not be blank")
-            return
+    private fun start(appId: String, msg: String) {
+        try {
+            setupPushCallback()
+            if (accessToken.isBlank()) {
+                logger.i("**Test Only: 该示例没有维护状态, 不应该多次获取token**")
+                logger.i("1. 获取access_token...")
+                accessToken =
+                    Cgi.getAccessToken(BuildConfig.HOST_APPID, BuildConfig.HOST_APPSECRET)
+            }
+            if (pushToken.isBlank()) {
+                val res = WMPF.getInstance().deviceApi.getPushToken(appId)
+                logger.i("accessToken=$accessToken")
+                logger.i("2. 获取push_token...")
+                pushToken = res.pushToken
+                logger.i("pushToken=$accessToken, expireTime=${res.expireTimestamp}")
+            }
+            logger.i("3. 推送消息 ${msg}...")
+            val pushRes = Cgi.postMsg(accessToken, pushToken, msg)
+            logger.i("4. 推送请求成功：$pushRes")
+        } catch (e: Exception) {
+            logger.e("发送失败", e)
         }
-        printlnToView("**Test Only: 该示例没有维护状态, 不应该多次获取token**")
-        printlnToView("1. 获取access_token...")
-        RequestsRepo.getAccessToken { success, ret ->
-            var accessToken = ""
-            if (success) {
-                accessToken = ret
-                this.accessToken = accessToken
-                printlnToView("result: $ret")
-                printlnToView("2. 获取push_token...")
-                RequestsRepo.getPushToken(appId) { success, ret, expireTime, errMsg ->
-                    if (success) {
-                        printlnToView("result: token = [$ret], expireTime = [$expireTime]")
-                    } else {
-                        printlnToView("result: $errMsg")
-                        return@getPushToken
-                    }
-                    val pushToken = ret
-                    this.pushToken = pushToken
+    }
 
-                    printlnToView("使用获取push_token = $pushToken, " +
-                            "accessToken = $accessToken, msg = ${msgView.text}, delay = $delay 推送")
-                    RequestsRepo.postMsg(accessToken, pushToken, msgView.text.toString(), delay) { success, ret ->
-                        printlnToView("3. 推送请求: isSuccess = $success, ret = $ret")
-                        printlnToView("4. 等待推送消息返回...")
-                        RequestsRepo.setMsgCallback(this@PushMsgQuickStartActivity)
+    private var hasPushCallback = false
+
+    private fun setupPushCallback() {
+        if (hasPushCallback) return
+        if (WMPFDemoUtil.getWmpfVersionCode(application) < 9020001) {
+            // 2.1 版本使用旧接口
+            WMPF.getInstance().deviceApi.setPushMsgCallback {
+                handlePushMsg(it)
+            }
+            WMPF.getInstance().addWMPFLifecycleListener(object : WMPFLifecycleListener {
+                override fun onWMPFRestart() {
+                    // WMPF 重启后需要重新绑定
+                    WMPF.getInstance().deviceApi.setPushMsgCallback {
+                        handlePushMsg(it)
                     }
                 }
-            } else {
-                printlnToView("result: $ret")
-            }
+            })
+        } else {
+            // 高版本使用新接口
+            WMPF.getInstance().deviceApi.registerPushMsgEventListener(object :
+                AbstractOnPushMsgEventListener() {
+                override fun onInvoke(data: WMPFPushMsgData) {
+                    handlePushMsg(data.message)
+                }
+            })
+            // 新接口 WMPF 重启后会自动重新绑定
         }
-
+        hasPushCallback = true
     }
 
-    @SuppressLint("SetTextI18n")
-    fun printlnToView(content: String) {
-        runOnUiThread {
-            val temp = consoleView.text.toString()
-            consoleView.text = temp + "\n" + content
-        }
+    private fun handlePushMsg(msg: String) {
+        logger.i("收到推送消息: [$msg]")
     }
-
-}
-
-fun Activity.toast(msg: String) {
-    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 }

@@ -1,4 +1,4 @@
-package com.tencent.wmpf.cli.task;
+package com.tencent.wmpf.demo.ui;
 
 import android.app.Activity;
 import android.content.Context;
