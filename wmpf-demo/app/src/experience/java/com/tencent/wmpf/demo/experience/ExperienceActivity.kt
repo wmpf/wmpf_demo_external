@@ -1,12 +1,12 @@
 package com.tencent.wmpf.demo.experience
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mmkv.MMKV
 import com.tencent.wmpf.app.WMPFBoot

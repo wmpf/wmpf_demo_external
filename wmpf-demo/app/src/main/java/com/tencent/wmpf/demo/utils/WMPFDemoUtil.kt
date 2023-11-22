@@ -9,8 +9,8 @@ import android.content.pm.PackageManager.NameNotFoundException
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.app.ActivityCompat
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import com.tencent.wmpf.app.WMPFInfo
 import com.tencent.wmpf.cli.api.WMPFClientDefaultExecutor
 import java.security.MessageDigest
@@ -29,9 +29,9 @@ object WMPFDemoUtil {
                 runnable.run()
             } catch (throwable: Throwable) {
                 Log.wtf(
-                        TAG,
-                        "failed: " + throwable.message,
-                        throwable
+                    TAG,
+                    "failed: " + throwable.message,
+                    throwable
                 )
                 throw IllegalStateException(throwable)
             }
@@ -48,8 +48,8 @@ object WMPFDemoUtil {
     @Throws(NameNotFoundException::class)
     fun getWmpfVersion(app: Application): String? {
         val info = app.packageManager.getApplicationInfo(
-                WMPFInfo.WMPF_APP_PACKAGE_NAME,
-                PackageManager.GET_META_DATA
+            WMPFInfo.WMPF_APP_PACKAGE_NAME,
+            PackageManager.GET_META_DATA
         )
         return info.metaData.getString(WMPFInfo.WMPF_APP_PACKAGE_NAME + ".BuildInfo.BUILD_WMPF_VERSION_NAME")
     }
@@ -83,14 +83,15 @@ object WMPFDemoUtil {
     fun requestPermission(context: Activity) {
         try {
             ActivityCompat.requestPermissions(
-                    context, arrayOf(
+                context, arrayOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.CAMERA,
                     Manifest.permission.READ_PHONE_STATE
-            ), 0)
+                ), 0
+            )
         } catch (e: Exception) {
 
         }

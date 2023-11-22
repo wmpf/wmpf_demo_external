@@ -6,8 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.*
@@ -15,6 +13,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 
 import com.bumptech.glide.Glide
 import com.tencent.luggage.demo.wxapi.DeviceInfo
@@ -206,13 +206,12 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
             0 -> if (requestCode == Activity.RESULT_OK) {
-                data.getStringExtra("code")
+                data?.getStringExtra("code")
             }
         }
     }

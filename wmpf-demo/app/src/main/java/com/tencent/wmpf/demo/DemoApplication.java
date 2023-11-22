@@ -3,9 +3,10 @@ package com.tencent.wmpf.demo;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.multidex.MultiDex;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.multidex.MultiDex;
 
 import com.tencent.luggage.demo.wxapi.DeviceInfo;
 import com.tencent.mmkv.MMKV;
