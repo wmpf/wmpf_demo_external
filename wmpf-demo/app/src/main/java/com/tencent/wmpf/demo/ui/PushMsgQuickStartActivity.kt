@@ -56,7 +56,6 @@ class PushMsgQuickStartActivity : AppCompatActivity() {
             WMPFDemoUtil.execute {
                 start(appId, msg)
             }
-
         }
     }
 
@@ -68,8 +67,7 @@ class PushMsgQuickStartActivity : AppCompatActivity() {
             if (accessToken.isBlank()) {
                 logger.i("**Test Only: 该示例没有维护状态, 不应该多次获取token**")
                 logger.i("1. 获取access_token...")
-                accessToken =
-                    Cgi.getAccessToken(BuildConfig.HOST_APPID, BuildConfig.HOST_APPSECRET)
+                accessToken = Cgi.getAccessToken(BuildConfig.HOST_APPID, BuildConfig.HOST_APPSECRET)
             }
             if (pushToken.isBlank()) {
                 val res = WMPF.getInstance().deviceApi.getPushToken(appId)
@@ -90,7 +88,7 @@ class PushMsgQuickStartActivity : AppCompatActivity() {
 
     private fun setupPushCallback() {
         if (hasPushCallback) return
-        if (WMPFDemoUtil.getWmpfVersionCode(application) < 9020001) {
+        if (WMPFDemoUtil.isLessThanWMPF22(application)) {
             // 2.1 版本使用旧接口
             WMPF.getInstance().deviceApi.setPushMsgCallback {
                 handlePushMsg(it)

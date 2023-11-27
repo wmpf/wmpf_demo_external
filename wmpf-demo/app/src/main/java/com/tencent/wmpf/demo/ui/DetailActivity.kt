@@ -15,16 +15,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-
 import com.bumptech.glide.Glide
-import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFAccountApi
 import com.tencent.wmpf.cli.api.WMPFApiException
 import com.tencent.wmpf.cli.api.WMPFMiniProgramApi
 import com.tencent.wmpf.cli.api.WMPFMusicController
 import com.tencent.wmpf.cli.model.WMPFStartAppParams
+import com.tencent.wmpf.cli.model.protocol.WMPFStartAppRequest
 import com.tencent.wmpf.cli.task.*
+import com.tencent.wmpf.demo.BuildConfig
 import com.tencent.wmpf.demo.Cgi
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.utils.WMPFDemoUtil
@@ -95,9 +95,10 @@ class DetailActivity : AppCompatActivity() {
 
                 }
                 if (oauthCode != null) {
-                    val authInfo =
-                        Cgi.getOAuthInfo(DeviceInfo.APP_ID, DeviceInfo.APP_SECRET, oauthCode)
-                    val userInfo = Cgi.getUserInfo(DeviceInfo.APP_ID, authInfo.accessToken)
+                    val authInfo = Cgi.getOAuthInfo(
+                        BuildConfig.HOST_APPID, BuildConfig.HOST_APPSECRET, oauthCode
+                    )
+                    val userInfo = Cgi.getUserInfo(BuildConfig.HOST_APPID, authInfo.accessToken)
                     Log.d(TAG, "userInfo: $userInfo")
                     runOnUiThread {
                         updateUserInfo(userInfo, getIMEI())
@@ -138,23 +139,22 @@ class DetailActivity : AppCompatActivity() {
             AlertDialog.Builder(this).setNegativeButton("normal") { _, _ ->
                 invokeWMPFApi("launchMiniProgram") {
                     WMPF.getInstance().miniProgramApi.launchMiniProgram(
-                        startParams,
-                        false, WMPFMiniProgramApi.LandscapeMode.NORMAL
+                        startParams, false, WMPFMiniProgramApi.LandscapeMode.NORMAL
                     )
                 }
             }.setNeutralButton("landscape compat") { _, _ ->
                 invokeWMPFApi("launchMiniProgram") {
                     WMPF.getInstance().miniProgramApi.launchMiniProgram(
-                        startParams,
-                        false, WMPFMiniProgramApi.LandscapeMode.LANDSCAPE_COMPAT
+                        startParams, false, WMPFMiniProgramApi.LandscapeMode.LANDSCAPE_COMPAT
                     )
                 }
             }.setPositiveButton("landscape") { _, _ ->
                 invokeWMPFApi("launchMiniProgram") {
-                    WMPF.getInstance().miniProgramApi.launchMiniProgram(
-                        startParams,
-                        false, WMPFMiniProgramApi.LandscapeMode.LANDSCAPE
-                    )
+                    // 示例直接传 WMPFStartAppRequest
+                    WMPF.getInstance().miniProgramApi.launchMiniProgram(WMPFStartAppRequest().apply {
+                        this.params = startParams
+                        this.landscapeMode = WMPFMiniProgramApi.LandscapeMode.LANDSCAPE
+                    })
                 }
             }.show()
         }
@@ -217,8 +217,7 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun updateUserInfo(
-        userInfo: Cgi.UserInfo,
-        deviceId: String
+        userInfo: Cgi.UserInfo, deviceId: String
     ) {
         userInfoTextView!!.text = String.format(
             "openId:%s\nnick: %s\nsex: %d\nprovince: %s\ncity: %s\ncountry: %s\nunionId: %s\ndeviceId:%s",

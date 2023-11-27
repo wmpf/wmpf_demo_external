@@ -63,10 +63,8 @@ object Cgi {
     fun getOAuthInfo(appId: String, secret: String, code: String): AuthInfo {
         Log.d(TAG, "get oauth info, appId=$appId, code=$code")
 
-        val urlBuilder = OAUTH_TOKEN_API.toHttpUrl().newBuilder()
-            .addQueryParameter("appid", appId)
-            .addQueryParameter("secret", secret)
-            .addQueryParameter("code", code)
+        val urlBuilder = OAUTH_TOKEN_API.toHttpUrl().newBuilder().addQueryParameter("appid", appId)
+            .addQueryParameter("secret", secret).addQueryParameter("code", code)
             .addQueryParameter("grant_type", "authorization_code")
 
         val res = getJSON(urlBuilder.build())
@@ -88,8 +86,7 @@ object Cgi {
     fun getUserInfo(openId: String?, accessToken: String?): UserInfo {
         Log.d(TAG, "getUserInfo, openId=$openId, accessToken=$accessToken")
 
-        val builder = USER_INFO_API.toHttpUrl().newBuilder()
-            .addQueryParameter("openid", openId)
+        val builder = USER_INFO_API.toHttpUrl().newBuilder().addQueryParameter("openid", openId)
             .addQueryParameter("access_token", accessToken)
 
         val result = getJSON(builder.build())
@@ -120,10 +117,8 @@ object Cgi {
     fun getTestDeviceInfo(ticket: String, wxaAppId: String, hostAppId: String): DeviceInfo {
         Log.d(TAG, "getTestDeviceInfo, ticket=$ticket, wxaAppId=$wxaAppId, hostAppId=$hostAppId")
 
-        val builder = DEMO_DEVICE_INFO.toHttpUrl().newBuilder()
-            .addQueryParameter("ticket", ticket)
-            .addQueryParameter("wxaappid", wxaAppId)
-            .addQueryParameter("hostappid", hostAppId)
+        val builder = DEMO_DEVICE_INFO.toHttpUrl().newBuilder().addQueryParameter("ticket", ticket)
+            .addQueryParameter("wxaappid", wxaAppId).addQueryParameter("hostappid", hostAppId)
 
         val result = getJSON(builder.build())
         val appIdList = result.optJSONArray("appid_list")
@@ -144,8 +139,7 @@ object Cgi {
 
         val builder = ACCESS_TOKEN.toHttpUrl().newBuilder()
             .addQueryParameter("grant_type", "client_credential")
-            .addQueryParameter("appid", hostAppId)
-            .addQueryParameter("secret", secret)
+            .addQueryParameter("appid", hostAppId).addQueryParameter("secret", secret)
 
         val result = getJSON(builder.build())
 
@@ -159,15 +153,14 @@ object Cgi {
     ): JSONObject {
         Log.d(TAG, "postMsg, pushToken=$token msg=$msg")
 
-        val builder = PUSH_MSG.toHttpUrl().newBuilder()
-            .addQueryParameter("grant_type", "client_credential")
-            .addQueryParameter("access_token", accessToken)
+        val builder =
+            PUSH_MSG.toHttpUrl().newBuilder().addQueryParameter("grant_type", "client_credential")
+                .addQueryParameter("access_token", accessToken)
 
         val body = JSONObject().put("msg", msg).put("push_token", token)
 
         return getJSON(
-            builder.build(),
-            body.toString().toRequestBody("application/json".toMediaType())
+            builder.build(), body.toString().toRequestBody("application/json".toMediaType())
         )
     }
 }

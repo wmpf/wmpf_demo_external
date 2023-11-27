@@ -12,6 +12,7 @@ interface ThirdpartConstants {
                 val KEY_RESULT_CODE = "result_code"
             }
         }
+
         interface Code {
             companion object {
                 val CODE_SUCCESS = 10000
@@ -19,6 +20,7 @@ interface ThirdpartConstants {
                 val CODE_PRINT = 10002
             }
         }
+
         interface Action {
             companion object {
                 val ACTION_THIRDPART = "com.tencent.wmpf.action.WMPF_PRINTER"

@@ -6,12 +6,14 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.tencent.mm.ipcinvoker.type.IPCVoid
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFAccountApi
 import com.tencent.wmpf.cli.api.WMPFApiException
 import com.tencent.wmpf.cli.api.WMPFLifecycleListener
 import com.tencent.wmpf.cli.api.WMPFMiniProgramApi
 import com.tencent.wmpf.cli.api.WMPFMusicController
+import com.tencent.wmpf.cli.event.AbstractOnDeviceActivationOutdatedEventListener
 import com.tencent.wmpf.cli.event.AbstractOnMusicStatusEventListener
 import com.tencent.wmpf.cli.event.WMPFMusicStatusData
 import com.tencent.wmpf.cli.model.WMPFStartAppParams
@@ -34,6 +36,14 @@ class DocumentActivity : AppCompatActivity() {
         Log.e(TAG, message)
         runOnUiThread {
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun showNotSupported(apiName: String) {
+        val msg = "当前版本 WMPF 暂不支持 $apiName"
+        Log.e(TAG, msg)
+        runOnUiThread {
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -67,6 +77,15 @@ class DocumentActivity : AppCompatActivity() {
             }
         }
 
+        findViewById<Button>(R.id.btn_active_status_outdated).setOnClickListener {
+            invokeWMPFApi("registerDeviceActivationOutdatedEventListener") {
+                if (setupActivationOutdatedListener()) {
+                    showOk("监听成功")
+                }
+            }
+        }
+
+
 
         findViewById<Button>(R.id.btn_preload_time).setOnClickListener {
             invokeWMPFApi("preload") {
@@ -81,8 +100,7 @@ class DocumentActivity : AppCompatActivity() {
             )
             invokeWMPFApi("launchMiniProgram") {
                 WMPF.getInstance().miniProgramApi.launchMiniProgram(
-                    startParams,
-                    false, WMPFMiniProgramApi.LandscapeMode.NORMAL
+                    startParams, false, WMPFMiniProgramApi.LandscapeMode.NORMAL
                 )
                 showOk("启动成功")
             }
@@ -98,8 +116,7 @@ class DocumentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_close_wxa_app).setOnClickListener {
             invokeWMPFApi("closeWxaApp") {
                 WMPF.getInstance().miniProgramApi.closeWxaApp(
-                    DEMO_APP_ID,
-                    false
+                    DEMO_APP_ID, false
                 )
                 showOk("关闭成功")
             }
@@ -164,6 +181,31 @@ class DocumentActivity : AppCompatActivity() {
             val intent = Intent(this, PushMsgQuickStartActivity::class.java)
             startActivity(intent)
         }
+
+        findViewById<Button>(R.id.btn_device_register).setOnClickListener {
+            showOk("设备注册过程不可逆，demo 暂不支持调用")
+        }
+
+        findViewById<Button>(R.id.btn_device_prefetch).setOnClickListener {
+            invokeWMPFApi("") {
+                val result = WMPF.getInstance().miniProgramDeviceApi.prefetchDeviceToken()
+                if (result.errMsg == null) {
+                    showOk("预拉取成功")
+                } else {
+                    showOk("预拉取失败: ${result.errMsg}")
+                }
+            }
+        }
+        findViewById<Button>(R.id.btn_device_get_info).setOnClickListener {
+            if (WMPFDemoUtil.isLessThanWMPF22(application)) {
+                showNotSupported("registerDeviceActivationOutdatedEventListener")
+                return@setOnClickListener
+            }
+            invokeWMPFApi("") {
+                val info = WMPF.getInstance().miniProgramDeviceApi.miniProgramDeviceInfo
+                showOk("获取成功：sn=${info.sn}, modelId=${info.modelId}, isRegistered=${info.isRegistered}")
+            }
+        }
     }
 
     private var musicController = WMPFMusicController()
@@ -173,7 +215,7 @@ class DocumentActivity : AppCompatActivity() {
 
     private fun setupMusicListener() {
         if (hasMusicListener) return
-        if (WMPFDemoUtil.getWmpfVersionCode(application) < 9020001) {
+        if (WMPFDemoUtil.isLessThanWMPF22(application)) {
             // 2.1 版本使用旧接口
             musicController.addMusicPlayStatusListener(musicListener)
             WMPF.getInstance().addWMPFLifecycleListener(object : WMPFLifecycleListener {
@@ -199,6 +241,34 @@ class DocumentActivity : AppCompatActivity() {
         }
 
         hasMusicListener = true
+    }
+
+    private var hasOutdatedListener = false
+
+    private fun setupActivationOutdatedListener(): Boolean {
+        if (WMPFDemoUtil.isLessThanWMPF22(application)) {
+            showNotSupported("registerDeviceActivationOutdatedEventListener")
+            return false
+        } else {
+            if (hasOutdatedListener) return true
+            WMPF.getInstance().deviceApi.registerDeviceActivationOutdatedEventListener(object :
+                AbstractOnDeviceActivationOutdatedEventListener() {
+                override fun onInvoke(p0: IPCVoid) {
+                    Log.e(TAG, "设备激活已失效，可能超时或被其他设备占用")
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@DocumentActivity,
+                            "设备激活已失效，可能超时或被其他设备占用",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    // 尝试重新激活
+                    WMPF.getInstance().deviceApi.activateDevice()
+                }
+            })
+            hasOutdatedListener = true
+            return true
+        }
     }
 
 

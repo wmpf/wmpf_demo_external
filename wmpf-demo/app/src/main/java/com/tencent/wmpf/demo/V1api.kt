@@ -36,31 +36,29 @@ object V1api {
                 this.baseRequest.clientInvokeToken = WMPF.getInstance().deviceApi.invokeToken
             }
 
-            val result =
-                WMPFIPCInvoker.invokeAsync(
-                    request,
-                    IPCInvokerTask_AuthorizeStatus::class.java,
-                    object : IPCInvokeCallbackEx<WMPFAuthorizeStatusResponse> {
-                        override fun onBridgeNotFound() {
-                            it.onError(WMPFApiException(TaskError.DISCONNECTED))
-                        }
+            val result = WMPFIPCInvoker.invokeAsync(request,
+                IPCInvokerTask_AuthorizeStatus::class.java,
+                object : IPCInvokeCallbackEx<WMPFAuthorizeStatusResponse> {
+                    override fun onBridgeNotFound() {
+                        it.onError(WMPFApiException(TaskError.DISCONNECTED))
+                    }
 
-                        override fun onCallback(response: WMPFAuthorizeStatusResponse) {
-                            if (isSuccess(response)) {
-                                it.onSuccess(response)
-                            } else {
-                                it.onError(WMPFApiException(createTaskError(response)))
-                            }
+                    override fun onCallback(response: WMPFAuthorizeStatusResponse) {
+                        if (isSuccess(response)) {
+                            it.onSuccess(response)
+                        } else {
+                            it.onError(WMPFApiException(createTaskError(response)))
                         }
+                    }
 
-                        override fun onCaughtInvokeException(exception: java.lang.Exception?) {
-                            if (exception != null) {
-                                it.onError(exception)
-                            } else {
-                                it.onError(Exception("null"))
-                            }
+                    override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                        if (exception != null) {
+                            it.onError(exception)
+                        } else {
+                            it.onError(Exception("null"))
                         }
-                    })
+                    }
+                })
 
             if (!result) {
                 it.onError(Exception("invoke authorizeStatus fail"))

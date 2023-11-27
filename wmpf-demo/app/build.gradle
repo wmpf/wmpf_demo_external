@@ -13,9 +13,9 @@ android {
 
         // TODO: Change this to your appId applied from open.weixin.qq.com
         // WARNING: WXA Apps run on each host AppId could be limited.
-        buildConfigField 'String', 'HOST_APPID', "\"wx94ef6bb77b573d05\""
-        // TODO: Temp workaround. You should keep the APP_SECRET out from your apk.
-        buildConfigField 'String', 'HOST_APPSECRET', "\"app_secret\""
+        buildConfigField 'String', 'HOST_APPID', '"REPLACE_WITH_REAL_HOSTAPPID"'
+        // TODO: DANGEROUS! 危险！仅供测试使用，APP_SECRET 需要严格保密，不应流出服务端后台环境，更不应该放到客户端代码中。
+        buildConfigField 'String', 'HOST_APPSECRET', '"REPLACE_WITH_REAL_SECRET"'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

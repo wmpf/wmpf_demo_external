@@ -7,7 +7,6 @@ import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.tencent.luggage.demo.wxapi.DeviceInfo
 import com.tencent.mmkv.MMKV
 import com.tencent.wmpf.app.WMPFBoot
 import com.tencent.wmpf.cli.api.WMPF
@@ -17,6 +16,7 @@ import com.tencent.wmpf.cli.model.WMPFDevice
 import com.tencent.wmpf.cli.model.WMPFStartAppParams
 import com.tencent.wmpf.cli.model.WMPFStartAppParams.WMPFAppType
 import com.tencent.wmpf.cli.task.TaskError
+import com.tencent.wmpf.demo.BuildConfig
 import com.tencent.wmpf.demo.Cgi
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.utils.WMPFDemoLogger
@@ -53,17 +53,12 @@ class ExperienceActivity : AppCompatActivity() {
         var newDevice: WMPFDevice? = null
 
         try {
-            val res = Cgi.getTestDeviceInfo(ticket, appId, DeviceInfo.APP_ID)
+            val res = Cgi.getTestDeviceInfo(ticket, appId, BuildConfig.HOST_APPID)
             newDevice = WMPFDevice(
-                DeviceInfo.APP_ID,
-                res.productId,
-                res.keyVersion,
-                res.deviceId,
-                res.signature
+                BuildConfig.HOST_APPID, res.productId, res.keyVersion, res.deviceId, res.signature
             )
             logger.i("设备信息获取成功: $newDevice")
         } catch (e: Exception) {
-            DeviceInfo.reset()
             throw Exception("请求设备信息失败: " + e.message)
         }
 
@@ -94,10 +89,7 @@ class ExperienceActivity : AppCompatActivity() {
     }
 
     private fun launchMiniProgram(
-        appId: String,
-        ticket: String,
-        path: String,
-        landscapeMode: LandscapeMode
+        appId: String, ticket: String, path: String, landscapeMode: LandscapeMode
     ) {
         this.hideKeyboard()
         logger.clear()
@@ -167,5 +159,7 @@ class ExperienceActivity : AppCompatActivity() {
                 launchMiniProgram(appId, ticket, path, landscapeMode)
             }
         }
+
+        WMPFDemoUtil.checkWMPFVersion(this)
     }
 }
