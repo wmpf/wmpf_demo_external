@@ -50,7 +50,7 @@ class ExperienceActivity : AppCompatActivity() {
             throw Exception("请输入 appId 和 ticket")
         }
 
-        var newDevice: WMPFDevice? = null
+        var newDevice: WMPFDevice?
 
         try {
             val res = Cgi.getTestDeviceInfo(ticket, appId, BuildConfig.HOST_APPID)

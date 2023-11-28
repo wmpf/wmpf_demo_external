@@ -22,9 +22,6 @@ object WMPFDemoUtil {
     private const val ERR_LOW_VERSION = "WMPF 版本过低，请升级到 2.1 及以上版本。当前版本为 "
     private const val TAG = "WMPF.DemoUtil"
     private val executor = WMPFClientDefaultExecutor()
-    private val mainHandler: Handler by lazy {
-        Handler(Looper.getMainLooper())
-    }
 
     fun execute(runnable: Runnable) {
         executor.submit {
@@ -61,14 +58,6 @@ object WMPFDemoUtil {
          * 例如：wmpf-arm-alpha-release-v2.1.0-9010017-signed.apk versionCode 为 9010017
          */
         return getWmpfVersionCode(app) < 9020001
-    }
-
-    fun runOnUiThread(runnable: Runnable) {
-        if (Looper.getMainLooper().thread === Thread.currentThread()) {
-            runnable.run()
-        } else {
-            mainHandler.post(runnable)
-        }
     }
 
     fun checkPermission(context: Context): Boolean {

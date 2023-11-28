@@ -8,11 +8,8 @@ import com.tencent.wmpf.app.WMPFClientProvider.InvokeChannelDelegate
 import com.tencent.wmpf.utils.ExceptionalConsumer
 import org.json.JSONObject
 
-class ClientProvider : WMPFClientProvider(), InvokeChannelDelegate,
-    DeviceActivatedDelegate {
-    private val mHandler by lazy {
-        Handler(context?.mainLooper)
-    }
+class ClientProvider : WMPFClientProvider(), InvokeChannelDelegate, DeviceActivatedDelegate {
+    private lateinit var mHandler: Handler
     private val events = HashMap<String, String>()
 
     init {
@@ -21,6 +18,7 @@ class ClientProvider : WMPFClientProvider(), InvokeChannelDelegate,
     }
 
     override fun onCreate(): Boolean {
+        mHandler = Handler(context!!.mainLooper)
         return true // 直接返回 true 即可。
     }
 
@@ -42,9 +40,7 @@ class ClientProvider : WMPFClientProvider(), InvokeChannelDelegate,
 
         mHandler.postDelayed({
             try {
-                val payload = JSONObject()
-                    .put("event", event)
-                    .put("eventId", eventId)
+                val payload = JSONObject().put("event", event).put("eventId", eventId)
                 notifyInvokeChannelEvent(eventId, event, payload.toString())
             } catch (e: Exception) {
                 Log.e(TAG, "send event failed: " + e.message)
@@ -69,15 +65,10 @@ class ClientProvider : WMPFClientProvider(), InvokeChannelDelegate,
      * @param callback 向小程序返回结果的 callback
      */
     override fun invoke(
-        method: String,
-        args: String,
-        callback: ExceptionalConsumer<String, out Exception?>
+        method: String, args: String, callback: ExceptionalConsumer<String, out Exception>
     ) {
         Log.i(TAG, "invokeAsync: ${method}, args=[$args]")
-        val result = JSONObject()
-            .put("isAsync", true)
-            .put("command", method)
-            .put("data", args)
+        val result = JSONObject().put("isAsync", true).put("command", method).put("data", args)
         mHandler.postDelayed({
             try {
                 callback.consume(result.toString())
@@ -94,10 +85,7 @@ class ClientProvider : WMPFClientProvider(), InvokeChannelDelegate,
      */
     override fun invokeSync(method: String, args: String): String {
         Log.i(TAG, "invokeSync: ${method}, args=[$args]")
-        val result = JSONObject()
-            .put("isAsync", false)
-            .put("command", method)
-            .put("data", args)
+        val result = JSONObject().put("isAsync", false).put("command", method).put("data", args)
 
         return result.toString()
     }
