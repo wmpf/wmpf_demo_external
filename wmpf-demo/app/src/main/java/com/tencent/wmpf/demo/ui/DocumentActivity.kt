@@ -137,11 +137,13 @@ class DocumentActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btn_authorize_status_v1).setOnClickListener {
             // 仅作为混用 v1/v2 API 的示例
-            V1api.authorizeStatus().subscribe({
-                showOk("登录状态：${it.isAuthorize}")
-            }, {
-                showFail("authorizeStatus", it)
-            })
+            V1api.authorizeStatus().whenComplete { res, e ->
+                if (e != null) {
+                    showOk("登录状态：${res.isAuthorize}")
+                } else {
+                    showFail("authorizeStatus", e)
+                }
+            }
         }
 
 

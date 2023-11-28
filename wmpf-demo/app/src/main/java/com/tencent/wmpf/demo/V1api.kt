@@ -10,7 +10,7 @@ import com.tencent.wmpf.cli.task.pb.WMPFIPCInvoker
 import com.tencent.wmpf.cli.task.pb.proto.WMPFResponse
 import com.tencent.wmpf.proto.WMPFAuthorizeStatusRequest
 import com.tencent.wmpf.proto.WMPFAuthorizeStatusResponse
-import io.reactivex.Single
+import java.util.concurrent.CompletableFuture
 
 object V1api {
     // 示例如何混用 v1 api
@@ -29,40 +29,41 @@ object V1api {
         return response != null && response.baseResponse.errCode == TaskError.ErrType_OK
     }
 
-    fun authorizeStatus(): Single<WMPFAuthorizeStatusResponse> {
-        return Single.create {
-            val request = WMPFAuthorizeStatusRequest().apply {
-                this.baseRequest = WMPFBaseRequestHelper.checked()
-                this.baseRequest.clientInvokeToken = WMPF.getInstance().deviceApi.invokeToken
-            }
+    fun authorizeStatus(): CompletableFuture<WMPFAuthorizeStatusResponse> {
+        val future = CompletableFuture<WMPFAuthorizeStatusResponse>()
 
-            val result = WMPFIPCInvoker.invokeAsync(request,
-                IPCInvokerTask_AuthorizeStatus::class.java,
-                object : IPCInvokeCallbackEx<WMPFAuthorizeStatusResponse> {
-                    override fun onBridgeNotFound() {
-                        it.onError(WMPFApiException(TaskError.DISCONNECTED))
-                    }
-
-                    override fun onCallback(response: WMPFAuthorizeStatusResponse) {
-                        if (isSuccess(response)) {
-                            it.onSuccess(response)
-                        } else {
-                            it.onError(WMPFApiException(createTaskError(response)))
-                        }
-                    }
-
-                    override fun onCaughtInvokeException(exception: java.lang.Exception?) {
-                        if (exception != null) {
-                            it.onError(exception)
-                        } else {
-                            it.onError(Exception("null"))
-                        }
-                    }
-                })
-
-            if (!result) {
-                it.onError(Exception("invoke authorizeStatus fail"))
-            }
+        val request = WMPFAuthorizeStatusRequest().apply {
+            this.baseRequest = WMPFBaseRequestHelper.checked()
+            this.baseRequest.clientInvokeToken = WMPF.getInstance().deviceApi.invokeToken
         }
+
+        val result = WMPFIPCInvoker.invokeAsync(request,
+            IPCInvokerTask_AuthorizeStatus::class.java,
+            object : IPCInvokeCallbackEx<WMPFAuthorizeStatusResponse> {
+                override fun onBridgeNotFound() {
+                    future.completeExceptionally(WMPFApiException(TaskError.DISCONNECTED))
+                }
+
+                override fun onCallback(response: WMPFAuthorizeStatusResponse) {
+                    if (isSuccess(response)) {
+                        future.complete(response)
+                    } else {
+                        future.completeExceptionally(WMPFApiException(createTaskError(response)))
+                    }
+                }
+
+                override fun onCaughtInvokeException(exception: java.lang.Exception?) {
+                    if (exception != null) {
+                        future.completeExceptionally(exception)
+                    } else {
+                        future.completeExceptionally(Exception("null"))
+                    }
+                }
+            })
+
+        if (!result) {
+            future.completeExceptionally(Exception("invoke authorizeStatus fail"))
+        }
+        return future
     }
 }

@@ -76,8 +76,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'animated-vector-drawable'
         exclude group: 'com.android.support', module: 'support-fragment'
     }
-    api 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    api 'io.reactivex.rxjava2:rxjava:2.1.16'
 
     api 'com.squareup.okhttp3:okhttp:4.11.0'
 
