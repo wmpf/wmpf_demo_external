@@ -5,7 +5,7 @@ android {
     compileSdk 28
     defaultConfig {
         applicationId "com.tencent.wmpf.demo"
-        minSdkVersion 21
+        minSdkVersion 25
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 26
         versionCode 1
