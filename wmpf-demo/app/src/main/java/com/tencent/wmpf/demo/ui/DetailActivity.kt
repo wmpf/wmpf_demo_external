@@ -70,10 +70,6 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (!WMPFDemoUtil.checkPermission(this)) {
-            WMPFDemoUtil.requestPermission(this)
-        }
-
         userInfoTextView = findViewById(R.id.userInfoTextView)
         avatarImageView = findViewById(R.id.avatarImageView)
 

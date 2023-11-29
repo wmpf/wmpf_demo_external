@@ -24,10 +24,6 @@ class FastExperienceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fast_experience)
 
-        if (!WMPFDemoUtil.checkPermission(this)) {
-            WMPFDemoUtil.requestPermission(this)
-        }
-
         logger = WMPFDemoLogger(TAG, this, findViewById(R.id.tv_device_info_resp))
 
         val perf = PreferenceManager.getDefaultSharedPreferences(applicationContext)

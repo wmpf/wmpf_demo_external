@@ -1,17 +1,11 @@
 package com.tencent.wmpf.demo.utils
 
-import android.Manifest
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
 import com.tencent.wmpf.app.WMPFInfo
 import com.tencent.wmpf.cli.api.WMPFClientDefaultExecutor
 import java.security.MessageDigest
@@ -58,36 +52,6 @@ object WMPFDemoUtil {
          * 例如：wmpf-arm-alpha-release-v2.1.0-9010017-signed.apk versionCode 为 9010017
          */
         return getWmpfVersionCode(app) < 9020001
-    }
-
-    fun checkPermission(context: Context): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val ret0 = context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-            val ret1 = context.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            val ret2 = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-            val ret3 = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            val ret4 = context.checkSelfPermission(Manifest.permission.CAMERA)
-            val ret5 = context.checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-            return ret0 == PackageManager.PERMISSION_GRANTED && ret1 == PackageManager.PERMISSION_GRANTED && ret2 == PackageManager.PERMISSION_GRANTED && ret3 == PackageManager.PERMISSION_GRANTED && ret4 == PackageManager.PERMISSION_GRANTED && ret5 == PackageManager.PERMISSION_GRANTED
-        }
-        return false
-    }
-
-    fun requestPermission(context: Activity) {
-        try {
-            ActivityCompat.requestPermissions(
-                context, arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.READ_PHONE_STATE
-                ), 0
-            )
-        } catch (e: Exception) {
-
-        }
     }
 
     fun getMD5String(text: String): String {
