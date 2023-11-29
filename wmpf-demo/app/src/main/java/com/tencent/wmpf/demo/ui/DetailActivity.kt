@@ -8,13 +8,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.util.Log
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+
 import com.bumptech.glide.Glide
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFAccountApi
@@ -23,13 +25,11 @@ import com.tencent.wmpf.cli.api.WMPFMiniProgramApi
 import com.tencent.wmpf.cli.api.WMPFMusicController
 import com.tencent.wmpf.cli.model.WMPFStartAppParams
 import com.tencent.wmpf.cli.model.protocol.WMPFStartAppRequest
-import com.tencent.wmpf.cli.task.*
 import com.tencent.wmpf.demo.BuildConfig
 import com.tencent.wmpf.demo.Cgi
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.utils.WMPFDemoUtil
 import com.tencent.wmpf.demo.utils.WMPFDemoUtil.execute
-import com.tencent.wmpf.proto.*
 
 class DetailActivity : AppCompatActivity() {
     private var userInfoTextView: TextView? = null

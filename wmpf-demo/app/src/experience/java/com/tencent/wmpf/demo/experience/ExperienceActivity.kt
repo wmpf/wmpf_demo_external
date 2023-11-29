@@ -1,13 +1,13 @@
 package com.tencent.wmpf.demo.experience
 
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.tencent.mmkv.MMKV
 import com.tencent.wmpf.app.WMPFBoot
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFApiException
@@ -129,11 +129,11 @@ class ExperienceActivity : AppCompatActivity() {
         val ticketView = findViewById<TextView>(R.id.et_ticket)
         val pathView = findViewById<TextView>(R.id.et_path)
 
-        val kv = MMKV.mmkvWithID(TAG)
+        val perf = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
-        val savedAppId = kv.getString("appId", "")
-        val savedTicket = kv.getString("ticket", "")
-        val savedPath = kv.getString("path", "")
+        val savedAppId = perf.getString("appId", "")
+        val savedTicket = perf.getString("ticket", "")
+        val savedPath = perf.getString("path", "")
 
         if (!savedAppId.isNullOrBlank()) {
             appIdView.text = savedAppId
@@ -151,9 +151,9 @@ class ExperienceActivity : AppCompatActivity() {
             val appId = appIdView.text.toString()
             val ticket = ticketView.text.toString()
             val path = pathView.text.toString()
-            kv.putString("appId", appId)
-            kv.putString("ticket", ticket)
-            kv.putString("path", path)
+            perf.edit().putString("appId", appId)
+                .putString("ticket", ticket)
+                .putString("path", path).apply()
 
             WMPFDemoUtil.execute {
                 launchMiniProgram(appId, ticket, path, landscapeMode)

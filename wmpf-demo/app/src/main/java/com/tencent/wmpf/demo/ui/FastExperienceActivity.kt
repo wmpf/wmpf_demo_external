@@ -2,17 +2,15 @@ package com.tencent.wmpf.demo.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.tencent.mmkv.MMKV
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFAccountApi
 import com.tencent.wmpf.cli.api.WMPFApiException
 import com.tencent.wmpf.cli.model.WMPFStartAppParams
 import com.tencent.wmpf.cli.model.WMPFStartAppParams.WMPFAppType
-import com.tencent.wmpf.demo.BuildConfig
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.utils.WMPFDemoLogger
 import com.tencent.wmpf.demo.utils.WMPFDemoUtil
@@ -32,20 +30,18 @@ class FastExperienceActivity : AppCompatActivity() {
 
         logger = WMPFDemoLogger(TAG, this, findViewById(R.id.tv_device_info_resp))
 
-        findViewById<EditText>(R.id.et_app_id).setText(BuildConfig.HOST_APPID)
-
+        val perf = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
         val appIdView = findViewById<TextView>(R.id.et_launch_app_id)
 
-        val kv = MMKV.mmkvWithID(TAG)
-        val savedAppId = kv.getString("appId", "")
+        val savedAppId = perf.getString("appId", "")
         if (!savedAppId.isNullOrBlank()) {
             appIdView.text = savedAppId
         }
 
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
             val appId = appIdView.text.toString()
-            kv.putString("appId", appId)
+            perf.edit().putString("appId", appId).apply()
             execute {
                 launchMiniProgram(appId)
             }
@@ -65,7 +61,7 @@ class FastExperienceActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btn_launch_wxa_dev_app).setOnClickListener {
             val appId = appIdView.text.toString()
-            kv.putString("appId", appId)
+            perf.edit().putString("appId", appId).apply()
             execute {
                 launchMiniProgram(appId, WMPFAppType.APP_TYPE_DEV)
             }
@@ -73,7 +69,7 @@ class FastExperienceActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btn_launch_wxa_pre_app).setOnClickListener {
             val appId = appIdView.text.toString()
-            kv.putString("appId", appId)
+            perf.edit().putString("appId", appId).apply()
             execute {
                 launchMiniProgram(appId, WMPFAppType.APP_TYPE_EXP)
             }
