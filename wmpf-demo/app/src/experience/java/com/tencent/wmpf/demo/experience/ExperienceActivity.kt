@@ -16,7 +16,6 @@ import com.tencent.wmpf.cli.model.WMPFDevice
 import com.tencent.wmpf.cli.model.WMPFStartAppParams
 import com.tencent.wmpf.cli.model.WMPFStartAppParams.WMPFAppType
 import com.tencent.wmpf.cli.task.TaskError
-import com.tencent.wmpf.demo.BuildConfig
 import com.tencent.wmpf.demo.Cgi
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.utils.WMPFDemoLogger
@@ -28,6 +27,7 @@ import com.tencent.wmpf.demo.utils.WMPFDemoUtil
 class ExperienceActivity : AppCompatActivity() {
     private companion object {
         private const val TAG = "ExperienceActivity"
+        private const val DEMO_HOST_APPID = "wx94ef6bb77b573d05"
     }
 
     private var landscapeMode = LandscapeMode.NORMAL
@@ -53,9 +53,9 @@ class ExperienceActivity : AppCompatActivity() {
         var newDevice: WMPFDevice?
 
         try {
-            val res = Cgi.getTestDeviceInfo(ticket, appId, BuildConfig.HOST_APPID)
+            val res = Cgi.getTestDeviceInfo(ticket, appId, DEMO_HOST_APPID)
             newDevice = WMPFDevice(
-                BuildConfig.HOST_APPID, res.productId, res.keyVersion, res.deviceId, res.signature
+                DEMO_HOST_APPID, res.productId, res.keyVersion, res.deviceId, res.signature
             )
             logger.i("设备信息获取成功: $newDevice")
         } catch (e: Exception) {
@@ -151,8 +151,7 @@ class ExperienceActivity : AppCompatActivity() {
             val appId = appIdView.text.toString()
             val ticket = ticketView.text.toString()
             val path = pathView.text.toString()
-            perf.edit().putString("appId", appId)
-                .putString("ticket", ticket)
+            perf.edit().putString("appId", appId).putString("ticket", ticket)
                 .putString("path", path).apply()
 
             WMPFDemoUtil.execute {

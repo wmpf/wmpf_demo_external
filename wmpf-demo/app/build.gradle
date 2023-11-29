@@ -11,9 +11,9 @@ android {
         versionCode 1
         versionName "1.0"
 
-        // TODO: Change this to your appId applied from open.weixin.qq.com
         // WARNING: WXA Apps run on each host AppId could be limited.
-        buildConfigField 'String', 'HOST_APPID', '"REPLACE_WITH_REAL_HOSTAPPID"'
+        // TODO: 替换成开发者在微信开放平台申请的 hostAppId
+        buildConfigField 'String', 'HOST_APPID', '"REPLACE_WITH_REAL_SECRET"'
         // TODO: DANGEROUS! 危险！仅供测试使用，APP_SECRET 需要严格保密，不应流出服务端后台环境，更不应该放到客户端代码中。
         buildConfigField 'String', 'HOST_APPSECRET', '"REPLACE_WITH_REAL_SECRET"'
     }
