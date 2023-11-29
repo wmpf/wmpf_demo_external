@@ -182,7 +182,10 @@ class DetailActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu?.add(0, 0, 0, "背景音频管理")
+        if (!WMPFDemoUtil.isLessThanWMPF22(application)) {
+            menu?.add(0, 0, 0, "背景音频管理")
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -198,16 +201,6 @@ class DetailActivity : AppCompatActivity() {
 
             else -> {
                 false
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-            0 -> if (requestCode == Activity.RESULT_OK) {
-                data?.getStringExtra("code")
             }
         }
     }

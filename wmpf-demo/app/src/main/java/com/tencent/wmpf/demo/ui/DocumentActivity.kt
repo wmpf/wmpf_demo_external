@@ -155,6 +155,10 @@ class DocumentActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_manage_music).setOnClickListener {
+            if (WMPFDemoUtil.isLessThanWMPF22(application)) {
+                showNotSupported("showManageUI")
+                return@setOnClickListener
+            }
             invokeWMPFApi("showManageUI") {
                 WMPF.getInstance().musicApi.showManageUI()
             }
@@ -189,7 +193,7 @@ class DocumentActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_device_prefetch).setOnClickListener {
-            invokeWMPFApi("") {
+            invokeWMPFApi("prefetchDeviceToken") {
                 val result = WMPF.getInstance().miniProgramDeviceApi.prefetchDeviceToken()
                 if (result.errMsg == null) {
                     showOk("预拉取成功")
@@ -200,7 +204,7 @@ class DocumentActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.btn_device_get_info).setOnClickListener {
             if (WMPFDemoUtil.isLessThanWMPF22(application)) {
-                showNotSupported("registerDeviceActivationOutdatedEventListener")
+                showNotSupported("getMiniProgramDeviceInfo")
                 return@setOnClickListener
             }
             invokeWMPFApi("") {
