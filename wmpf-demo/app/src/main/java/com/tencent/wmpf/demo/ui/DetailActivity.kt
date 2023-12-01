@@ -1,12 +1,7 @@
 package com.tencent.wmpf.demo.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -16,7 +11,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-
 import com.bumptech.glide.Glide
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFAccountApi
@@ -97,7 +91,7 @@ class DetailActivity : AppCompatActivity() {
                     val userInfo = Cgi.getUserInfo(BuildConfig.HOST_APPID, authInfo.accessToken)
                     Log.d(TAG, "userInfo: $userInfo")
                     runOnUiThread {
-                        updateUserInfo(userInfo, getIMEI())
+                        updateUserInfo(userInfo)
                     }
                 }
             }
@@ -205,9 +199,7 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUserInfo(
-        userInfo: Cgi.UserInfo, deviceId: String
-    ) {
+    private fun updateUserInfo(userInfo: Cgi.UserInfo) {
         userInfoTextView!!.text = String.format(
             "openId:%s\nnick: %s\nsex: %d\nprovince: %s\ncity: %s\ncountry: %s\nunionId: %s\ndeviceId:%s",
             userInfo.openId,
@@ -217,29 +209,11 @@ class DetailActivity : AppCompatActivity() {
             userInfo.city,
             userInfo.country,
             userInfo.unionId,
-            deviceId
         )
 
-        userInfoTextView!!.setOnLongClickListener {
-            copyToClip(deviceId)
-            Toast.makeText(this, "$deviceId is copy", Toast.LENGTH_LONG).show()
-            true
-        }
+
 
         Glide.with(this).load(userInfo.avatarUrl).into(avatarImageView!!)
-    }
-
-    @Suppress("DEPRECATION")
-    @SuppressLint("MissingPermission", "HardwareIds")
-    fun getIMEI(): String {
-        val telephonyMgr = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
-        return telephonyMgr.deviceId ?: "error"
-    }
-
-    @Suppress("DEPRECATION")
-    private fun copyToClip(content: String?) {
-        val cmb = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        cmb.text = content ?: ""
     }
 
     companion object {
