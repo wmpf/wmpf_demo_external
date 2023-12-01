@@ -1,11 +1,11 @@
 package com.tencent.wmpf.demo.ui
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.tencent.mm.ipcinvoker.tools.Log
 import com.tencent.wmpf.cli.api.WMPF
@@ -15,7 +15,7 @@ import com.uuzuche.lib_zxing.activity.CaptureActivity
 import com.uuzuche.lib_zxing.activity.CodeUtils
 import com.uuzuche.lib_zxing.activity.ZXingLibrary
 
-class LaunchWxaAppByScanInvoker : Activity() {
+class LaunchWxaAppByScanInvoker : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ZXingLibrary.initDisplayOpinion(this)
@@ -30,7 +30,8 @@ class LaunchWxaAppByScanInvoker : Activity() {
         startActivityForResult(intent, REQ_CODE)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQ_CODE) {
             if (data?.extras != null) {
                 val bundle = data.extras
