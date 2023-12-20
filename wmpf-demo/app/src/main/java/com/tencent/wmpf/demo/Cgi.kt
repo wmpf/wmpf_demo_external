@@ -25,6 +25,7 @@ object Cgi {
     private const val DEMO_DEVICE_INFO = "https://open.weixin.qq.com/wxaruntime/getdemodeviceinfo"
     private const val ACCESS_TOKEN = "https://api.weixin.qq.com/cgi-bin/token"
     private const val PUSH_MSG = "https://api.weixin.qq.com/wxa/business/runtime/pushappmsg"
+    private const val GET_SN_TICKET = "https://api.weixin.qq.com/wxa/getsnticket"
 
     private fun getJSON(url: HttpUrl, postBody: RequestBody? = null): JSONObject {
         Log.d(TAG, "send request: $url")
@@ -134,16 +135,32 @@ object Cgi {
         return deviceInfo
     }
 
-    fun getAccessToken(hostAppId: String, secret: String): String {
-        Log.d(TAG, "getAccessToken, hostAppId=$hostAppId")
+    fun getAccessToken(appId: String, secret: String): String {
+        Log.d(TAG, "getAccessToken, appId=$appId")
 
         val builder = ACCESS_TOKEN.toHttpUrl().newBuilder()
             .addQueryParameter("grant_type", "client_credential")
-            .addQueryParameter("appid", hostAppId).addQueryParameter("secret", secret)
+            .addQueryParameter("appid", appId).addQueryParameter("secret", secret)
 
         val result = getJSON(builder.build())
 
         return result.optString("access_token")
+    }
+
+    fun getSnTicket(accessToken: String, sn: String, modelId: String): String {
+        Log.d(TAG, "getSnTicket, sn=$sn, modelId=$modelId")
+
+        val builder = GET_SN_TICKET.toHttpUrl().newBuilder()
+            .addQueryParameter("access_token", accessToken)
+
+        val body = JSONObject().put("model_id", modelId).put("sn", sn)
+
+        val result = getJSON(
+            builder.build(),
+            body.toString().toRequestBody("application/json".toMediaType())
+        )
+
+        return result.optString("sn_ticket")
     }
 
     fun postMsg(

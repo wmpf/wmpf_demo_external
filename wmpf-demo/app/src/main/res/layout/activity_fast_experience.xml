@@ -22,6 +22,40 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <RadioGroup
+            android:id="@+id/rg_app_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_launch_app_id">
+
+
+            <RadioButton
+                android:id="@+id/app_type_release"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="正式版" />
+
+            <RadioButton
+                android:id="@+id/app_type_trial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="体验版(需登录)" />
+
+            <RadioButton
+                android:id="@+id/app_type_dev"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="开发版(需登录)" />
+        </RadioGroup>
+
         <Button
             android:id="@+id/btn_launch_wxa_app"
             android:layout_width="0dp"
@@ -33,7 +67,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_launch_app_id" />
+            app:layout_constraintTop_toBottomOf="@+id/rg_app_type" />
 
         <Button
             android:id="@+id/btn_launch_login"
@@ -49,49 +83,37 @@
             app:layout_constraintTop_toBottomOf="@+id/btn_launch_wxa_app" />
 
         <Button
-            android:id="@+id/btn_launch_wxa_dev_app"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="启动开发版小程序(必须先登录)"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_launch_login" />
-
-        <Button
-            android:id="@+id/btn_launch_wxa_pre_app"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="启动体验版小程序(必须先登录)"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_launch_wxa_dev_app" />
-
-        <Button
             android:id="@+id/btn_launch_remote_debug"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="扫码打开小程序/远程调试(必须先登录)"
+            android:text="扫码打开小程序/远程调试(需登录)"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_launch_wxa_pre_app" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_launch_login" />
+
+
+        <Button
+            android:id="@+id/btn_close_wxa_app"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="关闭小程序"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_launch_remote_debug" />
 
 
         <TextView
             android:id="@+id/tv_device_info_resp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/btn_launch_remote_debug" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_close_wxa_app" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

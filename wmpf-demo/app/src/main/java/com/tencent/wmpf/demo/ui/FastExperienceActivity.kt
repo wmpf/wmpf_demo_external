@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.widget.Button
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.tencent.wmpf.cli.api.WMPF
@@ -13,7 +14,6 @@ import com.tencent.wmpf.cli.model.WMPFStartAppParams
 import com.tencent.wmpf.cli.model.WMPFStartAppParams.WMPFAppType
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.utils.WMPFDemoLogger
-import com.tencent.wmpf.demo.utils.WMPFDemoUtil
 import com.tencent.wmpf.demo.utils.WMPFDemoUtil.execute
 
 class FastExperienceActivity : AppCompatActivity() {
@@ -35,11 +35,28 @@ class FastExperienceActivity : AppCompatActivity() {
             appIdView.text = savedAppId
         }
 
+        var appType = WMPFAppType.APP_TYPE_RELEASE
+        findViewById<RadioGroup>(R.id.rg_app_type).setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.app_type_release -> {
+                    appType = WMPFAppType.APP_TYPE_RELEASE
+                }
+
+                R.id.app_type_dev -> {
+                    appType = WMPFAppType.APP_TYPE_DEV
+                }
+
+                R.id.app_type_trial -> {
+                    appType = WMPFAppType.APP_TYPE_EXP
+                }
+            }
+        }
+
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
             val appId = appIdView.text.toString()
             perf.edit().putString("appId", appId).apply()
             execute {
-                launchMiniProgram(appId)
+                launchMiniProgram(appId, appType)
             }
         }
 
@@ -55,19 +72,10 @@ class FastExperienceActivity : AppCompatActivity() {
             }
         }
 
-        findViewById<Button>(R.id.btn_launch_wxa_dev_app).setOnClickListener {
+        findViewById<Button>(R.id.btn_close_wxa_app).setOnClickListener {
             val appId = appIdView.text.toString()
-            perf.edit().putString("appId", appId).apply()
             execute {
-                launchMiniProgram(appId, WMPFAppType.APP_TYPE_DEV)
-            }
-        }
-
-        findViewById<Button>(R.id.btn_launch_wxa_pre_app).setOnClickListener {
-            val appId = appIdView.text.toString()
-            perf.edit().putString("appId", appId).apply()
-            execute {
-                launchMiniProgram(appId, WMPFAppType.APP_TYPE_EXP)
+                WMPF.getInstance().miniProgramApi.closeWxaApp(appId, false)
             }
         }
 

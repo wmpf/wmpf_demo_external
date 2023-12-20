@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:orientation="vertical"
+    tools:context=".ui.MpDeviceActivity">
+
+    <Button
+        android:id="@+id/btn_device_register"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="设备注册" />
+
+    <Button
+        android:id="@+id/btn_device_prefetch"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="预拉取设备凭证" />
+
+    <Button
+        android:id="@+id/btn_device_get_info"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="获取设备信息" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/console"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="console: \n"
+            android:textColor="#000" />
+    </ScrollView>
+
+</LinearLayout>
