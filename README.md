@@ -27,6 +27,8 @@
 </p>
 
 > 当前分支建议用于 WMPF Service APK >= 2.2（最低支持 2.1）。若使用低版本，请参考 apiv1 分支。
+>
+> WMPF 版本发布已迁移至[官方发布页](https://developers.weixin.qq.com/doc/oplatform/Miniprogram_Frame/download.html)，github 仅提供 DEMO 代码，不再用做版本发布。
 
 ## 💡 WMPF是什么
 

@@ -75,7 +75,12 @@ class FastExperienceActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btn_close_wxa_app).setOnClickListener {
             val appId = appIdView.text.toString()
             execute {
-                WMPF.getInstance().miniProgramApi.closeWxaApp(appId, false)
+                try {
+                    WMPF.getInstance().miniProgramApi.closeWxaApp(appId, false)
+                    logger.i("关闭小程序成功")
+                } catch (e: WMPFApiException) {
+                    logger.e("关闭小程序失败", e)
+                }
             }
         }
 
