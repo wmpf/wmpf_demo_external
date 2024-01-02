@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="landscapes">
+        <item>NORMAL</item>
+        <item>LANDSCAPE</item>
+        <item>LANDSCAPE_COMPAT</item>
+        <item>FORCE_COMPAT</item>
+    </string-array>
+</resources>
