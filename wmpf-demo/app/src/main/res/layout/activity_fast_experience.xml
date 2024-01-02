@@ -1,143 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <EditText
+        android:id="@+id/et_launch_app_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".ui.FastExperienceActivity">
+        android:layout_marginTop="8dp"
+        android:hint="输入启动小程序的 APPID" />
 
-        <EditText
-            android:id="@+id/et_launch_app_id"
-            android:layout_width="0dp"
+    <EditText
+        android:id="@+id/et_launch_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="输入启动小程序的路径（默认首页）" />
+
+    <RadioGroup
+        android:id="@+id/rg_app_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/app_type_release"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:hint="输入启动小程序的 APPID"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:checked="true"
+            android:text="正式版" />
 
-        <RadioGroup
-            android:id="@+id/rg_app_type"
-            android:layout_width="match_parent"
+        <RadioButton
+            android:id="@+id/app_type_trial"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_launch_app_id">
+            android:text="体验版(需登录)" />
 
-            <RadioButton
-                android:id="@+id/app_type_release"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="正式版" />
-
-            <RadioButton
-                android:id="@+id/app_type_trial"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="体验版(需登录)" />
-
-            <RadioButton
-                android:id="@+id/app_type_dev"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="开发版(需登录)" />
-        </RadioGroup>
-
-        <RelativeLayout
-            android:id="@+id/config_landscape"
-            android:layout_width="match_parent"
+        <RadioButton
+            android:id="@+id/app_type_dev"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/rg_app_type">
+            android:text="开发版(需登录)" />
+    </RadioGroup>
 
-            <TextView
-                android:id="@+id/landscape_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="Landscape" />
-
-            <Spinner
-                android:id="@+id/choose_landscape"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_toEndOf="@+id/landscape_name"
-                android:spinnerMode="dropdown" />
-        </RelativeLayout>
-
-        <Button
-            android:id="@+id/btn_launch_wxa_app"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="启动小程序"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/config_landscape" />
-
-        <Button
-            android:id="@+id/btn_launch_login"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="登录"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_launch_wxa_app" />
-
-        <Button
-            android:id="@+id/btn_launch_remote_debug"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="扫码打开小程序/远程调试(需登录)"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_launch_login" />
-
-
-        <Button
-            android:id="@+id/btn_close_wxa_app"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="关闭小程序"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_launch_remote_debug" />
-
+    <RelativeLayout
+        android:id="@+id/config_landscape"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
 
         <TextView
-            android:id="@+id/tv_device_info_resp"
-            android:layout_width="match_parent"
+            android:id="@+id/landscape_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/btn_close_wxa_app" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            android:layout_centerVertical="true"
+            android:text="Landscape" />
+
+        <Spinner
+            android:id="@+id/choose_landscape"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/landscape_name"
+            android:spinnerMode="dropdown" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_launch_wxa_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="启动小程序" />
+
+    <Button
+        android:id="@+id/btn_launch_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="登录" />
+
+    <Button
+        android:id="@+id/btn_launch_remote_debug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="扫码打开小程序/远程调试(需登录)" />
+
+
+    <Button
+        android:id="@+id/btn_close_wxa_app"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="关闭小程序" />
+
+
+    <TextView
+        android:id="@+id/tv_device_info_resp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

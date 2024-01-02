@@ -22,8 +22,7 @@ android {
         buildConfigField 'String', 'WXA_APPID', '"REPLACE_WITH_REAL_VALUE"'
         // TODO: DANGEROUS! 危险！仅供测试使用，APP_SECRET 需要严格保密，不应流出服务端后台环境，更不应该放到客户端代码中。
         buildConfigField 'String', 'WXA_APPSECRET', '"REPLACE_WITH_REAL_VALUE"'
-        // TODO: 替换成开发者在小程序管理后台申请的硬件设备 modelId
-        buildConfigField 'String', 'WXA_MODEL_ID', '"REPLACE_WITH_REAL_VALUE-qMyHg"'
+        buildConfigField 'String', 'WXA_MODEL_ID', '"REPLACE_WITH_REAL_VALUE"'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

@@ -34,10 +34,15 @@ class FastExperienceActivity : AppCompatActivity() {
         val perf = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
         val appIdView = findViewById<TextView>(R.id.et_launch_app_id)
+        val pathView = findViewById<TextView>(R.id.et_launch_path)
 
-        val savedAppId = perf.getString("appId", "")
+        val savedAppId = perf.getString("appId", DEFAULT_APP_ID)
         if (!savedAppId.isNullOrBlank()) {
             appIdView.text = savedAppId
+        }
+        val savedPath = perf.getString("path", DEFAULT_PATH)
+        if (!savedPath.isNullOrBlank()) {
+            pathView.text = savedPath
         }
 
         var appType = WMPFAppType.APP_TYPE_RELEASE
@@ -78,9 +83,10 @@ class FastExperienceActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
             val appId = appIdView.text.toString()
-            perf.edit().putString("appId", appId).apply()
+            val path = pathView.text.toString()
+            perf.edit().putString("appId", appId).putString("path", path).apply()
             execute {
-                launchMiniProgram(appId, appType, landscapeMode)
+                launchMiniProgram(appId, path, appType, landscapeMode)
             }
         }
 
@@ -122,6 +128,7 @@ class FastExperienceActivity : AppCompatActivity() {
 
     private fun launchMiniProgram(
         appId: String,
+        path: String,
         type: WMPFAppType = WMPFAppType.APP_TYPE_RELEASE,
         landscapeMode: LandscapeMode = LandscapeMode.NORMAL
     ) {
@@ -135,7 +142,7 @@ class FastExperienceActivity : AppCompatActivity() {
         logger.i("启动小程序：$appId")
         try {
             WMPF.getInstance().miniProgramApi.launchMiniProgram(
-                WMPFStartAppParams(appId, "", type), false, landscapeMode
+                WMPFStartAppParams(appId, path, type), false, landscapeMode
             )
         } catch (e: WMPFApiException) {
             logger.e("启动小程序失败", e)
@@ -144,5 +151,7 @@ class FastExperienceActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "FastExperienceActivity"
+        private const val DEFAULT_APP_ID = ""
+        private const val DEFAULT_PATH = ""
     }
 }
