@@ -1,10 +1,12 @@
 package com.tencent.wmpf.demo.ui
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.tencent.mm.ipcinvoker.tools.Log
@@ -25,18 +27,30 @@ class LaunchWxaAppByScanInvoker : AppCompatActivity() {
     private fun doScanImpl() {
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 0)
+        } else {
+            val intent = Intent(this, CaptureActivity::class.java)
+            launcher.launch(intent)
         }
-        val intent = Intent(this, CaptureActivity::class.java)
-        startActivityForResult(intent, REQ_CODE)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQ_CODE) {
-            if (data?.extras != null) {
-                val bundle = data.extras
-                val retCode = bundle?.getInt(CodeUtils.RESULT_TYPE)
-                Log.i(TAG, "retCode:%d", retCode)
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 0 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            val intent = Intent(this, CaptureActivity::class.java)
+            launcher.launch(intent)
+        }
+    }
+
+    private var launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode != Activity.RESULT_OK) return@registerForActivityResult
+
+            val bundle = it.data?.extras
+            if (bundle != null) {
+                val retCode = bundle.getInt(CodeUtils.RESULT_TYPE)
+                Log.i(TAG, "retCode: %d", retCode)
                 when (retCode) {
                     CodeUtils.RESULT_SUCCESS -> {
                         val rawData = bundle.getString(CodeUtils.RESULT_STRING)
@@ -61,7 +75,6 @@ class LaunchWxaAppByScanInvoker : AppCompatActivity() {
                 finish()
             }
         }
-    }
 
     companion object {
         private const val TAG = "WMPF.ScanProxyUI"
@@ -69,7 +82,5 @@ class LaunchWxaAppByScanInvoker : AppCompatActivity() {
             val intent = Intent(context, LaunchWxaAppByScanInvoker::class.java)
             context.startActivity(intent)
         }
-
-        private const val REQ_CODE = 100
     }
 }

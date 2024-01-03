@@ -252,9 +252,9 @@ class DocumentActivity : ApiActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        Log.i(TAG, "menuItem id " + item?.itemId)
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.i(TAG, "menuItem id " + item.itemId)
+        return when (item.itemId) {
             0 -> {
                 invokeWMPFApi("showManageUI") {
                     WMPF.getInstance().musicApi.showManageUI()

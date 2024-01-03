@@ -2,8 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <application android:label="WMPF Launcher Demo" tools:replace="android:label">
-        <activity android:name=".activity.GuideActivity">
+    <application
+        android:label="WMPF Launcher Demo"
+        tools:replace="android:label">
+        <activity
+            android:name=".activity.GuideActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

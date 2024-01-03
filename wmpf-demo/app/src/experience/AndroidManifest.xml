@@ -5,7 +5,9 @@
     <application
         tools:replace="android:label"
         android:label="WMPF快速体验">
-        <activity android:name=".experience.ExperienceActivity">
+        <activity
+            android:name=".experience.ExperienceActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

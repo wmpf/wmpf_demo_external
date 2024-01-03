@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdk 28
+    compileSdk 32
     defaultConfig {
         applicationId "com.tencent.wmpf.demo"
         minSdkVersion 25
         //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 26
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
 
@@ -73,6 +73,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.preference:preference:1.2.1'
     implementation 'androidx.multidex:multidex:2.0.1'
 
     api 'com.squareup.okhttp3:okhttp:4.11.0'

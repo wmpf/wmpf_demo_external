@@ -27,10 +27,11 @@
         <activity android:name=".ui.DocumentActivity" />
         <activity android:name=".ui.MpDeviceActivity" /> <!-- 扫码打开小程序 -->
         <activity android:name=".ui.LaunchWxaAppByScanInvoker" />
-        <activity android:name=".thirdpart.ThirdPartApiDemoActivity">
+        <activity
+            android:name=".thirdpart.ThirdPartApiDemoActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.tencent.wmpf.action.WMPF_PRINTER" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

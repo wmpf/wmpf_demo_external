@@ -2,7 +2,6 @@ package com.tencent.wmpf.demo.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -11,6 +10,7 @@ import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.preference.PreferenceManager
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFAccountApi
 import com.tencent.wmpf.cli.api.WMPFMiniProgramApi.LandscapeMode

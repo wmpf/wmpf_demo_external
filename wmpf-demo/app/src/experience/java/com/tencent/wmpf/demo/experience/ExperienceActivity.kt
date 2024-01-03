@@ -1,13 +1,13 @@
 package com.tencent.wmpf.demo.experience
 
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import com.tencent.wmpf.app.WMPFBoot
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFApiException
