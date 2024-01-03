@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,72 +7,54 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".ui.FastExperienceActivity">
+        android:padding="16dp">
 
         <EditText
             android:id="@+id/et_launch_app_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:hint="输入启动小程序的AppId" />
+            android:hint="启动小程序的AppId" />
 
         <EditText
             android:id="@+id/et_ticket"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:hint="输入wecooper获取的Ticket" />
+            android:hint="wecooper获取的Ticket" />
 
         <EditText
             android:id="@+id/et_path"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:hint="小程序启动页面路径（可选，默认为首页）" />
+            android:hint="小程序启动页面（可选，默认为首页）" />
 
         <Switch
             android:id="@+id/switch_landscape"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
             android:text="是否横屏居中显示" />
 
         <Button
             android:id="@+id/btn_launch_wxa_app_quickly"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="启动小程序"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_ticket" />
+            android:text="启动小程序" />
 
 
         <TextView
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
             android:text=" 常见小程序/小游戏 AppId：\n
 腾讯地图：wx7643d5f831302ab0\n
 跳一跳：wx7c8d593b2c3a7703\n
 腾讯视频：wxa75efa648b60994b\n
 面对面翻译：wxd461f2076e3ebc8d\n
 儿童故事：wxdde587a4aebfe4f3\n
-成语小秀才：wx504e2b5e77713844\n
+成语小秀才：wx504e2b5e77713844
 "
             android:textIsSelectable="true" />
 
