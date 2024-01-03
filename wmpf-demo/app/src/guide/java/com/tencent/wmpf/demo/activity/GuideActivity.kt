@@ -9,7 +9,6 @@ import com.tencent.wmpf.app.WMPFBoot
 import com.tencent.wmpf.cli.model.WMPFDevice
 import com.tencent.wmpf.demo.BuildConfig
 import com.tencent.wmpf.demo.R
-import com.tencent.wmpf.demo.ui.DetailActivity
 import com.tencent.wmpf.demo.ui.DocumentActivity
 import com.tencent.wmpf.demo.ui.FastExperienceActivity
 import com.tencent.wmpf.demo.ui.MpDeviceActivity
@@ -27,9 +26,6 @@ class GuideActivity : AppCompatActivity() {
             startActivity(Intent(this, FastExperienceActivity::class.java))
         }
 
-        findViewById<Button>(R.id.btn_detail).setOnClickListener {
-            startActivity(Intent(this, DetailActivity::class.java))
-        }
 
         findViewById<Button>(R.id.btn_document).setOnClickListener {
             startActivity(Intent(this, DocumentActivity::class.java))

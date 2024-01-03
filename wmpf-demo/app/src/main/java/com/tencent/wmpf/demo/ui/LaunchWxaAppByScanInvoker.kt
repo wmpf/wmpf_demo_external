@@ -35,7 +35,7 @@ class LaunchWxaAppByScanInvoker : AppCompatActivity() {
         if (requestCode == REQ_CODE) {
             if (data?.extras != null) {
                 val bundle = data.extras
-                val retCode = bundle.getInt(CodeUtils.RESULT_TYPE)
+                val retCode = bundle?.getInt(CodeUtils.RESULT_TYPE)
                 Log.i(TAG, "retCode:%d", retCode)
                 when (retCode) {
                     CodeUtils.RESULT_SUCCESS -> {

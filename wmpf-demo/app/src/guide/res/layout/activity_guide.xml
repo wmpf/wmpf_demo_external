@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="快速体验小程序" />
+        android:text="启动小程序" />
 
     <Button
         android:id="@+id/btn_document"
@@ -24,13 +24,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="接口示例" />
-
-    <Button
-        android:id="@+id/btn_detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="流程演示" />
 
     <TextView
         android:id="@+id/title_extend"

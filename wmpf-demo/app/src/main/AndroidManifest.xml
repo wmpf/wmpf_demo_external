@@ -24,7 +24,6 @@
             android:exported="false" />
         <activity android:name=".ui.PushMsgQuickStartActivity" />
         <activity android:name=".ui.FastExperienceActivity" />
-        <activity android:name=".ui.DetailActivity" />
         <activity android:name=".ui.DocumentActivity" />
         <activity android:name=".ui.MpDeviceActivity" /> <!-- 扫码打开小程序 -->
         <activity android:name=".ui.LaunchWxaAppByScanInvoker" />

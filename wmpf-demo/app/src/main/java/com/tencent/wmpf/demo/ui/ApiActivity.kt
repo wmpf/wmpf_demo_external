@@ -18,11 +18,11 @@ open class ApiActivity : AppCompatActivity() {
         }
     }
 
-    protected fun showFail(apiName: String, e: Throwable) {
-        val message = "$apiName fail: ${e.message}"
-        Log.e(TAG, message)
+    protected fun showFail(message: String, e: Throwable?) {
+        val msg = if (e != null) "$message: ${e.message}" else message
+        Log.e(TAG, msg)
         runOnUiThread {
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -35,14 +35,21 @@ open class ApiActivity : AppCompatActivity() {
     }
 
     protected fun invokeWMPFApi(name: String, runnable: Runnable) {
+        invokeWMPFApi(name, false, runnable)
+    }
+
+    protected fun invokeWMPFApi(name: String, verbose: Boolean, runnable: Runnable) {
         WMPFDemoUtil.execute {
             try {
                 runnable.run()
+                if (verbose) {
+                    showOk("$name 成功")
+                }
             } catch (e: WMPFApiException) {
                 // WMPF 主动抛出的异常
-                showFail(name, e)
+                showFail("$name 失败", e)
             } catch (e: Exception) {
-                showFail(name, e)
+                showFail("$name 失败", e)
             }
         }
     }

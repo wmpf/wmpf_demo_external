@@ -2,8 +2,11 @@ package com.tencent.wmpf.demo.ui
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.tencent.mm.ipcinvoker.type.IPCVoid
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFAccountApi
@@ -14,11 +17,15 @@ import com.tencent.wmpf.cli.event.AbstractOnDeviceActivationOutdatedEventListene
 import com.tencent.wmpf.cli.event.AbstractOnMusicStatusEventListener
 import com.tencent.wmpf.cli.event.WMPFMusicStatusData
 import com.tencent.wmpf.cli.model.WMPFStartAppParams
+import com.tencent.wmpf.demo.BuildConfig
+import com.tencent.wmpf.demo.Cgi
 import com.tencent.wmpf.demo.R
 import com.tencent.wmpf.demo.V1api
 import com.tencent.wmpf.demo.utils.WMPFDemoUtil
 
 class DocumentActivity : ApiActivity() {
+    private var oauthCode: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_document)
@@ -70,6 +77,14 @@ class DocumentActivity : ApiActivity() {
             }
         }
 
+        findViewById<Button>(R.id.btn_launch_wxa_app_by_scan_custom).setOnClickListener {
+            invokeWMPFApi("launchWxaByScanUI") {
+                // Start wxa app by scan
+                // U also can use scan invoker, contain scan ui
+                LaunchWxaAppByScanInvoker.launchWxaByScanUI(this)
+            }
+        }
+
         findViewById<Button>(R.id.btn_close_wxa_app).setOnClickListener {
             invokeWMPFApi("closeWxaApp") {
                 WMPF.getInstance().miniProgramApi.closeWxaApp(
@@ -81,8 +96,33 @@ class DocumentActivity : ApiActivity() {
 
         findViewById<Button>(R.id.btn_authorize).setOnClickListener {
             invokeWMPFApi("login") {
-                WMPF.getInstance().accountApi.login(WMPFAccountApi.WMPFLoginUIStyle.FULLSCREEN)
-                showOk("登录成功")
+                oauthCode =
+                    WMPF.getInstance().accountApi.login(WMPFAccountApi.WMPFLoginUIStyle.FULLSCREEN)
+                showOk("登录成功，oauthCode=${oauthCode}")
+            }
+        }
+
+        findViewById<Button>(R.id.btn_user_info).setOnClickListener {
+            invokeWMPFApi("getUserInfo") {
+                if (oauthCode == null) {
+                    showFail("请重新扫码登录", null)
+                    return@invokeWMPFApi
+                } else {
+                    val authInfo = Cgi.getOAuthInfo(
+                        BuildConfig.HOST_APPID, BuildConfig.HOST_APPSECRET, oauthCode!!
+                    )
+                    showOk("获取 OpenId 成功，OpenId=${authInfo.openId}")
+
+                    val userInfo = Cgi.getUserInfo(BuildConfig.HOST_APPID, authInfo.accessToken)
+                    Log.i(TAG, "获取用户信息成功，userInfo=${userInfo}")
+
+                    runOnUiThread {
+                        AlertDialog.Builder(this).apply {
+                            setTitle("用户信息")
+                            setMessage(userInfo.toString())
+                        }.show()
+                    }
+                }
             }
         }
 
@@ -98,7 +138,7 @@ class DocumentActivity : ApiActivity() {
                 if (e == null) {
                     showOk("登录状态：${res.isAuthorize}")
                 } else {
-                    showFail("authorizeStatus", e)
+                    showFail("authorizeStatus 失败", e)
                 }
             }
         }
@@ -201,6 +241,30 @@ class DocumentActivity : ApiActivity() {
             })
             hasOutdatedListener = true
             return true
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if (!WMPFDemoUtil.isLessThanWMPF22(application)) {
+            menu?.add(0, 0, 0, "背景音频管理")
+        }
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        Log.i(TAG, "menuItem id " + item?.itemId)
+        return when (item?.itemId) {
+            0 -> {
+                invokeWMPFApi("showManageUI") {
+                    WMPF.getInstance().musicApi.showManageUI()
+                }
+                true
+            }
+
+            else -> {
+                false
+            }
         }
     }
 

@@ -10,31 +10,29 @@ import android.widget.Button
 import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
 import com.tencent.wmpf.cli.api.WMPF
 import com.tencent.wmpf.cli.api.WMPFAccountApi
-import com.tencent.wmpf.cli.api.WMPFApiException
 import com.tencent.wmpf.cli.api.WMPFMiniProgramApi.LandscapeMode
 import com.tencent.wmpf.cli.model.WMPFStartAppParams
 import com.tencent.wmpf.cli.model.WMPFStartAppParams.WMPFAppType
 import com.tencent.wmpf.demo.R
-import com.tencent.wmpf.demo.utils.WMPFDemoLogger
-import com.tencent.wmpf.demo.utils.WMPFDemoUtil.execute
 
-class FastExperienceActivity : AppCompatActivity() {
-    private lateinit var logger: WMPFDemoLogger
+class FastExperienceActivity : ApiActivity() {
+    private lateinit var appIdView: TextView
+    private lateinit var pathView: TextView
+    private val perf by lazy {
+        PreferenceManager.getDefaultSharedPreferences(applicationContext)
+    }
+    private var appType = WMPFAppType.APP_TYPE_RELEASE
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fast_experience)
 
-        logger = WMPFDemoLogger(TAG, this, findViewById(R.id.tv_device_info_resp))
-
-        val perf = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-
-        val appIdView = findViewById<TextView>(R.id.et_launch_app_id)
-        val pathView = findViewById<TextView>(R.id.et_launch_path)
+        appIdView = findViewById(R.id.et_launch_app_id)
+        pathView = findViewById(R.id.et_launch_path)
 
         val savedAppId = perf.getString("appId", DEFAULT_APP_ID)
         if (!savedAppId.isNullOrBlank()) {
@@ -45,7 +43,6 @@ class FastExperienceActivity : AppCompatActivity() {
             pathView.text = savedPath
         }
 
-        var appType = WMPFAppType.APP_TYPE_RELEASE
         findViewById<RadioGroup>(R.id.rg_app_type).setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.app_type_release -> {
@@ -82,70 +79,69 @@ class FastExperienceActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_launch_wxa_app).setOnClickListener {
-            val appId = appIdView.text.toString()
-            val path = pathView.text.toString()
-            perf.edit().putString("appId", appId).putString("path", path).apply()
-            execute {
-                launchMiniProgram(appId, path, appType, landscapeMode)
+            val param = createStartAppParams()
+            invokeWMPFApi("启动小程序", true) {
+                assertLoginState(param.appType)
+                WMPF.getInstance().miniProgramApi.launchMiniProgram(
+                    param, false, landscapeMode
+                )
             }
         }
 
         findViewById<Button>(R.id.btn_launch_login).setOnClickListener {
-            logger.clear()
-            execute {
-                try {
-                    WMPF.getInstance().accountApi.login(WMPFAccountApi.WMPFLoginUIStyle.FULLSCREEN)
-                    logger.i("扫码登录成功")
-                } catch (e: WMPFApiException) {
-                    logger.e("扫码登录失败", e)
-                }
+            invokeWMPFApi("扫码登录", true) {
+                WMPF.getInstance().accountApi.login(WMPFAccountApi.WMPFLoginUIStyle.FULLSCREEN)
             }
         }
 
         findViewById<Button>(R.id.btn_close_wxa_app).setOnClickListener {
             val appId = appIdView.text.toString()
-            execute {
-                try {
-                    WMPF.getInstance().miniProgramApi.closeWxaApp(appId, false)
-                    logger.i("关闭小程序成功")
-                } catch (e: WMPFApiException) {
-                    logger.e("关闭小程序失败", e)
-                }
+            invokeWMPFApi("关闭小程序", true) {
+                WMPF.getInstance().miniProgramApi.closeWxaApp(appId, false)
             }
         }
 
         findViewById<Button>(R.id.btn_launch_remote_debug).setOnClickListener {
-            logger.clear()
-            execute {
-                try {
-                    WMPF.getInstance().miniProgramApi.launchByQRScanCode()
-                } catch (e: WMPFApiException) {
-                    logger.e("扫码打开小程序失败", e)
+            invokeWMPFApi("扫码打开小程序", true) {
+                WMPF.getInstance().miniProgramApi.launchByQRScanCode()
+            }
+        }
+
+        findViewById<Button>(R.id.btn_preload).setOnClickListener {
+            invokeWMPFApi("预加载", true) {
+                WMPF.getInstance().miniProgramApi.preload(null)
+            }
+        }
+
+        findViewById<Button>(R.id.btn_warmup).setOnClickListener {
+            val param = createStartAppParams()
+            invokeWMPFApi("预热", true) {
+                assertLoginState(param.appType)
+                WMPF.getInstance().miniProgramApi.warmUpApp(param)
+                runOnUiThread {
+                    AlertDialog.Builder(this).setTitle("预热完成")
+                        .setNegativeButton("启动小程序") { _, _ ->
+                            invokeWMPFApi("launchMiniProgram") {
+                                WMPF.getInstance().miniProgramApi.launchMiniProgram(param)
+                            }
+                        }.show()
                 }
             }
         }
     }
 
-    private fun launchMiniProgram(
-        appId: String,
-        path: String,
-        type: WMPFAppType = WMPFAppType.APP_TYPE_RELEASE,
-        landscapeMode: LandscapeMode = LandscapeMode.NORMAL
-    ) {
-        logger.clear()
+    private fun createStartAppParams(): WMPFStartAppParams {
+        val appId = appIdView.text.toString()
+        val path = pathView.text.toString()
+        perf.edit().putString("appId", appId).putString("path", path).apply()
+        return WMPFStartAppParams(appId, path, appType)
+    }
+
+    private fun assertLoginState(type: WMPFAppType) {
         if (type == WMPFAppType.APP_TYPE_EXP || type == WMPFAppType.APP_TYPE_DEV) {
             if (!WMPF.getInstance().accountApi.isLogin) {
-                logger.e("启动${if (type === WMPFAppType.APP_TYPE_EXP) "体验" else "开发"}版小程序请先登录")
-                return
+                throw Exception("启动${if (type === WMPFAppType.APP_TYPE_EXP) "体验" else "开发"}版小程序请先登录")
             }
-        }
-        logger.i("启动小程序：$appId")
-        try {
-            WMPF.getInstance().miniProgramApi.launchMiniProgram(
-                WMPFStartAppParams(appId, path, type), false, landscapeMode
-            )
-        } catch (e: WMPFApiException) {
-            logger.e("启动小程序失败", e)
         }
     }
 
