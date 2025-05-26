@@ -56,7 +56,7 @@ class GuideActivity : AppCompatActivity() {
                 }.show()
             return
         }
-        WMPFBoot.init(this, getDeviceInfo())
+        WMPFBoot.init(this.application, getDeviceInfo())
     }
 
     private fun getDeviceInfo() = WMPFDevice(
