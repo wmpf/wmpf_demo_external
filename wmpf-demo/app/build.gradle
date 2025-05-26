@@ -10,12 +10,32 @@ android {
         targetSdkVersion 32
         versionCode 1
         versionName "1.0"
+        if (file("local.properties").exists()) {
+            // Load from local.properties
+            def localProperties = new Properties()
+            file("local.properties").withInputStream { localProperties.load(it) }
+            // WARNING: WXA Apps run on each host AppId could be limited.
+            buildConfigField 'String', 'HOST_APPID', "\"${localProperties.getProperty('HOST_APPID')}\""
+            // DANGEROUS! 危险！APP_SECRET 需要严格保密
+            buildConfigField 'String', 'HOST_APPSECRET', "\"${localProperties.getProperty('HOST_APPSECRET')}\""
 
-        // WARNING: WXA Apps run on each host AppId could be limited.
-        // TODO: 替换成开发者在微信开放平台申请的 hostAppId
-        buildConfigField 'String', 'HOST_APPID', '"REPLACE_WITH_REAL_VALUE"'
-        // TODO: DANGEROUS! 危险！仅供测试使用，APP_SECRET 需要严格保密，不应流出服务端后台环境，更不应该放到客户端代码中。
-        buildConfigField 'String', 'HOST_APPSECRET', '"REPLACE_WITH_REAL_VALUE"'
+            // WARNING: 仅作开发调试使用，正式应用中以下属性不应为编译期参数
+            buildConfigField 'int', 'WMPF_PRODUCT_ID', "${localProperties.getProperty('WMPF_PRODUCT_ID')}"
+            buildConfigField 'int', 'WMPF_KEY_VERSION', "${localProperties.getProperty('WMPF_KEY_VERSION')}"
+            buildConfigField 'String', 'WMPF_DEVICE_ID', "\"${localProperties.getProperty('WMPF_DEVICE_ID')}\""
+            buildConfigField 'String', 'WMPF_SIGNATURE', "\"${localProperties.getProperty('WMPF_SIGNATURE')}\""
+        } else {
+            // WARNING: WXA Apps run on each host AppId could be limited.
+            buildConfigField 'String', 'HOST_APPID', "\"REPLACE_WITH_REAL_VALUE\""
+            // DANGEROUS! 危险！APP_SECRET 需要严格保密
+            buildConfigField 'String', 'HOST_APPSECRET', "\"REPLACE_WITH_REAL_VALUE\""
+
+            // WARNING: 仅作开发调试使用，正式应用中以下属性不应为编译期参数
+            buildConfigField 'int', 'WMPF_PRODUCT_ID', "0"
+            buildConfigField 'int', 'WMPF_KEY_VERSION', "0"
+            buildConfigField 'String', 'WMPF_DEVICE_ID', "\"REPLACE_WITH_REAL_VALUE\""
+            buildConfigField 'String', 'WMPF_SIGNATURE', "\"REPLACE_WITH_REAL_VALUE\""
+        }
 
         // 仅在需要使用小程序设备认证的情况下需要指定 WXA_APPID, WXA_APPSECRET, WXA_MODEL_ID
         // TODO: 替换成开发者在微信公众平台申请的小程序 AppId

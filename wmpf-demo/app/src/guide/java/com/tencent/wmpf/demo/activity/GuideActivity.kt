@@ -61,6 +61,6 @@ class GuideActivity : AppCompatActivity() {
 
     private fun getDeviceInfo() = WMPFDevice(
         // TODO: 需要替换成正式的设备信息
-        BuildConfig.HOST_APPID, 0, 0, "", ""
+        BuildConfig.HOST_APPID, BuildConfig.WMPF_PRODUCT_ID, BuildConfig.WMPF_KEY_VERSION, BuildConfig.WMPF_DEVICE_ID, BuildConfig.WMPF_SIGNATURE
     )
 }
