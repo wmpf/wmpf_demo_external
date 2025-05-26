@@ -35,6 +35,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.AgentActivity" /> <!-- Agent功能体验 -->
 
         <provider
             android:name=".provider.ClientProvider"

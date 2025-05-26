@@ -6,9 +6,11 @@ import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.tencent.wmpf.app.WMPFBoot
+import com.tencent.wmpf.cli.api.WMPFDeviceApi
 import com.tencent.wmpf.cli.model.WMPFDevice
 import com.tencent.wmpf.demo.BuildConfig
 import com.tencent.wmpf.demo.R
+import com.tencent.wmpf.demo.ui.AgentActivity
 import com.tencent.wmpf.demo.ui.DocumentActivity
 import com.tencent.wmpf.demo.ui.FastExperienceActivity
 import com.tencent.wmpf.demo.ui.MpDeviceActivity
@@ -43,6 +45,10 @@ class GuideActivity : AppCompatActivity() {
             startActivity(Intent(this, VoipActivity::class.java))
         }
 
+        findViewById<Button>(R.id.btn_agent).setOnClickListener {
+            startActivity(Intent(this, AgentActivity::class.java))
+        }
+
         WMPFDemoUtil.checkWMPFVersion(this)
         initWMPFCli()
     }
@@ -57,6 +63,7 @@ class GuideActivity : AppCompatActivity() {
             return
         }
         WMPFBoot.init(this.application, getDeviceInfo())
+        WMPFDeviceApi.setEnableWakeUp(true)
     }
 
     private fun getDeviceInfo() = WMPFDevice(

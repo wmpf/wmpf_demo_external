@@ -59,4 +59,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="小程序音视频通话（for 硬件）" />
+
+    <Button
+        android:id="@+id/btn_agent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Agent 体验" />
 </LinearLayout>
