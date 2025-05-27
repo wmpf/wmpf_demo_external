@@ -1,5 +1,6 @@
 package com.tencent.wmpf.demo.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -106,9 +107,11 @@ class AgentActivity : ApiActivity() {
 
     private fun onReceiveMessage(message: String) {
         Log.i(TAG, "onReceiveMessage$message")
-        messageList.add("小程序: $message")
-        adapter.notifyItemInserted(messageList.size - 1)
-        messageRecyclerView.scrollToPosition(messageList.size - 1)
+        runOnUiThread {
+            messageList.add("小程序: $message")
+            adapter.notifyItemInserted(messageList.size - 1)
+            messageRecyclerView.scrollToPosition(messageList.size - 1)
+        }
     }
 
     private inner class MessageAdapter(private val messages: List<String>) :
@@ -131,6 +134,7 @@ class AgentActivity : ApiActivity() {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun cleanupAgentContext() {
         isInAgent = false
         mAgentFeedbackCallback = null
@@ -139,6 +143,7 @@ class AgentActivity : ApiActivity() {
         }
         agentRequestId = null
         messageList.clear()
+        adapter.notifyDataSetChanged()
     }
 
     //Agent corresponding fields
