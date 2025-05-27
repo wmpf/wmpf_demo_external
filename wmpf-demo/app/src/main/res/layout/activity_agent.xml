@@ -29,11 +29,11 @@
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_send"/>
 
-        <ImageButton
-            android:id="@+id/voiceButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_btn_speak_now"/>
+<!--        <ImageButton-->
+<!--            android:id="@+id/voiceButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@android:drawable/ic_btn_speak_now"/>-->
 
         <ImageButton
             android:id="@+id/refresh"

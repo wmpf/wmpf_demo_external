@@ -30,7 +30,7 @@ class AgentActivity : ApiActivity() {
 
     private lateinit var messageEditText: EditText
     private lateinit var sendButton: ImageButton
-    private lateinit var voiceButton: ImageButton
+//    private lateinit var voiceButton: ImageButton
     private lateinit var refreshButton: ImageButton
     private lateinit var messageRecyclerView: RecyclerView
     private val messageList = mutableListOf<String>()
@@ -43,7 +43,7 @@ class AgentActivity : ApiActivity() {
         messageRecyclerView = findViewById(R.id.messageRecyclerView)
         messageEditText = findViewById(R.id.messageEditText)
         sendButton = findViewById(R.id.sendButton)
-        voiceButton = findViewById(R.id.voiceButton)
+//        voiceButton = findViewById(R.id.voiceButton)
         refreshButton = findViewById(R.id.refresh)
 
         adapter = MessageAdapter(messageList)
@@ -51,7 +51,7 @@ class AgentActivity : ApiActivity() {
         messageRecyclerView.adapter = adapter
 
         sendButton.setOnClickListener { onSend() }
-        voiceButton.setOnClickListener { /* TODO: Implement voice input */ }
+//        voiceButton.setOnClickListener { /* TODO: Implement voice input */ }
         invokeWMPFApi("registerInvokeEventHander") {
             WMPF.getInstance().agentApi.registerInvokeEventHandler(
                 mAgentInvokeEventHandler
