@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -79,6 +80,11 @@ class AgentActivity : ApiActivity() {
 
     private fun onSendMessage(message: String) {
         if (message.isNotEmpty()) {
+            runOnUiThread {
+                messageEditText.isEnabled = false
+                messageEditText.hint = "等待回复中"
+                messageEditText.setTextColor(ContextCompat.getColor(this, android.R.color.darker_gray))
+            }
             messageList.add("You: $message")
             adapter.notifyItemInserted(messageList.size - 1)
             messageEditText.text.clear()
@@ -108,6 +114,9 @@ class AgentActivity : ApiActivity() {
     private fun onReceiveMessage(message: String) {
         Log.i(TAG, "onReceiveMessage$message")
         runOnUiThread {
+            messageEditText.isEnabled = true
+            messageEditText.hint = ""
+            messageEditText.setTextColor(ContextCompat.getColor(this, android.R.color.black))
             messageList.add("小程序: $message")
             adapter.notifyItemInserted(messageList.size - 1)
             messageRecyclerView.scrollToPosition(messageList.size - 1)
