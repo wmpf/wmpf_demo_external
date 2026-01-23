@@ -3,6 +3,7 @@ package com.tencent.wmpf.demo.ui
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -101,47 +102,58 @@ class FastExperienceActivity : ApiActivity() {
             val param = createStartAppParams()
             invokeWMPFApi("以悬浮窗口启动小程序",true){
                 assertLoginState(param.appType)
-                WMPF.getInstance().miniProgramApi.launchMiniProgram(
-                    WMPFStartAppRequest(
-                        param,false,landscapeMode
-                    ).apply {
-                        val portraitWidth = 500
-                        val portraitHeight = 700
-                        val landscapeWidth = 700
-                        val landscapeHeight = 500
-                        val x = 0
-                        val y = 0
-                        specific = WMPFFloatWindowSpecific(portraitWidth,
-                            portraitHeight,
-                            landscapeWidth,
-                            landscapeHeight,
-                            15F,
-                            x,
-                            y,
-                            true,
-                            Gravity.CENTER,
-                            TYPE_APPLICATION_OVERLAY
-                        ).apply {
-                            var landscapeModeInFloat = WMPFFloatWindowSpecific.Orientation.PORTRAIT
-                            if(landscapeMode == LandscapeMode.LANDSCAPE
-                                || landscapeMode == LandscapeMode.LANDSCAPE_COMPAT){
-                                landscapeModeInFloat = WMPFFloatWindowSpecific.Orientation.LANDSCAPE_LOCKED
-                            }
-                            orientation = landscapeModeInFloat
-                            portraitSpec.apply {
-                                isDraggableHorizontally = true
-                                isDraggableVertically = true
-                                dragAreaHeight = 100
-                                dragBarSize = WMPFSize(landscapeWidth,100)
-                            }
-                            landscapeSpec.apply {
-                                isDraggableHorizontally = true
-                                isDraggableVertically = true
-                                dragAreaHeight = 100
-                                dragBarSize = WMPFSize(landscapeWidth,100)
-                            }
-                        }
-                })
+                
+                // 浮窗尺寸配置（窗口外观相关）
+                val portraitWidth = 900
+                val portraitHeight = 1600
+                val landscapeWidth = 1600
+                val landscapeHeight = 900
+                val x = 0
+                val y = 0
+                
+                // 创建浮窗配置对象（移除 TYPE_APPLICATION_OVERLAY，使用 SDK 默认 windowType）
+                val floatSpecific = WMPFFloatWindowSpecific(
+                    portraitWidth,
+                    portraitHeight,
+                    landscapeWidth,
+                    landscapeHeight,
+                    16F,
+                    x,
+                    y,
+                    true  
+                ).apply {
+                    var landscapeModeInFloat = WMPFFloatWindowSpecific.Orientation.PORTRAIT
+                    if(landscapeMode == LandscapeMode.LANDSCAPE
+                        || landscapeMode == LandscapeMode.LANDSCAPE_COMPAT){
+                        landscapeModeInFloat = WMPFFloatWindowSpecific.Orientation.LANDSCAPE_LOCKED
+                    }
+                    orientation = landscapeModeInFloat
+                    
+                    portraitSpec.apply {
+                        isDraggableHorizontally = true
+                        isDraggableVertically = true
+                        dragAreaHeight = 20
+                        dragBarSize = WMPFSize(100,5)
+                    }
+                    
+                    landscapeSpec.apply {
+                        isDraggableHorizontally = true
+                        isDraggableVertically = true
+                        dragAreaHeight = 20
+                        dragBarSize = WMPFSize(100,5)
+                    }
+                }
+                
+                val request = WMPFStartAppRequest(param).apply {
+                    // 设置浮窗配置
+                    specific = floatSpecific
+                    // 显式开启浮窗模式
+                    isFloatWindow = true
+                    // 强制索引不重启
+                    isForceIndexNoRelaunch = true
+                }
+
+                WMPF.getInstance().miniProgramApi.launchMiniProgram(request)
             }
         }
 
